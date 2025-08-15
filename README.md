@@ -62,4 +62,4 @@ Edit it on notebooks/0. config/config.ipynb
 MIT
 
 # Acknowledgements
-UNSW, Ausgrid, RACE For 2030
+This project is part of Samhan's PhD study, supported by the University International Postgraduate Award (UIPA) Scholarship from UNSW, the Industry Collaboration Project Scholarship from Ausgrid, and the RACE for 2030 Industry PhD Scholarship. We also acknowledge Solcast and the Australian Bureau of Meteorology (BOM) for providing access to historical weather datasets for this research. Finally, we thank the reviewers and editor of the Journal of Open Source Software for their valuable feedback and guidance.

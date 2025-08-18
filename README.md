@@ -55,11 +55,17 @@ The list of available model and its hyperparameter can be seen on config/model_h
 Edit it on notebooks/0. config/config.ipynb
 
 ## How to add a dataset
+- add on folder data
+- edit config file
+- for now, the minimum dataset length is 12 weeks. otherwise the tool will reutrn an error. 1 week for lookback period, 10 week for training & cross validation, 1 week for holdout test. 
 
 ## How to add a model
 
 # License
-MIT
+MIT License
 
 # Acknowledgements
 This project is part of Samhan's PhD study, supported by the University International Postgraduate Award (UIPA) Scholarship from UNSW, the Industry Collaboration Project Scholarship from Ausgrid, and the RACE for 2030 Industry PhD Scholarship. We also acknowledge Solcast and the Australian Bureau of Meteorology (BOM) for providing access to historical weather datasets for this research. Finally, we thank the reviewers and editor of the Journal of Open Source Software for their valuable feedback and guidance.
+
+# Raising Issue, Contributing, and Support Request
+To report bugs, request features, or suggest improvements, please use the GitHub Issues feature. For contributing or seeking support, contact m.samhan@unsw.edu.au.

@@ -32,6 +32,14 @@ This tool aims to evaluate net load forecasting models in a reliable and reprodu
 5. Tool will output the evaluation result on experiment_result/ as one folder. 
 6. If you want to evaluate several forecast problems and model specifications at once, you can use notebooks/model/run_experiments_batch.ipynb
 
+# Tool Testing
+- For simple test, follow the steps on Quick Start above and try certain inputs. For example, use these inputs
+dataset = ds0 # This is dataset for testing
+forecast_horizon = fh1 # fh1 = 30 minutes ahead
+model_name = m6 # this is linear regression
+hyperparameter_no = 'hp1'
+- For a complete test of all 18 models, use the file run_tests.ipynb and run all cells without modifying anything. It will output a file in experiment_result/Archive/Testing Result which compares all experiment outputs with a benchmark outputs. All values should be the same unless runtime_ms which depends on the computer specification used to run the tool. This complete test takes around 1 hour using Intel i5 with 32 RAM. 
+
 # Tool Features
 1. Adjustable. User can specify the dataset, forecast horizon, model, and model hyperparameter
 2. Systematic. Every experiment performed also outputs metadata like experiment date, experiment number, forecast problem, model specification, etc.
@@ -65,7 +73,7 @@ Edit it on notebooks/0. config/config.ipynb
 MIT License
 
 # Acknowledgements
-This project is part of Samhan's PhD study, supported by the University International Postgraduate Award (UIPA) Scholarship from UNSW, the Industry Collaboration Project Scholarship from Ausgrid, and the RACE for 2030 Industry PhD Scholarship. We also acknowledge Solcast and the Australian Bureau of Meteorology (BOM) for providing access to historical weather datasets for this research. Finally, we thank the reviewers and editor of the Journal of Open Source Software for their valuable feedback and guidance.
+This project is part of Samhan's PhD study, supported by the University International Postgraduate Award (UIPA) Scholarship from UNSW, the Industry Collaboration Project Scholarship from Ausgrid, and the RACE for 2030 Industry PhD Scholarship. We also acknowledge Solcast and the Australian Bureau of Meteorology (BOM) for providing access to historical weather datasets for this research. We further acknowledge the use of Python libraries including Pandas, NumPy, PyTorch, Scikit-learn, XGBoost, Prophet, Statsmodels, and Matplotlib. Finally, we thank the reviewers and editor of the Journal of Open Source Software for their valuable feedback and guidance.
 
 # Raising Issue, Contributing, and Support Request
 To report bugs, request features, or suggest improvements, please use the GitHub Issues feature. For contributing or seeking support, contact m.samhan@unsw.edu.au.

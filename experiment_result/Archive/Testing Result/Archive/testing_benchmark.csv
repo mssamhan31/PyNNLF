@@ -203,8 +203,8 @@ m6_lr_train_nRMSE_mean,2.982059462
 m6_lr_train_nRMSE_stddev,0.035519859
 m6_lr_test_nRMSE_mean,3.046862901
 m6_lr_test_nRMSE_stddev,0.314425736
-m7_ann_runtime_ms_mean,1241.500974
-m7_ann_runtime_ms_stddev,530.0404978
+m7_ann_runtime_ms_mean,1498.060727
+m7_ann_runtime_ms_stddev,651.361408
 m7_ann_train_MBE_mean,0.068613
 m7_ann_train_MBE_stddev,0.925627961
 m7_ann_train_MAE_mean,19.7323

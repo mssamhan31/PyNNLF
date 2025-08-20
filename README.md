@@ -26,11 +26,12 @@ This tool aims to evaluate net load forecasting models in a reliable and reprodu
 
 # Quick Start
 1. Clone the whole repository to your personal computer.
-2. Open notebooks/model/run_experiments.ipynb.
-3. Fill the input values (forecast problem & model specification). 
-4. Run notebooks/model/run_experiments.ipynb.
-5. Tool will output the evaluation result on experiment_result/ as one folder. 
-6. If you want to evaluate several forecast problems and model specifications at once, you can use notebooks/model/run_experiments_batch.ipynb
+2. Create python virtual environment and install the requirements using pip install -r requirements.txt. This will take ~10 minutes. Although newer Python version should work, this tool was tested using Python 3.12.3. 
+3. Open notebooks/model/run_experiments.ipynb.
+4. Fill the input values (forecast problem & model specification) that you want. 
+5. Run notebooks/model/run_experiments.ipynb.
+6. Tool will output the evaluation result on experiment_result/ as one folder. 
+7. If you want to evaluate several forecast problems and model specifications at once, you can use notebooks/model/run_experiments_batch.ipynb
 
 # Tool Testing
 - For simple test, follow the steps on Quick Start above and try certain inputs. For example, use these inputs
@@ -38,7 +39,7 @@ dataset = ds0 # This is dataset for testing
 forecast_horizon = fh1 # fh1 = 30 minutes ahead
 model_name = m6 # this is linear regression
 hyperparameter_no = 'hp1'
-- For a complete test of all 18 models, use the file run_tests.ipynb and run all cells without modifying anything. It will output a file in experiment_result/Archive/Testing Result which compares all experiment outputs with a benchmark outputs. All values should be the same unless runtime_ms which depends on the computer specification used to run the tool. This complete test takes around 1 hour using Intel i5 with 32 RAM. 
+- For a complete test of all 18 models, use the file run_tests.ipynb and run all cells without modifying anything. It will output a file in experiment_result/Archive/Testing Result which compares all experiment outputs with a benchmark outputs. All values should be the same unless runtime_ms which depends on the computer specification used to run the tool. This complete test takes around 1 hour using a personal computer with Intel i5 processor & 32GB RAM. 
 
 # Tool Features
 1. Adjustable. User can specify the dataset, forecast horizon, model, and model hyperparameter

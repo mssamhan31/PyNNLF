@@ -47,11 +47,11 @@ hyperparameter_no = 'hp1'
 - Suppose we do the simple test using the inputs above, this should take less than 1 minute.  
 - <img src="image-1.png" alt="test output" style="height:300; width:auto;"/>  
 - This is the output folder  
-- <img src="image.png" alt="output folder" style="height:300; width:auto;"/>  
+- <img src="image.png" alt="output folder" style="height:200; width:auto;"/>  
 - The file a1_experiment_result.csv will summarise the result, including the cross validated nRMSE & its standard deviation  
-- <img src="image-2.png" alt="result summary" style="height:300; width:auto;"/>  
+- <img src="image-2.png" alt="result summary" style="height:30; width:auto;"/>  
 - The file a3_cross_validation_result.csv will provide the cross validation (CV) detailed result, from CV1 to CV10  
-- <img src="image-5.png" alt="cv results" style="height:300; width:auto;"/>  
+- <img src="image-5.png" alt="cv results" style="height:200; width:auto;"/>  
 - Below are some plots on the test set <br>
   <img src="E00001_c1_test_timeplot.png" alt="timeplot" height="300"/> <img src="E00001_c2_test_scatterplot.png" alt="scatterplot" height="300"/> <br>
   <img src="E00001_c3_test_residual_timeplot.png" alt="residual timeplot" height="300"/> <img src="E00001_c4_test_residual_histogram.png" alt="histogram" height="300"/>
@@ -63,7 +63,11 @@ hyperparameter_no = 'hp1'
 
 # Tool Limitation
 1. Basic user interface. User needs to modify the code manually to change the model
-2. Limited dataset and model. There are still many public net load datasets & models that can be added to the library.
+2. Limited dataset and model. There are still many public net load datasets & models that can be added to the library. We welcome contribution to add these dataset & models into the library!
+
+# Core API Documentation
+- all functions are written with docstrings on the code file
+- 
 
 # Folder Structure (WIP HERE)
 - data: contains all dataset being used on this project
@@ -82,8 +86,10 @@ Edit it on notebooks/0. config/config.ipynb
 - add on folder data
 - edit config file
 - for now, the minimum dataset length is 12 weeks. otherwise the tool will reutrn an error. 1 week for lookback period, 10 week for training & cross validation, 1 week for holdout test. 
+- Consider contributing!
 
 ## How to add a model
+- Consider contributing!
 
 # License
 MIT License

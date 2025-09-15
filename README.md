@@ -1,30 +1,37 @@
-# Tool Name
-PyNNLF (Python for Network Net Load Forecast) is a tool to evaluate net load forecasting models performance in a reliable and reproducible way. 
+# Welcome to PyNNLF
+PyNNLF (Python for Network Net Load Forecast) is a tool to evaluate net load forecasting model performance in a reliable and reproducible way.
 
-# Introduction
-Net load is the difference between electricity load and solar generation. Forecasting net load is important to network operators both for operational and planning purpose. Since 2016, there has been more than 60 academic papers published on the topic. Most of them introduced new net load forecasting model and claimed superior performance. However, most of these results are obtained by a private evaluation. Many researchers used a publicly unavailable dataset, compared with another complex model as benchmark model, and did not share their implementaiton code publicly. Until now, there is no tool that can be readily used to evaluate net load forecasting models in a systematic way, compare it with other existing models, with a library of public net load dataset.
+You can access the [GitHub repository here](https://github.com/mssamhan31/PyNNLF).
 
 # Objective
-This tool aims to evaluate net load forecasting models in a reliable and reproducible manner. It has library of public net load datasets and common net load forecasting models including simple benchmark models. The user inputs the forecast problem and model specification, and the tool outputs the evaluation results. The tool enables the user to add their own dataset, model, and to modify the hyperparameters. Thus, a researcher claiming new and superior model can use this tool to compare their model with other existing models on a public dataset. The target audience of this tool is any researchers in academia or industry aiming to evaluate and optimise net load forecasting models. The tool illustration can be seen below.
+This tool evaluates net load forecasting models reliably and reproducibly. It includes a library of public net load datasets and common forecasting models, including simple benchmark models. Users input the forecast problem and model specification, and the tool outputs evaluation results. 
 
+It also allows users to add datasets, models, and modify hyperparameters. Researchers claiming a new or superior model can compare their model with existing ones on public datasets. The target audience includes researchers in academia or industry focused on evaluating and optimizing net load forecasting models. 
+
+A visual illustration of the tool workflow is shown below.
+![Home Illustration](./docs/img/home_illustration.png)
 
 # Input
-1. Forecast problem: dataset & forecast horizon. List of possible forecast problem values is on notebooks/config/config.ipynb. 
-2. Forecast model specification: model & hyperparameter. List of possible model specification is on notebooks/config/model_hyperparameters.ipynb.
+1. **Forecast Target**: dataset & forecast horizon. List of possible forecast problem values is in `notebooks/config/config.ipynb`.
+2. **Model Specification**: model & hyperparameters. List of possible model specifications is in `notebooks/config/model_hyperparameters.ipynb`.
 
 # Output
-1. a1_experiment result.csv : accuracy (cross-validated test n-RMSE Error), stability (accuracy stddev), training time,
-2. a2_hyperparameter.csv : hyperparameter being used on the model
-3. a3_cross_validation_result.csv : detailed result for each of the cross validation split
-4. cv_plots folder: some plots of train and test set, consisting of
-   1. observation vs forecast time plot
-   2. observation vs forecast scatter plot
-   3. residual time plot
-   4. residual histogram
-5. cv_test and cv_train folder: consisting of time series of the observation, forecast, and residual of each of the cross validation
+1. `a1_experiment_result.csv` – contains accuracy (cross-validated test n-RMSE), stability (accuracy stddev), and training time.
+2. `a2_hyperparameter.csv` – lists hyperparameters used for each model.
+3. `a3_cross_validation_result.csv` – detailed results for each cross-validation split.
+4. `cv_plots/` – folder with plots including:
+   - Observation vs forecast (time plot)
+   - Observation vs forecast (scatter plot)
+   - Residual time plot
+   - Residual histogram
+5. `cv_test/` and `cv_train/` – folders containing time series of observation, forecast, and residuals for each cross-validation split.
 
-# Tool output naming convention
-[experiment no]_[experiment date]_[dataset]_[forecast horizon]_[model]_[hyperparameter]
+# Tool Output Naming Convention
+Format:
+`[experiment_no]_[experiment_date]_[dataset]_[forecast_horizon]_[model]_[hyperparameter]`
+
+Example:
+`E00001_250915_ds0_fh30_m6_lr_hp1`
 
 # Installation Instruction
 1. Clone the whole repository to your personal computer.

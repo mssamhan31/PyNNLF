@@ -1,4 +1,6 @@
 site_name: PyNNLF Documentation
+site_url: https://mssamhan31.github.io/PyNNLF/
+
 theme:
   name: material
 plugins:

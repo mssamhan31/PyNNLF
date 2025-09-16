@@ -1,0 +1,1057 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../tool_testing/">
+      
+      
+        <link rel="next" href="../run_experiment/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>Datasets & Models - PyNNLF Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.e53b48f4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dataset" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="PyNNLF Documentation" class="md-header__button md-logo" aria-label="PyNNLF Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PyNNLF Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Datasets & Models
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="PyNNLF Documentation" class="md-nav__button md-logo" aria-label="PyNNLF Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PyNNLF Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tool_testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tool Testing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Detailed Guide
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Detailed Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Datasets & Models
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Datasets & Models
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dataset
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dataset">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ausgrid-solar-home-datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ausgrid Solar Home Datasets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#australia-energy-data-platform-aedp-datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Australia Energy Data Platform (AEDP) Datasets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ausgrid-zone-substation-zs-datasets-mascot" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ausgrid Zone Substation (ZS) Datasets – Mascot
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#forecasting-models-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Forecasting Models Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyperparameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hyperparameter
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../run_experiment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How to run an experiment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modify_hyper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How to modify model hyperparameter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../add_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How to add a model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../add_dataset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How to add a dataset
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../repo_structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Repo structure
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features_limitations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Features & Limitations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ack_license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Acknowledgement & License
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../support_contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Support & Contributing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributors
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dataset
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dataset">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ausgrid-solar-home-datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ausgrid Solar Home Datasets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#australia-energy-data-platform-aedp-datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Australia Energy Data Platform (AEDP) Datasets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ausgrid-zone-substation-zs-datasets-mascot" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ausgrid Zone Substation (ZS) Datasets – Mascot
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#forecasting-models-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Forecasting Models Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyperparameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hyperparameter
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Datasets & Models</h1>
+
+<h2 id="dataset">Dataset<a class="headerlink" href="#dataset" title="Permanent link">&para;</a></h2>
+<p>The available datasets are listed in the <code>data</code> folder, with metadata provided in <code>data/metadata.xlsx</code>. Below are some of the datasets currently included in the library:</p>
+<h3 id="ausgrid-solar-home-datasets">Ausgrid Solar Home Datasets<a class="headerlink" href="#ausgrid-solar-home-datasets" title="Permanent link">&para;</a></h3>
+<p>This dataset has been widely used in net load forecasting research since 2016. It includes data from 300 solar-equipped households within the Ausgrid network in Sydney. The original source is <a href="https://data.nsw.gov.au/data/dataset/solar-home-electricty-data/resource/d2dc76f0-22e3-4efc-bed9">here</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Dataset Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ds1_ahsd.csv</code></td>
+<td>Ausgrid Solar Home Dataset, aggregate of 300 household data in Ausgrid network</td>
+</tr>
+<tr>
+<td><code>ds4_ashd_with_weather.csv</code></td>
+<td><code>ds1</code> enhanced with temperature, relative humidity, and wind speed data</td>
+</tr>
+<tr>
+<td><code>ds13_ashd_with_cloud_solcast.csv</code></td>
+<td><code>ds4</code> further enriched with cloud data from Solcast</td>
+</tr>
+</tbody>
+</table>
+<h3 id="australia-energy-data-platform-aedp-datasets">Australia Energy Data Platform (AEDP) Datasets<a class="headerlink" href="#australia-energy-data-platform-aedp-datasets" title="Permanent link">&para;</a></h3>
+<p>These datasets were compiled by UNSW Sydney using data from Solar Analytics and Wattwatchers. Sensitive information such as customer addresses, names, and NMIs has been removed. The original source is
+ <a href="https://darth.engineering.unsw.edu.au/">here</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Dataset Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ds10_aedp_cluster2_30min.csv</code></td>
+<td>AEDP dataset for Cluster 2 with 30-minute resolution</td>
+</tr>
+<tr>
+<td><code>ds11_aedp_cluster2_30min_with_weather.csv</code></td>
+<td><code>ds10</code> enhanced with weather data including temperature, humidity, etc.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ausgrid-zone-substation-zs-datasets-mascot">Ausgrid Zone Substation (ZS) Datasets – Mascot<a class="headerlink" href="#ausgrid-zone-substation-zs-datasets-mascot" title="Permanent link">&para;</a></h3>
+<p>Unlike the previous household-focused datasets, this dataset covers a zone substation, which includes residential, commercial &amp; industrial (C&amp;I), and major customers. The original source is <a href="https://www.ausgrid.com.au/Industry/Our-Research/Data-to-share/Distribution-zone-substation">here</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Dataset Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ds14_ausgrid_zs_mascot.csv</code></td>
+<td>Zone Substation data for Mascot</td>
+</tr>
+<tr>
+<td><code>ds15_ausgrid_zs_mascot_30min_with_weather.csv</code></td>
+<td><code>ds14</code> enhanced with weather data at 30-minute resolution</td>
+</tr>
+</tbody>
+</table>
+<h2 id="model">Model<a class="headerlink" href="#model" title="Permanent link">&para;</a></h2>
+<h3 id="forecasting-models-overview">Forecasting Models Overview<a class="headerlink" href="#forecasting-models-overview" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Model ID</th>
+<th>Model Name</th>
+<th>Short Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>m1_naive</code></td>
+<td>Naive</td>
+<td>Forecast equals the last observed value</td>
+</tr>
+<tr>
+<td><code>m2_snaive</code></td>
+<td>Seasonal Naive</td>
+<td>Forecast equals the value from the same season in the previous cycle</td>
+</tr>
+</tbody>
+</table>
+<h4 id="statistical-models">Statistical Models<a class="headerlink" href="#statistical-models" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Model ID</th>
+<th>Model Name</th>
+<th>Short Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>m3_ets</code></td>
+<td>ETS</td>
+<td>Exponential smoothing model with error, trend, and seasonality components</td>
+</tr>
+<tr>
+<td><code>m4_arima</code></td>
+<td>ARIMA</td>
+<td>Autoregressive Integrated Moving Average model for time series forecasting</td>
+</tr>
+<tr>
+<td><code>m5_sarima</code></td>
+<td>SARIMA</td>
+<td>Seasonal ARIMA model with seasonal components</td>
+</tr>
+<tr>
+<td><code>m6_lr</code></td>
+<td>Linear Regression</td>
+<td>Predicts future values using a linear combination of input features</td>
+</tr>
+</tbody>
+</table>
+<h4 id="machine-learning-models">Machine Learning Models<a class="headerlink" href="#machine-learning-models" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Model ID</th>
+<th>Model Name</th>
+<th>Short Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>m7_ann</code></td>
+<td>ANN</td>
+<td>Basic Artificial Neural Network with one hidden layers</td>
+</tr>
+<tr>
+<td><code>m8_dnn</code></td>
+<td>Deep Neural Network</td>
+<td>ANN with more than one hidden layer</td>
+</tr>
+<tr>
+<td><code>m9_rt</code></td>
+<td>Regression Tree</td>
+<td>Decision tree model for regression tasks</td>
+</tr>
+<tr>
+<td><code>m10_rf</code></td>
+<td>Random Forest</td>
+<td>Ensemble of regression trees for improved accuracy and robustness</td>
+</tr>
+<tr>
+<td><code>m11_svr</code></td>
+<td>Support Vector Regression</td>
+<td>Uses support vectors to perform regression with margin of tolerance</td>
+</tr>
+<tr>
+<td><code>m12_rnn</code></td>
+<td>Recurrent Neural Network</td>
+<td>Neural network with feedback loops for sequential data</td>
+</tr>
+<tr>
+<td><code>m13_lstm</code></td>
+<td>Long Short-Term Memory</td>
+<td>RNN variant designed to capture long-term dependencies</td>
+</tr>
+<tr>
+<td><code>m14_gru</code></td>
+<td>Gated Recurrent Unit</td>
+<td>Simplified LSTM with fewer parameters</td>
+</tr>
+<tr>
+<td><code>m15_transformer</code></td>
+<td>Transformer</td>
+<td>Attention-based model for sequence modeling without recurrence</td>
+</tr>
+<tr>
+<td><code>m16_prophet</code></td>
+<td>Prophet</td>
+<td>Time series model developed by Facebook for business forecasting</td>
+</tr>
+<tr>
+<td><code>m17_xgb</code></td>
+<td>XGBoost</td>
+<td>Gradient boosting framework optimized for speed and performance</td>
+</tr>
+<tr>
+<td><code>m18_nbeats</code></td>
+<td>N-BEATS</td>
+<td>Deep learning model for univariate time series forecasting</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hyperparameter">Hyperparameter<a class="headerlink" href="#hyperparameter" title="Permanent link">&para;</a></h3>
+<p>The list of available model and its hyperparameter can be seen on <code>config/model_hyperparameters.ipynb</code>. The values currently available are the hyperparameter values mostly used in academic literature, but not necessarily the optimum value. </p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

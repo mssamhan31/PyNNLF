@@ -1,0 +1,31 @@
+site_name: PyNNLF Documentation
+theme:
+  name: material
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+nav: 
+  - Home: index.md
+  - Getting Started: getting_started.md
+  - Examples: examples.md
+  - Tool Testing: tool_testing.md
+  - Detailed Guide:
+      - Datasets & Models: datasets_models.md
+      - How to run an experiment: run_experiment.md
+      - How to modify model hyperparameter: modify_hyper.md
+      - How to add a model: add_model.md
+      - How to add a dataset: add_dataset.md
+      - Repo structure: repo_structure.md
+      - API Reference: api_reference.md
+  - Features & Limitations: features_limitations.md
+  - Acknowledgement & License: ack_license.md
+  - Support & Contributing: support_contributing.md
+  - Contributors: contributors.md
+markdown_extensions:
+  - toc:
+      permalink: true
+      toc_depth: 3

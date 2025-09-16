@@ -9,7 +9,7 @@ This tool evaluates net load forecasting models reliably and reproducibly. It in
 It also allows users to add datasets, models, and modify hyperparameters. Researchers claiming a new or superior model can compare their model with existing ones on public datasets. The target audience includes researchers in academia or industry focused on evaluating and optimizing net load forecasting models. 
 
 A visual illustration of the tool workflow is shown below.
-![Home Illustration](../img/home_illustration.png)
+![Home Illustration](img/home_illustration.png)
 
 # Input
 1. **Forecast Target**: dataset & forecast horizon. List of possible forecast problem values is in `notebooks/config/config.ipynb`.

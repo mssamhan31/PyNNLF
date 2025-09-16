@@ -56,10 +56,10 @@ The file `a3_cross_validation_result.csv` provides the detailed cross-validation
 
 Below are some plots on the test set:
 
-| ![Time Plot](../img/E00001_c1_test_timeplot.png) | ![Scatter Plot](../img/E00001_c2_test_scatterplot.png) |
+| ![Time Plot](img/E00001_c1_test_timeplot.png) | ![Scatter Plot](img/E00001_c2_test_scatterplot.png) |
 |:---:|:---:|
 | **Figure 1:** Observation vs Forecast (Time Plot) | **Figure 2:** Observation vs Forecast (Scatter Plot) |
 
-| ![Residual Time Plot](../img/E00001_c3_test_residual_timeplot.png) | ![Residual Histogram](../img/E00001_c4_test_residual_histogram.png) |
+| ![Residual Time Plot](img/E00001_c3_test_residual_timeplot.png) | ![Residual Histogram](img/E00001_c4_test_residual_histogram.png) |
 |:---:|:---:|
 | **Figure 3:** Residuals Over Time | **Figure 4:** Residual Histogram |

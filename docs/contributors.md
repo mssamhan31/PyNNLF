@@ -1,0 +1,3 @@
+- **Samhan Samhan** (m.samhan@unsw.edu.au): Lead developer and researcher. Responsible for conceptualization, implementation, documentation, and experimentation.
+- **Assoc Prof Anna Bruce**: Supervisor. Provided guidance on research direction and methodology.
+- **Dr Baran Yildiz**: Supervisor. Provided guidance on research direction and methodology.

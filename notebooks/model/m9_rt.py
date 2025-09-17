@@ -13,17 +13,16 @@ from sklearn.metrics import mean_squared_error
 
 
 def train_model_m9_rt(hyperparameter, train_df_X, train_df_y):
-    ''' Train and test a regression tree model for point forecasting. 
-        
-    Args:
-        hyperparameter (df) : hyperparameter value of the model consisting of number of features
-        train_df_X (df) : features matrix for training
-        train_df_y (df) : target matrix for training
+    """Train a regression tree (DecisionTreeRegressor) for point forecasting.
 
-    
+    Args:
+        hyperparameter (dict): Dictionary of hyperparameters (seed, max_depth, min_samples_split, min_samples_leaf, max_features).
+        train_df_X (pd.DataFrame): Predictor variables for training.
+        train_df_y (pd.DataFrame): Target variable for training.
+
     Returns:
-        model (model) : trained model with all features
-    '''
+        model (dict): Contains the trained regression tree under key 'rt'.
+    """
     
     #UNPACK HYPERPARAMETER
     seed = hyperparameter['seed']
@@ -58,17 +57,16 @@ def train_model_m9_rt(hyperparameter, train_df_X, train_df_y):
 
 
 def produce_forecast_m9_rt(model, train_df_X, test_df_X):
-    """Create forecast at the train and test set using the trained model
+    """Generate forecasts for train and test sets using a trained regression tree.
 
     Args:
-        model (dictionary): all parameters of the trained model
-        train_df_X (df): predictors of train set
-        test_df_X (df): predictors of test set
+        model (dict): Trained model containing the regression tree under key 'rt'.
+        train_df_X (pd.DataFrame): Predictor variables for the training set.
+        test_df_X (pd.DataFrame): Predictor variables for the test set.
 
     Returns:
-        train_df_y_hat (df) : forecast result at train set
-        test_df_y_hat (df) : forecast result at test set
-        
+        train_df_y_hat (pd.DataFrame): Forecasts for the training set.
+        test_df_y_hat (pd.DataFrame): Forecasts for the test set.
     """
     
     # UNPACK MODEL

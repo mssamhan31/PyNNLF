@@ -13,18 +13,20 @@ from statsmodels.tsa.statespace.exponential_smoothing import ExponentialSmoothin
 
 
 def train_model_m3_ets(hyperparameter, train_df_X, train_df_y, forecast_horizon):
-    ''' Train and test a linear model for point forecasting. 
-    https://www.statsmodels.org/dev/generated/statsmodels.tsa.statespace.exponential_smoothing.ExponentialSmoothing.html
-        
+    """Train an Exponential Smoothing (ETS) model for point forecasting.
+
+    Uses statsmodels' ExponentialSmoothing for trend forecasting. Handles 
+    timestep frequency, removes sudden jumps, and introduces a gap to avoid data leakage.
+
     Args:
-        hyperparameter (df) : hyperparameter value of the model consisting of number of features
-        train_df_X (df) : features matrix for training
-        train_df_y (df) : target matrix for training
-        forecast_horizon (int) : forecast horizon in mins
-    
+        hyperparameter (pd.DataFrame): Model hyperparameters including trend, damped_trend, and seasonal_periods_days.
+        train_df_X (pd.DataFrame): Features matrix for training (unused for ETS).
+        train_df_y (pd.DataFrame): Target series for training.
+        forecast_horizon (int): Forecast horizon in minutes.
+
     Returns:
-        model (model) : trained model with all features
-    '''
+        model (dict): Trained ETS model object containing fitted model.
+    """
     
     #UNPACK HYPERPARAMETER
     trend = hyperparameter['trend']
@@ -69,22 +71,26 @@ def train_model_m3_ets(hyperparameter, train_df_X, train_df_y, forecast_horizon)
     return model
 
 
-# In[1]:
+# In[ ]:
 
 
 def produce_forecast_m3_ets(model, train_df_X, test_df_X, forecast_horizon):
-    """Create forecast at the train and test set using the trained model
+    """Generate forecasts for training and test sets using a fitted ETS model.
+
+    The function produces fitted values for the training set and 
+    horizon-based forecasts for the test set, handling gaps and 
+    timestep frequency. Test forecasts are skipped if the test set 
+    precedes the training set (e.g., in certain CV folds).
 
     Args:
-        model (dictionary): all parameters of the trained model
-        train_df_X (df): predictors of train set
-        test_df_X (df): predictors of test set
-        forecast_horizon (int): forecast horizon in mins
+        model (dict): Trained ETS model containing the fitted model object.
+        train_df_X (pd.DataFrame): Predictor data for the training set.
+        test_df_X (pd.DataFrame): Predictor data for the test set.
+        forecast_horizon (int): Forecast horizon in minutes.
 
     Returns:
-        train_df_y_hat (df) : forecast result at train set
-        test_df_y_hat (df) : forecast result at test set
-        
+        train_df_y_hat (pd.DataFrame): Forecasted values for the training set.
+        test_df_y_hat (pd.DataFrame): Forecasted values for the test set.
     """
     
     timestep_frequency = test_df_X.index[1] - test_df_X.index[0]

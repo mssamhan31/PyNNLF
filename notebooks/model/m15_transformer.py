@@ -5,16 +5,23 @@
 
 
 def train_model_m15_transformer(hyperparameter, train_df_X, train_df_y):
-    ''' Train and test a Transformer model for point forecasting. 
-    Uses Transformer for temporal patterns, FC layer for lag+exogenous features.
+    """
+    Train a Transformer model for point forecasting using lag and exogenous features.
+
+    The model uses a Transformer encoder to capture temporal dependencies in lag features,
+    and a fully connected layer to combine the last hidden state with exogenous features.
+
     Args:
-        hyperparameter (df) : hyperparameter value of the model consisting of number of features
-        train_df_X (df) : features matrix for training
-        train_df_y (df) : target matrix for training
+        hyperparameter (dict): Dictionary containing model hyperparameters including
+            seed, input_size, hidden_size, num_layers, output_size, batch_size,
+            epochs, nhead, and learning_rate.
+        train_df_X (pd.DataFrame): Feature matrix for training (lag + exogenous features).
+        train_df_y (pd.DataFrame): Target variable for training.
 
     Returns:
-        model (model) : trained model with all features
-    '''
+        model (dict): Dictionary containing the trained Transformer model and associated
+            hyperparameters, as well as the original training data.
+    """
 
     # UNPACK HYPERPARAMETER
     seed = int(hyperparameter['seed'])
@@ -108,15 +115,17 @@ def train_model_m15_transformer(hyperparameter, train_df_X, train_df_y):
 
 
 def produce_forecast_m15_transformer(model, train_df_X, test_df_X):
-    """Create forecast at the train and test set using the trained Transformer model
+    """
+    Generate forecasts for train and test sets using a trained Transformer model.
+
     Args:
-        model (dictionary): all parameters of the trained model
-        train_df_X (df): predictors of train set
-        test_df_X (df): predictors of test set
+        model (dict): Dictionary containing the trained Transformer model and hyperparameters.
+        train_df_X (pd.DataFrame): Predictors of the training set (lag + exogenous features).
+        test_df_X (pd.DataFrame): Predictors of the test set (lag + exogenous features).
 
     Returns:
-        train_df_y_hat (df) : forecast result at train set
-        test_df_y_hat (df) : forecast result at test set
+        train_df_y_hat (np.ndarray): Forecast results for the training set.
+        test_df_y_hat (np.ndarray): Forecast results for the test set.
     """
     transformer = model['transformer']
     hyperparameter = model['hyperparameter']

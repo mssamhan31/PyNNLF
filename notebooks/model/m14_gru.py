@@ -5,17 +5,33 @@
 
 
 def train_model_m14_gru(hyperparameter, train_df_X, train_df_y):
-    ''' Train and test a GRU model for point forecasting. 
-    Uses GRU for temporal patterns, FC layer for lag+exogenous features.
-    Args:
-        hyperparameter (df) : hyperparameter value of the model consisting of number of features
-        train_df_X (df) : features matrix for training
-        train_df_y (df) : target matrix for training
+    """
+    Train a GRU-based model for point forecasting.
 
-    
+    The GRU captures temporal patterns from lag features, and a fully connected
+    layer integrates the last hidden state with exogenous variables to produce
+    the final prediction.
+
+    Args:
+        hyperparameter (dict): Dictionary of hyperparameters, including:
+            - 'seed': random seed for reproducibility
+            - 'input_size': number of input features per time step
+            - 'hidden_size': number of hidden units in GRU
+            - 'num_layers': number of GRU layers
+            - 'output_size': number of outputs
+            - 'batch_size': minibatch size
+            - 'epochs': number of training epochs
+            - 'learning_rate': optimizer learning rate
+        train_df_X (pd.DataFrame): DataFrame of input features (lag + exogenous).
+        train_df_y (pd.DataFrame): DataFrame of target values.
+
     Returns:
-        model (model) : trained model with all features
-    '''
+        model (dict): Dictionary containing:
+            - 'gru': trained GRU model
+            - 'hyperparameter': hyperparameters used for training
+            - 'train_df_X': training features
+            - 'train_df_y': training target
+    """
 
     # UNPACK HYPERPARAMETER
     seed = int(hyperparameter['seed'])
@@ -99,16 +115,23 @@ def train_model_m14_gru(hyperparameter, train_df_X, train_df_y):
 
 
 def produce_forecast_m14_gru(model, train_df_X, test_df_X):
-    """Create forecast at the train and test set using the trained GRU model
+    """
+    Generate forecasts using a trained GRU model for both train and test sets.
+
+    The GRU model processes lag features to capture temporal patterns and 
+    combines them with exogenous variables via a fully connected layer to produce 
+    the predictions. Minibatching is used to avoid memory issues.
+
     Args:
-        model (dictionary): all parameters of the trained model
-        train_df_X (df): predictors of train set
-        test_df_X (df): predictors of test set
+        model (dict): Dictionary containing the trained GRU model and hyperparameters.
+        train_df_X (pd.DataFrame): Input features for the training set (lag + exogenous).
+        test_df_X (pd.DataFrame): Input features for the test set (lag + exogenous).
 
     Returns:
-        train_df_y_hat (df) : forecast result at train set
-        test_df_y_hat (df) : forecast result at test set
+        train_df_y_hat (np.ndarray): Forecasted values for the training set.
+        test_df_y_hat (np.ndarray): Forecasted values for the test set.
     """
+    
     gru = model['gru']
     hyperparameter = model['hyperparameter']
     input_size = int(hyperparameter['input_size'])

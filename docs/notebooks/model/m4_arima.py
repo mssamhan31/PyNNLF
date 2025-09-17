@@ -12,18 +12,21 @@ from statsmodels.tsa.arima.model import ARIMA
 
 
 def train_model_m4_arima(hyperparameter, train_df_X, train_df_y, forecast_horizon):
-    ''' Train and test a linear model for point forecasting. 
-        
-    Args:
-        hyperparameter (df) : hyperparameter value of the model consisting of number of features
-        train_df_X (df) : features matrix for training
-        train_df_y (df) : target matrix for training
-        forecast_horizon (int) : forecast horizon in mins
+    """Train an ARIMA model for point forecasting.
 
-    
+    Handles timestep frequency, removes sudden jumps, and introduces 
+    a gap to avoid data leakage. Fits an ARIMA(p, d, q) model on the 
+    target series.
+
+    Args:
+        hyperparameter (pd.DataFrame): Hyperparameters including 'p', 'd', and 'q' for ARIMA.
+        train_df_X (pd.DataFrame): Features matrix for training (unused for ARIMA).
+        train_df_y (pd.DataFrame): Target series for training.
+        forecast_horizon (int): Forecast horizon in minutes.
+
     Returns:
-        model (model) : trained model with all features
-    '''
+        model (dict): Trained ARIMA model object containing the fitted model.
+    """
     
     #UNPACK HYPERPARAMETER
     p = hyperparameter['p']
@@ -60,22 +63,25 @@ def train_model_m4_arima(hyperparameter, train_df_X, train_df_y, forecast_horizo
     return model
 
 
-# In[1]:
+# In[ ]:
 
 
 def produce_forecast_m4_arima(model, train_df_X, test_df_X, forecast_horizon):
-    """Create forecast at the train and test set using the trained model
+    """Generate forecasts for training and test sets using a fitted ARIMA model.
+
+    Produces fitted values for the training set and horizon-based forecasts
+    for the test set. Handles timestep frequency, gaps, and skips test forecasts
+    if the test set precedes the training set (e.g., in certain CV folds).
 
     Args:
-        model (dictionary): all parameters of the trained model
-        train_df_X (df): predictors of train set
-        test_df_X (df): predictors of test set
-        forecast_horizon (int): forecast horizon in mins
+        model (dict): Trained ARIMA model containing the fitted model object.
+        train_df_X (pd.DataFrame): Predictor data for the training set.
+        test_df_X (pd.DataFrame): Predictor data for the test set.
+        forecast_horizon (int): Forecast horizon in minutes.
 
     Returns:
-        train_df_y_hat (df) : forecast result at train set
-        test_df_y_hat (df) : forecast result at test set
-        
+        train_df_y_hat (pd.DataFrame): Forecasted values for the training set.
+        test_df_y_hat (pd.DataFrame): Forecasted values for the test set.
     """
     timestep_frequency = test_df_X.index[1] - test_df_X.index[0]
     n_timestep_forecast_horizon = int(forecast_horizon / (timestep_frequency.total_seconds() / 60))

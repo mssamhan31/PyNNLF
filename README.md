@@ -1,10 +1,11 @@
 # Welcome to PyNNLF
-PyNNLF (Python for Network Net Load Forecast) is a tool for evaluating net load forecasting model performance in a reliable and reproducible way.
-It includes a library of public net load datasets and common forecasting models, including simple benchmark models. Users provide the forecast problem and model specifications, and the tool outputs evaluation results. It also allows users to add datasets, incorporate new models, and modify hyperparameters.
+PyNNLF (Python for Network Net Load Forecast) is a tool to evaluate net load forecasting model performance in a reliable and reproducible way.
 
-Researchers claiming a new or superior model can compare their results with existing ones on public datasets. The target audience includes researchers in academia or industry who are focused on evaluating and optimizing net load forecasting models.
+It includes a library of public net load datasets and common forecasting models, including simple benchmark models. Users input the forecast problem and model specification, and the tool outputs evaluation results.
 
-A visual illustration of the tool's workflow is shown below. 
+It also allows users to add datasets, models, and modify hyperparameters. Researchers claiming a new or superior model can compare their model with existing ones on public datasets. The target audience includes researchers in academia or industry focused on evaluating and optimizing net load forecasting models.
+
+A visual illustration of the tool workflow is shown below.
 
 ![Home Illustration](./docs/img/home_illustration.png)
 

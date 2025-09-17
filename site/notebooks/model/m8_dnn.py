@@ -11,16 +11,16 @@ import numpy as np
 import pandas as pd
 
 def train_model_m8_dnn(hyperparameter, train_df_X, train_df_y):
-    ''' Train and test a linear model for point forecasting. 
-    
+    """Train a Deep Neural Network (DNN) for point forecasting.
+
     Args:
-        hyperparameter (dict) : hyperparameter value of the model consisting of number of features
-        train_df_X (DataFrame) : features matrix for training
-        train_df_y (DataFrame) : target matrix for training
-    
+        hyperparameter (dict): Contains DNN configuration (hidden layers, size, activation, solver, learning rate, epochs, seed).
+        train_df_X (pd.DataFrame): Predictor variables for training.
+        train_df_y (pd.DataFrame): Target variable for training.
+
     Returns:
-        model (dict) : trained model with all features
-    '''
+        model (dict): Contains the trained DNN under key 'model_dnn'.
+    """
     
     # UNPACK HYPERPARAMETER
     seed = hyperparameter['seed']
@@ -108,16 +108,16 @@ def train_model_m8_dnn(hyperparameter, train_df_X, train_df_y):
     return model
 
 def produce_forecast_m8_dnn(model, train_df_X, test_df_X):
-    """Create forecast at the train and test set using the trained model
+    """Generate forecasts for train and test sets using a trained DNN model.
 
     Args:
-        model (dict): all parameters of the trained model
-        train_df_X (DataFrame): predictors of train set
-        test_df_X (DataFrame): predictors of test set
+        model (dict): Contains the trained DNN under key 'model_dnn'.
+        train_df_X (pd.DataFrame): Predictor variables for the training set.
+        test_df_X (pd.DataFrame): Predictor variables for the test set.
 
     Returns:
-        train_df_y_hat (DataFrame) : forecast result at train set
-        test_df_y_hat (DataFrame) : forecast result at test set
+        train_df_y_hat (pd.DataFrame): Forecasted values for the training set.
+        test_df_y_hat (pd.DataFrame): Forecasted values for the test set.
     """
     
     # UNPACK MODEL

@@ -24,7 +24,7 @@ For example, to add a model named `new_model`, create a file called `m19_new_mod
 You can refer to existing models for examples, such as the ANN model:
 ```
 def train_model_m7_ann(hyperparameter, train_df_X, train_df_y):
-    ''' Train and test a linear model for point forecasting. 
+    ''' Train and test an ANN model for point forecasting. 
         
     Args:
         hyperparameter (df) : hyperparameter value of the model consisting of number of features
@@ -177,6 +177,6 @@ elif model_name == 'm19_new_model':
 ### 3. Update `produce_forecast` function in `notebooks/config/general_functions.ipynb` file
 Similarly, update the `produce_forecast` function by adding:
 ```
-elif model_name == 'm18_nbeats':
+elif model_name == 'm19_new_model':
         train_df_y_hat, test_df_y_hat = produce_forecast_m19_new_model(model, train_df_X, test_df_X)
 ```

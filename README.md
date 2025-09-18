@@ -50,6 +50,6 @@ This project is part of Samhan's PhD study, supported by the University Internat
 The authors declare that they have no competing financial, personal, or professional interests related to this work.
 
 # Contributors
-- **Samhan Samhan** (m.samhan@unsw.edu.au): Lead developer and researcher. Responsible for conceptualization, implementation, documentation, and experimentation.
-- **Assoc Prof Anna Bruce**: Supervisor. Provided guidance on research direction and methodology.
-- **Dr Baran Yildiz**: Supervisor. Provided guidance on research direction and methodology.
+- **M. Syahman Samhan** (m.samhan@unsw.edu.au): Lead developer and researcher. Responsible for conceptualization, implementation, documentation, and experimentation.
+- **Anna Bruce**: Supervisor. Provided guidance on research direction and methodology.
+- **Baran Yildiz**: Supervisor. Provided guidance on research direction and methodology.

@@ -1,8 +1,8 @@
 # Welcome to PyNNLF
-PyNNLF (Python for Network Net Load Forecast) is a tool for evaluating net load forecasting model performance in a reliable and reproducible way.
-It includes a library of public net load datasets and common forecasting models, including simple benchmark models. Users provide the forecast problem and model specifications, and the tool outputs evaluation results. It also allows users to add datasets, incorporate new models, and modify hyperparameters.
+PyNNLF (Python for Network Net Load Forecast) is a tool to evaluate net load forecasting model performance in a reliable and reproducible way.
 
-Researchers claiming a new or superior model can compare their results with existing ones on public datasets. The target audience includes researchers in academia or industry who are focused on evaluating and optimizing net load forecasting models.
+This tool evaluates net load forecasting models aiming to make new net load forecasting research more reliable and reproducible. It includes a library of public net load datasets and common forecasting models, including simple benchmark models. Users input the forecast problem and model specification, and the tool outputs evaluation results. 
+It also allows users to add datasets, models, and modify hyperparameters. Researchers claiming a new or superior model can compare their model with existing ones on public datasets. The target audience includes researchers working in academia or industry focusing on evaluating and optimizing net load forecasting models. 
 
 A visual illustration of the tool's workflow is shown below. 
 
@@ -45,7 +45,7 @@ Example:
 Detailed documentation including examples, testing, detailed guide, API reference, features & limitations, etc. can be seen here. [PyNNLF Documentation](https://mssamhan31.github.io/PyNNLF/)
 
 # Acknowledgements
-This project is part of Samhan's PhD study, supported by the University International Postgraduate Award (UIPA) Scholarship from UNSW, the Industry Collaboration Project Scholarship from Ausgrid, and the RACE for 2030 Industry PhD Scholarship. We also acknowledge Solcast and the Australian Bureau of Meteorology (BOM) for providing access to historical weather datasets for this research. We further acknowledge the use of Python libraries including Pandas, NumPy, PyTorch, Scikit-learn, XGBoost, Prophet, Statsmodels, and Matplotlib. Finally, we thank the reviewers and editor of the Journal of Open Source Software for their valuable feedback and guidance.
+This project is part of Samhan's PhD study, supported by the University International Postgraduate Award (UIPA) Scholarship from UNSW and the Industry Collaboration Project Scholarship from Ausgrid. We also acknowledge Solcast and the Australian Bureau of Meteorology (BOM) for providing access to historical weather datasets for this research. We further acknowledge the use of Python libraries including Pandas, NumPy, PyTorch, Scikit-learn, XGBoost, Prophet, Statsmodels, and Matplotlib. Finally, we thank the reviewers and editor of the Journal of Open Source Software for their valuable feedback and guidance.
 
 The authors declare that they have no competing financial, personal, or professional interests related to this work.
 

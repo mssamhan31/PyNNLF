@@ -15,22 +15,17 @@ import numpy as np
 
 
 def train_model_m7_ann(hyperparameter, train_df_X, train_df_y):
-    """Train an artificial neural network (ANN) for point forecasting.
-
+    ''' Train and test a linear model for point forecasting. 
+        
     Args:
-        hyperparameter (dict): Hyperparameters for the ANN including:
-            - 'seed': Random seed for reproducibility.
-            - 'hidden_size': Number of neurons in the hidden layer.
-            - 'activation_function': Activation function ('relu', 'sigmoid', 'tanh').
-            - 'learning_rate': Learning rate for the optimizer.
-            - 'solver': Optimizer type ('adam' or 'sgd').
-            - 'epochs': Number of training epochs.
-        train_df_X (pd.DataFrame): Predictor variables for training.
-        train_df_y (pd.DataFrame): Target variable for training.
+        hyperparameter (df) : hyperparameter value of the model consisting of number of features
+        train_df_X (df) : features matrix for training
+        train_df_y (df) : target matrix for training
 
+    
     Returns:
-        model (dict): Contains the trained ANN model under key 'model_ann'.
-    """
+        model (model) : trained model with all features
+    '''
     
     #UNPACK HYPERPARAMETER
 
@@ -118,20 +113,21 @@ def train_model_m7_ann(hyperparameter, train_df_X, train_df_y):
     return model
 
 
-# In[ ]:
+# In[1]:
 
 
 def produce_forecast_m7_ann(model, train_df_X, test_df_X):
-    """Generate forecasts for train and test sets using a trained ANN model.
+    """Create forecast at the train and test set using the trained model
 
     Args:
-        model (dict): Contains the trained ANN under key 'model_ann'.
-        train_df_X (pd.DataFrame): Predictor variables for the training set.
-        test_df_X (pd.DataFrame): Predictor variables for the test set.
+        model (dictionary): all parameters of the trained model
+        train_df_X (df): predictors of train set
+        test_df_X (df): predictors of test set
 
     Returns:
-        train_df_y_hat (pd.DataFrame): Forecasted values for the training set.
-        test_df_y_hat (pd.DataFrame): Forecasted values for the test set.
+        train_df_y_hat (df) : forecast result at train set
+        test_df_y_hat (df) : forecast result at test set
+        
     """
     
     # UNPACK MODEL

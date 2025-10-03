@@ -14,17 +14,17 @@ from xgboost import XGBRegressor
 
 
 def train_model_m17_xgb(hyperparameter, train_df_X, train_df_y):
-    """
-    Train an XGBoost regressor for point forecasting.
-
+    ''' Train and test a xgb model for point forecasting. 
+        
     Args:
-        hyperparameter (dict): Dictionary containing model hyperparameters (e.g., n_estimators, learning_rate, max_depth, subsample, colsample_bytree, xgb_seed).
-        train_df_X (pd.DataFrame): Features matrix for training.
-        train_df_y (pd.DataFrame): Target vector for training.
+        hyperparameter (df) : hyperparameter value of the model consisting of number of features
+        train_df_X (df) : features matrix for training
+        train_df_y (df) : target matrix for training
 
+    
     Returns:
-        model (dict): Dictionary containing the trained XGBoost model under the key 'xgb'.
-    """
+        model (model) : trained model with all features
+    '''
     
     #UNPACK HYPERPARAMETER
     xgb_seed = int(hyperparameter["xgb_seed"])
@@ -49,17 +49,17 @@ def train_model_m17_xgb(hyperparameter, train_df_X, train_df_y):
 
 
 def produce_forecast_m17_xgb(model, train_df_X, test_df_X):
-    """
-    Generate point forecasts for train and test sets using a trained XGBoost model.
+    """Create forecast at the train and test set using the trained model
 
     Args:
-        model (dict): Dictionary containing the trained XGBoost model under the key 'xgb'.
-        train_df_X (pd.DataFrame): Feature matrix for the training set.
-        test_df_X (pd.DataFrame): Feature matrix for the test set.
+        model (dictionary): all parameters of the trained model
+        train_df_X (df): predictors of train set
+        test_df_X (df): predictors of test set
 
     Returns:
-        train_df_y_hat (np.ndarray): Predicted values for the training set.
-        test_df_y_hat (np.ndarray): Predicted values for the test set.
+        train_df_y_hat (df) : forecast result at train set
+        test_df_y_hat (df) : forecast result at test set
+        
     """
     
     # UNPACK MODEL

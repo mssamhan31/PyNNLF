@@ -12,21 +12,18 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 
 
 def train_model_m5_sarima(hyperparameter, train_df_X, train_df_y, forecast_horizon):
-    """Train a SARIMA model for point forecasting.
-
-    Handles timestep frequency, removes sudden jumps, and introduces 
-    a gap to avoid data leakage. Fits a seasonal ARIMA (SARIMA) model 
-    with specified non-seasonal and seasonal orders.
-
+    ''' Train and test a linear model for point forecasting. 
+        
     Args:
-        hyperparameter (pd.DataFrame): Hyperparameters including 'p', 'd', 'q', 'P', 'D', 'Q', and seasonal_period_days.
-        train_df_X (pd.DataFrame): Features matrix for training (unused for SARIMA).
-        train_df_y (pd.DataFrame): Target series for training.
-        forecast_horizon (int): Forecast horizon in minutes.
+        hyperparameter (df) : hyperparameter value of the model consisting of number of features
+        train_df_X (df) : features matrix for training
+        train_df_y (df) : target matrix for training
+        forecast_horizon (int) : forecast horizon in mins
 
+    
     Returns:
-        model (dict): Trained SARIMA model object containing the fitted model.
-    """
+        model (model) : trained model with all features
+    '''
     
     #UNPACK HYPERPARAMETER
     p = hyperparameter['p']
@@ -68,24 +65,22 @@ def train_model_m5_sarima(hyperparameter, train_df_X, train_df_y, forecast_horiz
     return model
 
 
-# In[ ]:
+# In[1]:
 
 
 def produce_forecast_m5_sarima(model, train_df_X, test_df_X, forecast_horizon):
-    """Generate forecasts for train and test sets using a trained SARIMA model.
-
-    Handles timestep adjustments, sudden jumps, and gaps to avoid data leakage.
-    Produces fitted values for the training set and step-wise forecasts for the test set.
+    """Create forecast at the train and test set using the trained model
 
     Args:
-        model (dict): Trained SARIMA model object containing the fitted model.
-        train_df_X (pd.DataFrame): Predictors of the training set (used to align timesteps).
-        test_df_X (pd.DataFrame): Predictors of the test set (used to align timesteps).
-        forecast_horizon (int): Forecast horizon in minutes.
+        model (dictionary): all parameters of the trained model
+        train_df_X (df): predictors of train set
+        test_df_X (df): predictors of test set
+        forecast_horizon (int): forecast horizon in mins
 
     Returns:
-        train_df_y_hat (pd.DataFrame): Forecasted values for the training set.
-        test_df_y_hat (pd.DataFrame): Forecasted values for the test set.
+        train_df_y_hat (df) : forecast result at train set
+        test_df_y_hat (df) : forecast result at test set
+        
     """
     timestep_frequency = test_df_X.index[1] - test_df_X.index[0]
     n_timestep_forecast_horizon = int(forecast_horizon / (timestep_frequency.total_seconds() / 60))

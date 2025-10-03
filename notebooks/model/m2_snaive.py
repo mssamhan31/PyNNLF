@@ -5,19 +5,17 @@
 
 
 def train_model_m2_snaive(hyperparameter, train_df_X, train_df_y):
-    """Train a seasonal naive model for point forecasting.
-
-    The seasonal naive model does not require training; it forecasts 
-    using lagged values based on seasonal periods.
-
+    ''' Train and test a seasonal model for point forecasting. 
+        
     Args:
-        hyperparameter (pd.DataFrame): Hyperparameter values, e.g., number of days for seasonality.
-        train_df_X (pd.DataFrame): Features matrix for training.
-        train_df_y (pd.DataFrame): Target values for training.
+        hyperparameter (df) : hyperparameter value of the model consisting of number of features
+        train_df_X (df) : features matrix for training
+        train_df_y (df) : target matrix for training
 
+    
     Returns:
-        model (dict): Trained seasonal naive model object containing the lagged column name.
-    """
+        model (model) : trained model with all features
+    '''
     
     #UNPACK HYPERPARAMETER
     days = hyperparameter['days']
@@ -33,23 +31,21 @@ def train_model_m2_snaive(hyperparameter, train_df_X, train_df_y):
     return model
 
 
-# In[ ]:
+# In[1]:
 
 
 def produce_forecast_m2_snaive(model, train_df_X, test_df_X):
-    """Generate seasonal naive forecasts for training and test sets.
-
-    The seasonal naive model forecasts using the value from the same period 
-    in the previous season (e.g., same day in prior week).
+    """Create forecast at the train and test set using the trained model
 
     Args:
-        model (dict): Trained seasonal naive model containing lagged column info.
-        train_df_X (pd.DataFrame): Predictor data for the training set.
-        test_df_X (pd.DataFrame): Predictor data for the test set.
+        model (dictionary): all parameters of the trained model
+        train_df_X (df): predictors of train set
+        test_df_X (df): predictors of test set
 
     Returns:
-        train_df_y_hat (pd.Series): Forecast results for the training set.
-        test_df_y_hat (pd.Series): Forecast results for the test set.
+        train_df_y_hat (df) : forecast result at train set
+        test_df_y_hat (df) : forecast result at test set
+        
     """
     
     # UNPACK MODEL

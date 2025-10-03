@@ -6,15 +6,16 @@
 
 def train_model_m18_nbeats(hyperparameter, train_df_X, train_df_y):
     """
-    Train an NBeats model for point forecasting using lag and exogenous features.
-
+    Train and test an NBeats model for point forecasting.
+    Uses NBeats architecture for predicting time series with lag+exogenous features.
+    
     Args:
-        hyperparameter (dict): Model hyperparameters (e.g., hidden_size, num_blocks, num_layers, lr, output_size, epochs, seed).
-        train_df_X (pd.DataFrame): Feature matrix for training.
-        train_df_y (pd.DataFrame): Target values for training.
-
+        hyperparameter (dict) : model hyperparameters
+        train_df_X (DataFrame) : predictors for training
+        train_df_y (DataFrame) : target for training
+    
     Returns:
-        model (torch.nn.Module): Trained NBeats PyTorch model.
+        model : trained PyTorch NBeats model
     """
     # ---- Unpack hyperparameters ----
     input_size = train_df_X.shape[1]
@@ -82,16 +83,16 @@ def train_model_m18_nbeats(hyperparameter, train_df_X, train_df_y):
 
 def produce_forecast_m18_nbeats(model, train_df_X, test_df_X):
     """
-    Generate forecasts for train and test sets using a trained NBeats model.
-
+    Create forecast at the train and test set using the trained NBeats model.
+    
     Args:
-        model (torch.nn.Module): Trained NBeats PyTorch model.
-        train_df_X (pd.DataFrame): Feature matrix for the training set.
-        test_df_X (pd.DataFrame): Feature matrix for the test set.
+        model : trained NBeats PyTorch model
+        train_df_X (DataFrame) : predictors of train set
+        test_df_X (DataFrame) : predictors of test set
 
     Returns:
-        train_df_y_hat (pd.DataFrame): Forecasted values for the training set.
-        test_df_y_hat (pd.DataFrame): Forecasted values for the test set.
+        train_df_y_hat (DataFrame) : forecast result at train set
+        test_df_y_hat (DataFrame) : forecast result at test set
     """
     import torch
     model.eval()

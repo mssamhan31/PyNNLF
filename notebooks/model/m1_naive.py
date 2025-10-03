@@ -5,19 +5,17 @@
 
 
 def train_model_m1_naive(hyperparameter, train_df_X, train_df_y):
-    """Train a naive model for point forecasting.
-
-    For the naive model, no actual training is required. The model 
-    simply stores configuration (if any) and will produce lagged forecasts.
-
+    ''' Train and test a naive model for point forecasting. 
+        
     Args:
-        hyperparameter (pd.DataFrame): Hyperparameter values (e.g., number of features).
-        train_df_X (pd.DataFrame): Features matrix for training.
-        train_df_y (pd.DataFrame): Target values for training.
+        hyperparameter (df) : hyperparameter value of the model consisting of number of features
+        train_df_X (df) : features matrix for training
+        train_df_y (df) : target matrix for training
 
+    
     Returns:
-        model (dict): Trained naive model object containing all features.
-    """
+        model (model) : trained model with all features
+    '''
     
     #UNPACK HYPERPARAMETER
     #no hyperparameter for naive model
@@ -32,20 +30,21 @@ def train_model_m1_naive(hyperparameter, train_df_X, train_df_y):
     return model
 
 
-# In[ ]:
+# In[1]:
 
 
 def produce_forecast_m1_naive(model, train_df_X, test_df_X):
-    """Generate naive forecasts for training and test sets using lagged values.
+    """Create forecast at the train and test set using the trained model
 
     Args:
-        model (dict): Parameters of the trained model.
-        train_df_X (pd.DataFrame): Predictor data for the training set.
-        test_df_X (pd.DataFrame): Predictor data for the test set.
+        model (dictionary): all parameters of the trained model
+        train_df_X (df): predictors of train set
+        test_df_X (df): predictors of test set
 
     Returns:
-        train_df_y_hat (pd.Series): Forecast results for the training set.
-        test_df_y_hat (pd.Series): Forecast results for the test set.
+        train_df_y_hat (df) : forecast result at train set
+        test_df_y_hat (df) : forecast result at test set
+        
     """
     
     # PRODUCE FORECAST

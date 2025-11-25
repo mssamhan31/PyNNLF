@@ -44,8 +44,9 @@ A library of commonly used net load datasets (e.g., Ausgrid Solar Home Data [@Au
 The PyNNLF software is available as an open-source repository on GitHub [here](https://github.com/mssamhan31/PyNNLF) [@PyNNLF_Repo]. Comprehensive documentation is provided [here](https://mssamhan31.github.io/PyNNLF/) [@PyNNLF_Docs].
 
 Users can specify the forecasting problem (dataset and forecast horizon) and model configuration (model name and hyperparameters). PyNNLF then outputs evaluation results including performance metrics, metadata, visualizations, and supplemental outputs.
-Researchers and network operators can use PyNNLF to benchmark their models against others using standardized datasets. They can also contribute new models or datasets to the PyNNLF library, enabling broader comparison and collaboration.
-While general time series forecasting libraries like `statsmodels`, `PyTorch`, or `Darts` exist, none specifically focus on net load forecasting with curated datasets and models.
+
+Researchers and network operators can use PyNNLF to benchmark their models against others using standardized datasets. They can also contribute new models or datasets to the PyNNLF library, enabling broader comparison and collaboration While libraries like `statsmodels`, `PyTorch`, or `Darts` allow some model comparison with shared data and metrics, they are not designed specifically for net load forecasting. They lack curated datasets and models for this purpose and do not offer a clear way to record experiments. PyNNLF addresses these gaps by providing a focused framework with integrated datasets and structured experiment tracking.
+
 In parallel with developing PyNNLF, we are also preparing other research papers: a literature review of net load forecasting studies, and comparative analyses of various models on multiple net load datasets, forecast horizons, spatial aggregations for the load, and minimum demand forecasting using PyNNLF.
 
 # Acknowledgements

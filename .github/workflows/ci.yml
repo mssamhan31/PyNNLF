@@ -28,6 +28,10 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install .
 
+      - name: Prepare CI workspace
+        run: |
+          python -c "import pynnlf; pynnlf.init('ws_ci')"
+
       - name: Run smoke tests
         run: |
           python -c "import pynnlf; pynnlf.run_tests('ws_ci/specs/tests_ci.yaml')"

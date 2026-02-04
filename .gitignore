@@ -17,6 +17,8 @@ ENV/
 my_project/
 my_project_test*/
 my_project_smoke*/
+ws_ci/
+ws_full/
 
 # --- Outputs (big, generated) ---
 experiment_result/

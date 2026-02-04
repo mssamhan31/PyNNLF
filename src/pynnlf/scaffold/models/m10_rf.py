@@ -1,5 +1,7 @@
 # IMPORT IMPORTANT LIBRARY
 from sklearn.ensemble import RandomForestRegressor
+import pandas as pd
+
 def train_model_m10_rf(hyperparameter, train_df_X, train_df_y):
     ''' Train and test a random forest model for point forecasting. 
         

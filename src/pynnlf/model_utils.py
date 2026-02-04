@@ -158,3 +158,29 @@ def remove_jump_df(train_df_y):
     else:
         train_df_y_updated = train_df_y
     return train_df_y_updated
+
+def separate_lag_and_exogenous_features(train_df_X, target_column='y', lag_prefix='y_lag'):
+    '''
+    This function separates the lag features and exogenous variables from the training dataframe.
+
+    Args:
+        train_df_X (pd.DataFrame): The dataframe containing both lag features and exogenous variables.
+        target_column (str): The name of the target column (e.g., 'y').
+        lag_prefix (str): The prefix used for lag columns (e.g., 'y_lag').
+
+    Returns:
+        X_lags (pd.DataFrame): DataFrame containing only the lag features.
+        X_exog (pd.DataFrame): DataFrame containing only the exogenous variables.
+    '''
+    
+    # Identify lag features (columns that start with 'y_lag')
+    lag_features = [col for col in train_df_X.columns if col.startswith(lag_prefix)]
+    
+    # Identify exogenous variables (everything except the target and lag features)
+    exog_features = [col for col in train_df_X.columns if col not in [target_column] + lag_features]
+    
+    # Create dataframes for lag features and exogenous features
+    X_lags = train_df_X[lag_features]
+    X_exog = train_df_X[exog_features]
+    
+    return X_lags, X_exog

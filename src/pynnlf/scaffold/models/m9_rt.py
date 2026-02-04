@@ -1,6 +1,7 @@
 # IMPORT IMPORTANT LIBRARY
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_squared_error
+import pandas as pd
 
 def train_model_m9_rt(hyperparameter, train_df_X, train_df_y):
     ''' Train and test a regression tree model for point forecasting. 

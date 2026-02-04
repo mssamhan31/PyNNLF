@@ -535,30 +535,52 @@ def save_model(filepath, cv_no, model):
         # pickle.dump(model, model_file)
         dill.dump(model, model_file)
 
-def to_series(y_hat, index):
-            """
-            Convert model output to a 1D pandas Series aligned to index.
+import numpy as np
+import pandas as pd
 
-            Args:
-                y_hat (any): model output (np array / Series / DataFrame)
-                index (pd.Index): target index
+def to_series(y_hat, target_index):
+    """
+    Convert model output to a 1D pandas Series aligned to target_index.
 
-            Returns:
-                pd.Series: aligned forecast series
-            """
-            if isinstance(y_hat, pd.DataFrame):
-                if y_hat.shape[1] == 1:
-                    s = y_hat.iloc[:, 0]
-                else:
-                    s = pd.Series(np.asarray(y_hat).ravel())
-            elif isinstance(y_hat, pd.Series):
-                s = y_hat
-            else:
-                s = pd.Series(np.asarray(y_hat).ravel())
+    Rules:
+    - If y_hat is Series/DataFrame with its own index: reindex to target_index.
+    - If y_hat is array-like: require matching length (otherwise raise).
 
-            s = s.copy()
-            s.index = index
-            return s
+    Args:
+        y_hat (any): model output (np array / Series / DataFrame)
+        target_index (pd.Index): desired index
+
+    Returns:
+        pd.Series: forecast aligned to target_index
+    """
+    # DataFrame -> Series
+    if isinstance(y_hat, pd.DataFrame):
+        if y_hat.shape[1] == 1:
+            s = y_hat.iloc[:, 0]
+        else:
+            # flatten multi-col to 1D (defensive)
+            s = pd.Series(np.asarray(y_hat).ravel(), index=y_hat.index[:len(np.asarray(y_hat).ravel())])
+    elif isinstance(y_hat, pd.Series):
+        s = y_hat
+    else:
+        arr = np.asarray(y_hat).ravel()
+        if len(arr) != len(target_index):
+            raise ValueError(
+                f"Forecast length mismatch: got {len(arr)} values, expected {len(target_index)}"
+            )
+        return pd.Series(arr, index=target_index)
+
+    # If it has an index, align by timestamps
+    if hasattr(s, "index") and len(s.index) > 0:
+        return s.reindex(target_index)
+
+    # Fallback (should rarely happen)
+    arr = np.asarray(s).ravel()
+    if len(arr) != len(target_index):
+        raise ValueError(
+            f"Forecast length mismatch: got {len(arr)} values, expected {len(target_index)}"
+        )
+    return pd.Series(arr, index=target_index)
         
 def run_model(
     df,

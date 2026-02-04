@@ -25,7 +25,14 @@ def train_model_m17_xgb(hyperparameter, train_df_X, train_df_y):
     colsample_bytree=hyperparameter["colsample_bytree"]
     
     #INITIALIZE AND TRAIN MODEL
-    xgb = XGBRegressor(n_estimators=200, learning_rate=0.1, max_depth=6, subsample=0.8, colsample_bytree=0.8, random_state=xgb_seed)   
+    xgb = XGBRegressor(
+        n_estimators=int(n_estimators),
+        learning_rate=float(learning_rate),
+        max_depth=int(max_depth),
+        subsample=float(subsample),
+        colsample_bytree=float(colsample_bytree),
+        random_state=xgb_seed,
+    )
     xgb.fit(train_df_X, train_df_y)   
   
     # PACK MODEL

@@ -1,3 +1,6 @@
+import torch
+from pynnlf.model_utils import separate_lag_and_exogenous_features
+
 def train_model_m15_transformer(hyperparameter, train_df_X, train_df_y):
     ''' Train and test a Transformer model for point forecasting. 
     Uses Transformer for temporal patterns, FC layer for lag+exogenous features.

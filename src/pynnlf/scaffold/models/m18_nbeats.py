@@ -1,3 +1,6 @@
+from pyexpat import model
+
+
 def train_model_m18_nbeats(hyperparameter, train_df_X, train_df_y):
     """
     Train and test an NBeats model for point forecasting.
@@ -26,10 +29,12 @@ def train_model_m18_nbeats(hyperparameter, train_df_X, train_df_y):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
 
     # ---- Define NBeats model inside the function ----
     import torch.nn as nn
@@ -91,8 +96,8 @@ def produce_forecast_m18_nbeats(model, train_df_X, test_df_X):
         X_train_tensor = torch.tensor(train_df_X.values, dtype=torch.float32)
         X_test_tensor = torch.tensor(test_df_X.values, dtype=torch.float32)
         
-        y_train_hat = model(X_train_tensor).numpy()
-        y_test_hat = model(X_test_tensor).numpy()
+        y_train_hat = model(X_train_tensor).detach().cpu().numpy()
+        y_test_hat  = model(X_test_tensor).detach().cpu().numpy()
     
     import pandas as pd
     train_df_y_hat = pd.DataFrame(y_train_hat, index=train_df_X.index, columns=['y_hat'])

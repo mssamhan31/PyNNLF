@@ -8,7 +8,9 @@ import time
 import pickle # for saving trained model
 import dill # for saving trained model
 import importlib.util
-from pathlib import Path    
+from pathlib import Path   
+import re
+ 
 
 
 # # FOLDER PREPARATION
@@ -36,22 +38,39 @@ def load_model_module(models_dir: Path, model_name: str):
     return mod
 
 def compute_exp_no(path_result):
-    """Compute experiment number for folder & file naming based on the number of existing experiments that have been done.
-    For example, if on the folder there are already 5 experiment folders, then the new experiment no. is E00006.
+    """Compute experiment number for folder & file naming.
+
+    This version:
+    1) Detects existing experiment folders matching pattern: E00001_*
+    2) Uses the maximum existing number + 1
+    3) Starts numbering from 1
+    4) Ignores Archive/other folders/files safely
 
     Args:
-        path_result (str): relative path of experiment folder, stored in config
+        path_result (str): path to experiment_result folder
 
     Returns:
-        int: exp no 
-        str: exp no in str
+        int: experiment_no (starts at 1)
+        str: experiment_no_str (e.g., "E00001")
     """
-    subfolders = os.listdir(path_result)
-    number_of_folders = len(subfolders)
-    experiment_no = max(0, number_of_folders - 1)
-    experiment_no_str = f"E{str(experiment_no).zfill(5)}"
-    
-    return experiment_no, experiment_no_str
+    if not os.path.exists(path_result):
+        os.makedirs(path_result, exist_ok=True)
+
+    pat = re.compile(r"^E(\d{5})_")
+    nums = []
+
+    for name in os.listdir(path_result):
+        full = os.path.join(path_result, name)
+        if not os.path.isdir(full):
+            continue
+        m = pat.match(name)
+        if m:
+            nums.append(int(m.group(1)))
+
+    # Start from 1 if none exist
+    next_no = (max(nums) + 1) if nums else 1
+    next_no_str = f"E{next_no:05d}"
+    return next_no, next_no_str
 
 def compute_folder_name(experiment_no_str, dataset_file, forecast_horizon, model_name, hyperparameter_no):
     """
@@ -112,7 +131,7 @@ def prepare_directory(path_result, dataset_file, forecast_horizon, model_name, h
     path_model = path_result2 + folder_model +'/'
 
     # MAKE FOLDERS
-    os.mkdir(path_result2)
+    os.makedirs(path_result2, exist_ok=False)
     os.mkdir(path_result_train)
     os.mkdir(path_result_test)
     os.mkdir(path_result_plot)
@@ -762,6 +781,24 @@ def run_model(
     
     # return df_a1_result, cross_val_result_df
 
+def validate_model_module(model_mod, model_name: str) -> None:
+    """
+    Validate that a model module provides required functions.
+
+    Args:
+        model_mod (module): loaded model module
+        model_name (str): file stem, e.g. "m6_lr"
+
+    Returns:
+        None
+    """
+    train_name = f"train_model_{model_name}"
+    fcst_name = f"produce_forecast_{model_name}"
+    if not hasattr(model_mod, train_name):
+        raise AttributeError(f"Missing function '{train_name}' in {model_name}.py")
+    if not hasattr(model_mod, fcst_name):
+        raise AttributeError(f"Missing function '{fcst_name}' in {model_name}.py")
+    
 # RUN THE TOOL
 def run_experiment_engine(
     dataset_path,
@@ -801,6 +838,7 @@ def run_experiment_engine(
 
     # load workspace model module
     model_mod = load_model_module(Path(models_dir), model_name)
+    validate_model_module(model_mod, model_name)
 
     # folders + filepaths
     hyperparameter_used, experiment_no_str, filepath = prepare_directory(

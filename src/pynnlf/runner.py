@@ -1,46 +1,31 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 from pathlib import Path
-import json
 
+from .yamlio import load_yaml
 from .hyperparams import load_hyperparameters, get_hp
+from .discovery import discover_model_name, discover_dataset_path
 from .engine import run_experiment_engine
-
-def _load_json(path: Path) -> dict:
-    """
-    Load JSON file into dict.
-
-    Args:
-        path (Path): JSON file path.
-
-    Returns:
-        dict: Parsed JSON.
-    """
-    return json.loads(path.read_text(encoding="utf-8"))
 
 def _workspace_root_from_spec(spec_path: Path) -> Path:
     """
     Infer workspace root from a spec path.
 
-    Assumes structure:
-        <workspace>/specs/experiment.json
-        <workspace>/specs/batch.json
-
     Args:
-        spec_path (Path): Path to spec JSON.
+        spec_path (Path): <workspace>/specs/experiment.yaml or batch.yaml
 
     Returns:
-        Path: Workspace root directory.
+        Path: workspace root
     """
     return spec_path.parent.parent
 
 def run_single(spec_path: str | Path) -> None:
     """
-    Run a single experiment from a 4-key JSON spec.
-
-    Spec contains only:
-        dataset, forecast_horizon, model, hyperparameter
+    Run a single experiment from a 4-key YAML spec.
 
     Args:
-        spec_path (str | Path): Path to <workspace>/specs/experiment.json
+        spec_path (str | Path): <workspace>/specs/experiment.yaml
 
     Returns:
         None
@@ -48,24 +33,24 @@ def run_single(spec_path: str | Path) -> None:
     spec_path = Path(spec_path)
     ws = _workspace_root_from_spec(spec_path)
 
-    spec = _load_json(spec_path)
-    cfg = _load_json(ws / "specs" / "pynnlf_config.json")
+    spec = load_yaml(spec_path)
+    cfg = load_yaml(ws / "specs" / "pynnlf_config.yaml")
 
-    ds_id = spec["dataset"]
-    fh_id = spec["forecast_horizon"]
-    m_id  = spec["model"]
-    hp_no = spec["hyperparameter"]
+    ds_id = spec["dataset"]              # e.g. ds19
+    fh_id = spec["forecast_horizon"]     # e.g. fh1
+    m_id  = spec["model"]                # e.g. m19
+    hp_no = spec["hyperparameter"]       # e.g. hp1
 
     data_dir = ws / cfg["paths"]["data_dir"]
     out_dir  = ws / cfg["paths"]["output_dir"]
-    hp_path  = ws / cfg["paths"]["hyperparameters_path"]  # models/hyperparameters.json
+    models_dir = ws / "models"
+    hp_path = ws / cfg["paths"]["hyperparameters_path"]  # models/hyperparameters.yaml
 
-    dataset_file = cfg["datasets"][ds_id]
-    fh_min       = int(cfg["forecast_horizons"][fh_id])
-    model_name   = cfg["models"][m_id]
+    # auto-discovery (no config edits)
+    dataset_path = discover_dataset_path(data_dir, ds_id)
+    model_name = discover_model_name(models_dir, m_id)
 
-    dataset_path = data_dir / dataset_file
-    models_dir   = ws / "models"
+    fh_min = int(cfg["forecast_horizons"][fh_id])
 
     hparams = load_hyperparameters(hp_path)
     hp = get_hp(hparams, model_name, hp_no)
@@ -83,18 +68,10 @@ def run_single(spec_path: str | Path) -> None:
 
 def run_batch(spec_path: str | Path) -> None:
     """
-    Run batch experiments from a batch JSON spec.
-
-    Batch spec contains:
-        datasets: [dsX...]
-        forecast_horizons: [fhX...]
-        model_and_hp: [[mX, hpY], ...]
-
-    Runs all combinations:
-        datasets × forecast_horizons × model_and_hp
+    Run batch experiments from YAML batch spec (cartesian product).
 
     Args:
-        spec_path (str | Path): Path to <workspace>/specs/batch.json
+        spec_path (str | Path): <workspace>/specs/batch.yaml
 
     Returns:
         None
@@ -102,26 +79,23 @@ def run_batch(spec_path: str | Path) -> None:
     spec_path = Path(spec_path)
     ws = _workspace_root_from_spec(spec_path)
 
-    batch = _load_json(spec_path)
-    cfg = _load_json(ws / "specs" / "pynnlf_config.json")
+    batch = load_yaml(spec_path)
+    cfg = load_yaml(ws / "specs" / "pynnlf_config.yaml")
 
     data_dir = ws / cfg["paths"]["data_dir"]
     out_dir  = ws / cfg["paths"]["output_dir"]
-    hp_path  = ws / cfg["paths"]["hyperparameters_path"]
     models_dir = ws / "models"
+    hp_path = ws / cfg["paths"]["hyperparameters_path"]
 
     hparams = load_hyperparameters(hp_path)
 
-    ds_files = [cfg["datasets"][d] for d in batch["datasets"]]
-    fh_mins  = [int(cfg["forecast_horizons"][h]) for h in batch["forecast_horizons"]]
-    model_and_hp = [(cfg["models"][m], hp) for (m, hp) in batch["model_and_hp"]]
-
-    for ds_file in ds_files:
-        for fh_min in fh_mins:
-            for model_name, hp_no in model_and_hp:
-                dataset_path = data_dir / ds_file
+    for ds_id in batch["datasets"]:
+        dataset_path = discover_dataset_path(data_dir, ds_id)
+        for fh_id in batch["forecast_horizons"]:
+            fh_min = int(cfg["forecast_horizons"][fh_id])
+            for m_id, hp_no in batch["model_and_hp"]:
+                model_name = discover_model_name(models_dir, m_id)
                 hp = get_hp(hparams, model_name, hp_no)
-
                 run_experiment_engine(
                     dataset_path=dataset_path,
                     forecast_horizon_min=fh_min,

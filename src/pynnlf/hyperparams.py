@@ -1,21 +1,20 @@
-import json
-from pathlib import Path
-from typing import Any, Union
+#!/usr/bin/env python
+# coding: utf-8
 
-PathLike = Union[str, Path]
+from typing import Any
+from .yamlio import load_yaml
 
-def load_hyperparameters(path: PathLike) -> dict[str, Any]:
+def load_hyperparameters(path) -> dict[str, Any]:
     """
-    Load hyperparameters JSON.
+    Load hyperparameters from YAML.
 
     Args:
-        path (str | Path): Path to models/hyperparameters.json.
+        path (str | Path): Path to models/hyperparameters.yaml.
 
     Returns:
-        dict: Nested dict: {model_name: {hp_no: hyperparameter_dict}}.
+        dict: {model_name: {hp_no: hyperparameter_dict}}
     """
-    p = Path(path)
-    return json.loads(p.read_text(encoding="utf-8"))
+    return load_yaml(path)
 
 def get_hp(hparams: dict[str, Any], model_name: str, hp_no: str) -> dict[str, Any]:
     """
@@ -23,17 +22,17 @@ def get_hp(hparams: dict[str, Any], model_name: str, hp_no: str) -> dict[str, An
 
     Args:
         hparams (dict): Output of load_hyperparameters().
-        model_name (str): e.g., "m6_lr".
-        hp_no (str): e.g., "hp1".
+        model_name (str): e.g., "m6_lr" (model file stem)
+        hp_no (str): e.g., "hp1"
 
     Returns:
-        dict: Hyperparameter dictionary for the requested model/hp.
+        dict: Hyperparameter dict for the model/hp.
     """
     if model_name not in hparams:
-        raise KeyError(f"Model '{model_name}' not found in hyperparameters.json")
+        raise KeyError(f"Model '{model_name}' not found in hyperparameters.yaml")
     if hp_no not in hparams[model_name]:
         raise KeyError(f"HP '{hp_no}' not found for model '{model_name}'")
     hp = hparams[model_name][hp_no]
     if not isinstance(hp, dict):
-        raise TypeError("Hyperparameter entry must be a JSON object/dict")
+        raise TypeError("Hyperparameter entry must be a mapping/dict")
     return hp

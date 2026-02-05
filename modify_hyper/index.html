@@ -17,8 +17,11 @@
         <link rel="next" href="../add_model/">
       
       
+        
+      
+      
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.19">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -26,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
       
 
@@ -51,7 +54,6 @@
     
       
 
-    
     
     
   </head>
@@ -203,9 +205,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Home
+  
+
     
   </span>
+  
   
 
       </a>
@@ -225,9 +232,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Getting Started
+  
+
     
   </span>
+  
   
 
       </a>
@@ -247,9 +259,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Examples
+  
+
     
   </span>
+  
   
 
       </a>
@@ -269,9 +286,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Tool Testing
+  
+
     
   </span>
+  
   
 
       </a>
@@ -304,9 +326,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Detailed Guide
+  
+
     
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -315,7 +342,11 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
-            Detailed Guide
+            
+  
+    Detailed Guide
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -331,9 +362,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Datasets & Models
+  
+
     
   </span>
+  
   
 
       </a>
@@ -354,9 +390,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     How to run an experiment
+  
+
     
   </span>
+  
   
 
       </a>
@@ -386,9 +427,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     How to modify model hyperparameter
+  
+
     
   </span>
+  
   
 
           <span class="md-nav__icon md-icon"></span>
@@ -399,9 +445,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     How to modify model hyperparameter
+  
+
     
   </span>
+  
   
 
       </a>
@@ -424,7 +475,9 @@
         <li class="md-nav__item">
   <a href="#format" class="md-nav__link">
     <span class="md-ellipsis">
-      Format
+      
+        Format
+      
     </span>
   </a>
   
@@ -451,9 +504,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     How to add a model
+  
+
     
   </span>
+  
   
 
       </a>
@@ -474,9 +532,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     How to add a dataset
+  
+
     
   </span>
+  
   
 
       </a>
@@ -497,9 +560,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Repo structure
+  
+
     
   </span>
+  
   
 
       </a>
@@ -520,9 +588,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     API Reference
+  
+
     
   </span>
+  
   
 
       </a>
@@ -550,9 +623,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Features & Limitations
+  
+
     
   </span>
+  
   
 
       </a>
@@ -572,9 +650,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Acknowledgement & License
+  
+
     
   </span>
+  
   
 
       </a>
@@ -594,9 +677,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Support & Contributing
+  
+
     
   </span>
+  
   
 
       </a>
@@ -616,9 +704,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Contributors
+  
+
     
   </span>
+  
   
 
       </a>
@@ -655,7 +748,9 @@
         <li class="md-nav__item">
   <a href="#format" class="md-nav__link">
     <span class="md-ellipsis">
-      Format
+      
+        Format
+      
     </span>
   </a>
   
@@ -671,6 +766,7 @@
           
           
             <div class="md-content" data-md-component="content">
+              
               <article class="md-content__inner md-typeset">
                 
                   
@@ -678,65 +774,52 @@
 
 
 <h1 id="model-hyperparameter">Model Hyperparameter<a class="headerlink" href="#model-hyperparameter" title="Permanent link">&para;</a></h1>
-<p>All hyperparameter values are stored separately from the model code in a designated notebook: <code>notebooks/config/model_hyperparameters.ipynb</code>.<br />
+<p>All hyperparameter values are stored separately from the model code in a YAML file: <code>models/hyperparameters.yaml</code>.<br />
 <strong>This design avoids hard-coded values and provides a centralized location for managing all hyperparameters.</strong></p>
 <h2 id="format">Format<a class="headerlink" href="#format" title="Permanent link">&para;</a></h2>
-<p>Hyperparameter values are stored as a list of dictionaries. For example, for <code>m7_ann</code>, the values are stored in the <code>m7_hp_table</code> list.<br />
-Each dictionary contains an <code>hp_no</code> (hyperparameter set ID) and key-value pairs for the parameters.</p>
-<pre><code class="language-python">m7_hp_table = [
-    {
-        &quot;hp_no&quot;: &quot;hp1&quot;,
-        &quot;seed&quot;: 99, # we will use the same seed for reproducibility
-        &quot;hidden_size&quot;: 10, #number of neurons in hidden layers
-        &quot;activation_function&quot;: &quot;relu&quot;,
-        &quot;learning_rate&quot; : 0.001,
-        &quot;solver&quot; : &quot;adam&quot;,
-        &quot;epochs&quot; : 500
-    },
-    {
-        &quot;hp_no&quot;: &quot;hp2&quot;,
-        &quot;seed&quot;: 99, # we will use the same seed for reproducibility
-        &quot;hidden_size&quot;: 10, #number of neurons in hidden layers
-        &quot;activation_function&quot;: &quot;relu&quot;,
-        &quot;learning_rate&quot; : 0.01,
-        &quot;solver&quot; : &quot;adam&quot;,
-        &quot;epochs&quot; : 500
-    },
-]
+<p>Hyperparameter values are stored as a list of dictionaries. For example, for <code>m7_ann</code>, the values are stored under the <code>m7</code> key. Each dictionary contains an <code>hp_no</code> (hyperparameter set ID) and key-value pairs for the parameters.</p>
+<pre><code class="language-yaml">m7:
+    - hp_no: hp1
+        seed: 99
+        hidden_size: 10
+        activation_function: relu
+        learning_rate: 0.001
+        solver: adam
+        epochs: 500
+    - hp_no: hp2
+        seed: 99
+        hidden_size: 10
+        activation_function: relu
+        learning_rate: 0.01
+        solver: adam
+        epochs: 500
 </code></pre>
 <h1 id="how-to-modify-model-hyperparameter">How to Modify Model Hyperparameter<a class="headerlink" href="#how-to-modify-model-hyperparameter" title="Permanent link">&para;</a></h1>
-<p>If for example we want to modify the learning rate of the ANN model we can create a new hyperparameter set, and below is the update result:</p>
-<pre><code>m7_hp_table = [
-    {
-        &quot;hp_no&quot;: &quot;hp1&quot;,
-        &quot;seed&quot;: 99, # we will use the same seed for reproducibility
-        &quot;hidden_size&quot;: 10, #number of neurons in hidden layers
-        &quot;activation_function&quot;: &quot;relu&quot;,
-        &quot;learning_rate&quot; : 0.001,
-        &quot;solver&quot; : &quot;adam&quot;,
-        &quot;epochs&quot; : 500
-    },
-    {
-        &quot;hp_no&quot;: &quot;hp2&quot;,
-        &quot;seed&quot;: 99, # we will use the same seed for reproducibility
-        &quot;hidden_size&quot;: 10, #number of neurons in hidden layers
-        &quot;activation_function&quot;: &quot;relu&quot;,
-        &quot;learning_rate&quot; : 0.01,
-        &quot;solver&quot; : &quot;adam&quot;,
-        &quot;epochs&quot; : 500
-    },
-    {
-        &quot;hp_no&quot;: &quot;hp3&quot;,
-        &quot;seed&quot;: 99, # we will use the same seed for reproducibility
-        &quot;hidden_size&quot;: 10, #number of neurons in hidden layers
-        &quot;activation_function&quot;: &quot;relu&quot;,
-        &quot;learning_rate&quot; : 0.1, **Modified learning rate**
-        &quot;solver&quot; : &quot;adam&quot;,
-        &quot;epochs&quot; : 500
-    },
-]
+<p>If, for example, you want to modify the learning rate of the ANN model, create a new hyperparameter set with a new <code>hp_no</code>:</p>
+<pre><code class="language-yaml">m7:
+    - hp_no: hp1
+        seed: 99
+        hidden_size: 10
+        activation_function: relu
+        learning_rate: 0.001
+        solver: adam
+        epochs: 500
+    - hp_no: hp2
+        seed: 99
+        hidden_size: 10
+        activation_function: relu
+        learning_rate: 0.01
+        solver: adam
+        epochs: 500
+    - hp_no: hp3
+        seed: 99
+        hidden_size: 10
+        activation_function: relu
+        learning_rate: 0.1  # modified learning rate
+        solver: adam
+        epochs: 500
 </code></pre>
-<p>When running experiments, you can select the desired hyperparameter set by referencing its <code>hp_no</code>, such as <code>hp3</code>.</p>
+<p>When running experiments, select the desired hyperparameter set by referencing its <code>hp_no</code>, such as <code>hp3</code>, in <code>specs/experiment.yaml</code> under <code>hyperparameter</code>.</p>
 
 
 
@@ -785,10 +868,11 @@ Each dictionary contains an <code>hp_no</code> (hyperparameter set ID) and key-v
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

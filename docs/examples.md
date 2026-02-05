@@ -10,6 +10,7 @@ hyperparameter: hp1
 ```
 
 Run the experiment:
+On macOS, use `python3 -c` if `python -c` is not available.
 ```
 python -c "import pynnlf; pynnlf.run_experiment('my_project/specs/experiment.yaml')"
 ```

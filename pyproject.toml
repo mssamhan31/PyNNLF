@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pynnlf"
-version = "0.2.0"
+dynamic = ["version"]
 description = "Python Network Net Load Forecasting (PyNNLF): reproducible evaluation of net load forecasting models."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -115,6 +115,10 @@ docs = [
 
 [tool.setuptools]
 package-dir = {"" = "src"}
+license-files = []
+
+[tool.setuptools.dynamic]
+version = { attr = "pynnlf.__about__.__version__" }
 
 [tool.setuptools.packages.find]
 where = ["src"]

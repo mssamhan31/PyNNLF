@@ -17,8 +17,11 @@
         <link rel="next" href="../modify_hyper/">
       
       
+        
+      
+      
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.19">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -26,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
       
 
@@ -51,7 +54,6 @@
     
       
 
-    
     
     
   </head>
@@ -203,9 +205,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Home
+  
+
     
   </span>
+  
   
 
       </a>
@@ -225,9 +232,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Getting Started
+  
+
     
   </span>
+  
   
 
       </a>
@@ -247,9 +259,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Examples
+  
+
     
   </span>
+  
   
 
       </a>
@@ -269,9 +286,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Tool Testing
+  
+
     
   </span>
+  
   
 
       </a>
@@ -304,9 +326,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Detailed Guide
+  
+
     
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -315,7 +342,11 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
-            Detailed Guide
+            
+  
+    Detailed Guide
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -331,9 +362,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Datasets & Models
+  
+
     
   </span>
+  
   
 
       </a>
@@ -363,9 +399,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     How to run an experiment
+  
+
     
   </span>
+  
   
 
       </a>
@@ -387,9 +428,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     How to modify model hyperparameter
+  
+
     
   </span>
+  
   
 
       </a>
@@ -410,9 +456,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     How to add a model
+  
+
     
   </span>
+  
   
 
       </a>
@@ -433,9 +484,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     How to add a dataset
+  
+
     
   </span>
+  
   
 
       </a>
@@ -456,9 +512,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Repo structure
+  
+
     
   </span>
+  
   
 
       </a>
@@ -479,9 +540,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     API Reference
+  
+
     
   </span>
+  
   
 
       </a>
@@ -509,9 +575,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Features & Limitations
+  
+
     
   </span>
+  
   
 
       </a>
@@ -531,9 +602,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Acknowledgement & License
+  
+
     
   </span>
+  
   
 
       </a>
@@ -553,9 +629,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Support & Contributing
+  
+
     
   </span>
+  
   
 
       </a>
@@ -575,9 +656,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Contributors
+  
+
     
   </span>
+  
   
 
       </a>
@@ -613,6 +699,7 @@
           
           
             <div class="md-content" data-md-component="content">
+              
               <article class="md-content__inner md-typeset">
                 
                   
@@ -620,26 +707,27 @@
 
 
 <h1 id="how-to-use-the-tool">How to Use The Tool<a class="headerlink" href="#how-to-use-the-tool" title="Permanent link">&para;</a></h1>
-<ul>
-<li>Open the notebook: <code>notebooks/model/run_experiments.ipynb.</code></li>
-<li>Fill in the input values for your forecast problem and model specification. Example:</li>
-</ul>
-<pre><code>dataset = &quot;ds0&quot;            # Dataset for testing
-forecast_horizon = &quot;fh1&quot;   # fh1 = 30 minutes ahead
-model_name = &quot;m6&quot;          # Linear regression
-hyperparameter_no = &quot;hp1&quot;  # Hyperparameter ID
-</code></pre>
-<ul>
+<ol>
 <li>
-<p>Run the notebook.</p>
+<p>Initialize a workspace (example name: <code>my_project</code>). By default, only the sample dataset (ds0) is included. You can choose to download all datasets if needed:</p>
+<p>On macOS, use <code>python3 -c</code> if <code>python -c</code> is not available.</p>
+<p><code>python -c "import pynnlf; pynnlf.init('my_project')"</code></p>
 </li>
 <li>
-<p>The tool outputs evaluation results to the <code>experiment_result/folder</code>.</p>
+<p>Fill in the input values for your forecast problem and model specification in <code>specs/experiment.yaml</code>. Example:</p>
+<p><code>dataset: ds0
+forecast_horizon: fh1   # fh1 = 30 minutes ahead
+model: m6               # Linear regression
+hyperparameter: hp1     # Hyperparameter ID</code></p>
 </li>
 <li>
-<p>To evaluate multiple forecast problems and model specifications at once, use <code>notebooks/model/run_experiments_batch.ipynb</code></p>
+<p>Run the experiment:</p>
+<p><code>python -c "import pynnlf; pynnlf.run_experiment('my_project/specs/experiment.yaml')"</code></p>
 </li>
-</ul>
+<li>
+<p>The tool outputs evaluation results to the <code>experiment_result/</code> folder inside your workspace.</p>
+</li>
+</ol>
 <p>For the list of available datasets &amp; models, how to modify model hyperparameter, how to add a model, how to add a dataset, and exhaustive list of API Reference see the Detailed Guide page.</p>
 
 
@@ -689,10 +777,11 @@ hyperparameter_no = &quot;hp1&quot;  # Hyperparameter ID
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

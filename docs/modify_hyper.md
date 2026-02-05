@@ -8,7 +8,7 @@ All hyperparameter values are stored separately from the model code in a YAML fi
 
 Hyperparameter values are stored as a list of dictionaries. For example, for `m7_ann`, the values are stored under the `m7` key. Each dictionary contains an `hp_no` (hyperparameter set ID) and key-value pairs for the parameters.
 
-```yaml
+```
 m7:
     - hp_no: hp1
         seed: 99
@@ -29,7 +29,7 @@ m7:
 # How to Modify Model Hyperparameter
 If, for example, you want to modify the learning rate of the ANN model, create a new hyperparameter set with a new `hp_no`:
 
-```yaml
+```
 m7:
     - hp_no: hp1
         seed: 99

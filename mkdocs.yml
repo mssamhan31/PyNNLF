@@ -3,6 +3,8 @@ site_url: https://mssamhan31.github.io/PyNNLF/
 
 theme:
   name: material
+  features:
+    - content.code.copy
 plugins:
   - search
   - mkdocstrings:

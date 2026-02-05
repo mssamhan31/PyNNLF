@@ -3,6 +3,7 @@ The available datasets are listed in the `data` folder, with metadata provided i
 
 
 Simple initialization example:
+On macOS, use `python3 -c` if `python -c` is not available.
 ```
 python -c "import pynnlf; pynnlf.init('my_project')"
 ```

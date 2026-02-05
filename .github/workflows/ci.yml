@@ -36,6 +36,11 @@ jobs:
         run: |
           python -c "import pynnlf; pynnlf.run_tests('ws_ci/specs/tests_ci.yaml')"
 
+      - name: Run recap experiments
+        run: |
+          python -c "import pynnlf; pynnlf.recap_experiments('ws_ci/experiment_result')"
+          python -c "from pathlib import Path; p = Path('ws_ci/experiment_result/a1_experiment_result.csv'); assert p.exists(), f'Missing recap output: {p}'"
+
       - name: Upload report artifact
         uses: actions/upload-artifact@v4
         with:

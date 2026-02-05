@@ -3,12 +3,14 @@
 
 from pathlib import Path
 from datetime import datetime
+import shutil
 import pandas as pd
 
 from .yamlio import load_yaml
 from .runner import run_batch
 from .engine import compute_exp_no  # or keep local helper if you moved it
 import re
+from .recap_experiments import recap_experiments
 
 
 def _workspace_root_from_spec(spec_path: Path) -> Path:
@@ -94,6 +96,63 @@ def _write_report(report_path: Path, report_rows: list[dict]) -> None:
     out.to_csv(report_path, index=True)
 
 
+def _run_recap_smoke(output_dir: Path) -> list[str]:
+    warnings: list[str] = []
+    temp_root = output_dir / "_recap_smoke"
+
+    if temp_root.exists():
+        shutil.rmtree(temp_root, ignore_errors=True)
+    temp_root.mkdir(parents=True, exist_ok=True)
+
+    def _make_folder(name: str) -> Path:
+        p = temp_root / name
+        p.mkdir(parents=True, exist_ok=False)
+        return p
+
+    folder_1 = _make_folder("E00001_smoke")
+    folder_2 = _make_folder("E00002_smoke")
+    folder_3 = _make_folder("E00003_smoke")
+    folder_4 = _make_folder("E00004_smoke")
+
+    (folder_1 / "foo_experiment_result.csv").write_text(
+        "col1,col2\n1,one\n2,two\n",
+        encoding="utf-8",
+    )
+
+    (folder_3 / "bad_experiment_result.csv").write_text(
+        'col1,col2\n"unterminated,1\n',
+        encoding="utf-8",
+    )
+
+    (folder_4 / "bar_experiment_result.csv").write_text(
+        "col1,col2\n4,four\n5,five\n",
+        encoding="utf-8",
+    )
+
+    out_path = temp_root / "a1_experiment_result.csv"
+    df = recap_experiments(temp_root, out_path, return_df=True, include_experiment_folder=True)
+
+    expected_folders = ["E00001_smoke", "E00004_smoke"]
+    actual_folders = df["experiment_folder"].tolist() if "experiment_folder" in df.columns else []
+    if actual_folders != expected_folders:
+        warnings.append(
+            f"recap ordering mismatch: expected {expected_folders} got {actual_folders}"
+        )
+
+    expected_col1 = [1, 4]
+    actual_col1 = df["col1"].tolist() if "col1" in df.columns else []
+    if actual_col1 != expected_col1:
+        warnings.append(
+            f"recap nrows=1 mismatch: expected {expected_col1} got {actual_col1}"
+        )
+
+    if not out_path.exists():
+        warnings.append(f"recap output missing: {out_path}")
+
+    shutil.rmtree(temp_root, ignore_errors=True)
+    return warnings
+
+
 def run_tests(spec_path: str | Path) -> Path:
     """
     Run regression tests described by specs/tests_ci.yaml or specs/tests_full.yaml.
@@ -135,6 +194,16 @@ def run_tests(spec_path: str | Path) -> Path:
     )
 
     run_batch(tmp_batch)
+
+    recap_warnings = _run_recap_smoke(output_dir)
+    for w in recap_warnings:
+        print(f"[PyNNLF recap] WARNING: {w}")
+
+    # Also produce a real recap summary for the experiment_result root.
+    try:
+        recap_experiments(output_dir)
+    except Exception as exc:
+        print(f"[PyNNLF recap] WARNING: failed to write recap summary: {exc}")
 
     # 2) Load benchmark
     bench = _load_benchmark_csv(ws, tests["benchmark_csv"])

@@ -24,8 +24,9 @@ bibliography: paper.bib
 citeproc: true
 ---
 
-# Summary
-As solar photovoltaic (PV) system installations increase, network operators must forecast net electricity load—the difference between electricity consumption and PV generation. The term net load forecasting was first introduced in an academic paper in 2016 [@Kaur_2016]. Since then, over 60 journal articles and conference papers have been published on the topic by 2025 [@Tziolis_2025]. Research focus has been mainly on proposing new and complex models, claiming superior performance. Typical statements include:
+# Statement of need
+As solar photovoltaic (PV) system installations increase, network operators must forecast net6
+electricity load—the difference between electricity consumption and PV generation. Since 2016 [@Kaur_2016], more than 100 net load forecasting papers have been published, and most (84 papers) introduced new models and claimed superior performance [@Tziolis_2025]. Typical statements include:
 
 | Statement                                                                                                                        | Reference         |
 |----------------------------------------------------------------------------------------------------------------------------------|-------------------|
@@ -33,10 +34,11 @@ As solar photovoltaic (PV) system installations increase, network operators must
 | Comparative tests utilizing real-world data verify the superiority of the proposed method over other state-of-the-art algorithms | [@Hu_2024]        |
 | The performance of the BDLSTM model dominates when compared with the best of the state-of-the-art methods …                     | [@Sun_2020]       |
 
+However, limited attention has been given to reliability and reproducibility: 81% did not compare against simple benchmark models such as naive or mean models, 60% evaluated the models only on one dataset, and 94% did not make the code publicly available. This creates a clear need for a tool that evaluates net load forecasting models reliably and reproducibly. Such a tool should include a library of publicly available net load datasets and models, and enable users to add their own datasets and models to compare against established baselines.
 
+# Summary
 
-However, around 75% of these studies did not use simple benchmark models such as the `naïve model`, which forecasts the next value as equal to the last observation. Additionally, 63% of these studies did not use public datasets, and 99% did not share their code publicly. This indicates a strong focus on improving forecasting accuracy, but limited attention to standardizing evaluation process, model reliability and reproducibility.
-PyNNLF (Python for Network Net Load Forecasting) is an open-source tool designed to address these gaps by enabling reliable and reproducible evaluation of net load forecasting models. It includes:
+PyNNLF (Python for Network Net Load Forecasting) is an open-source tool designed to enable reliable and reproducible evaluation of net load forecasting models. It includes:
 
 A library of commonly used net load datasets (e.g., Ausgrid Solar Home Data [@Ausgrid_2014]), and a collection of 18 forecasting models, ranging from simple benchmarks (e.g., `naïve model`) to statistical models (e.g., `linear regression`) and machine learning models (e.g., `artificial neural networks`).
 
@@ -47,9 +49,21 @@ Users can specify the forecasting problem (dataset and forecast horizon) and mod
 
 Researchers and network operators can use PyNNLF to benchmark their models against others using standardized datasets. They can also contribute new models or datasets to the PyNNLF library, enabling broader comparison and collaboration While libraries like `statsmodels`, `PyTorch`, or `Darts` allow some model comparison with shared data and metrics, they are not designed specifically for net load forecasting. They lack curated datasets and models for this purpose and do not offer a clear way to record experiments. PyNNLF addresses these gaps by providing a focused framework with integrated datasets and structured experiment tracking.
 
+# Research field
+Net load forecasting sits within energy forecasting and energy systems research. While general-purpose forecasting tools exist, they are not tailored to net load forecasting and do not provide curated datasets, baseline models, and standardized experiment outputs in a single workflow.
+
+# Software design
+PyNNLF is a Python package that is installed using `pip install pynnlf`. It provides a reproducible workflow based on YAML specifications, standardized experiment outputs, and modular model and dataset discovery.
+
+# Research impact statement
+By standardizing datasets, baselines, and reporting, PyNNLF makes net load forecasting research more reliable and reproducible and enables fair comparisons across studies.
+
+# AI usage
+We used AI for simple editing assistance (spelling, grammar, etc.) and coding assistance, especially for syntax writing with GitHub Copilot with the GPT-5.2-Codex model. The overall architecture of the software and user requirements were defined by the authors. 
+
 In parallel with developing PyNNLF, we are also preparing other research papers: a literature review of net load forecasting studies, and comparative analyses of various models on multiple net load datasets, forecast horizons, spatial aggregations for the load, and minimum demand forecasting using PyNNLF.
 
 # Acknowledgements
-This research is part of Samhan’s PhD study, which is sponsored by University International Postgraduate Award (UIPA) UNSW scholarship [@UNSW_2025] and industry collaboration partnership with Ausgrid [@Ausgrid_2025], a Distribution Network Service Provider in Australia.
+This research is part of Samhan’s PhD study, which is sponsored by University International Postgraduate Award (UIPA) UNSW scholarship [@UNSW_2025] and industry collaboration partnership with Ausgrid [@Ausgrid_2025], a Distribution Network Service Provider in Australia, and RACE For 2030 Scholarship.
 
 # References

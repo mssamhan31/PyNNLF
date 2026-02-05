@@ -19,9 +19,23 @@
 3. Run the experiment:
 
     ```
-    python -c "import pynnlf; pynnlf.run_experiment('my_project/specs/experiment.yaml')"
+    python -c "import pynnlf; pynnlf.run_experiment('example_project/specs/experiment.yaml')"
     ```
 
-4. The tool outputs evaluation results to the `experiment_result/` folder inside your workspace.
+4. Run a batch of experiments (optional):
+
+    ```
+    python -c "import pynnlf; pynnlf.run_experiment_batch('example_project/specs/batch.yaml')"
+    ```
+
+5. Recap multiple experiments into one CSV (optional):
+
+    ```
+    python -c "import pynnlf; pynnlf.recap_experiments('example_project/experiment_result')"
+    ```
+
+    This writes `example_project/experiment_result/a1_experiment_result.csv` and skips missing or malformed CSVs with warnings.
+
+6. The tool outputs evaluation results to the `experiment_result/` folder inside your workspace.
 
 For the list of available datasets & models, how to modify model hyperparameter, how to add a model, how to add a dataset, and exhaustive list of API Reference see the Detailed Guide page.

@@ -9,7 +9,7 @@ from .engine import run_experiment_engine
 
 def _load_json(path: Path) -> dict:
     """
-    Load JSON file into dict.
+    Load JSON file into dict (legacy JSON workflow).
 
     Args:
         path (Path): JSON file path.
@@ -21,7 +21,7 @@ def _load_json(path: Path) -> dict:
 
 def _workspace_root_from_spec(spec_path: Path) -> Path:
     """
-    Infer workspace root from a spec path.
+    Infer workspace root from a spec path (legacy JSON workflow).
 
     Assumes structure:
         <workspace>/specs/experiment.json
@@ -37,7 +37,7 @@ def _workspace_root_from_spec(spec_path: Path) -> Path:
 
 def run_single(spec_path: str | Path) -> None:
     """
-    Run a single experiment from a 4-key JSON spec.
+    Run a single experiment from a 4-key JSON spec (legacy workflow).
 
     Spec contains only:
         dataset, forecast_horizon, model, hyperparameter
@@ -86,7 +86,7 @@ def run_single(spec_path: str | Path) -> None:
 
 def run_batch(spec_path: str | Path) -> None:
     """
-    Run batch experiments from a batch JSON spec.
+    Run batch experiments from a batch JSON spec (legacy workflow).
 
     Batch spec contains:
         datasets: [dsX...]

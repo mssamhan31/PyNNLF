@@ -1,0 +1,264 @@
+m1_naive:
+  hp1:
+    hyperparameter_1: No hyperparameter
+
+m2_snaive:
+  hp1:
+    days: 1
+  hp2:
+    days: 7
+
+m3_ets:
+  hp1:
+    trend: false
+    damped_trend: false
+    seasonal_periods_days: null
+  hp2:
+    trend: false
+    damped_trend: false
+    seasonal_periods_days: 1
+  hp3:
+    trend: add
+    damped_trend: false
+    seasonal_periods_days: null
+
+m4_arima:
+  hp1:
+    p: 1
+    d: 0
+    q: 1
+  hp2:
+    p: 1
+    d: 1
+    q: 1
+
+m5_sarima:
+  hp1:
+    p: 1
+    d: 0
+    q: 1
+    P: 0
+    D: 1
+    Q: 0
+    seasonal_period_days: 1
+  hp2:
+    p: 1
+    d: 0
+    q: 1
+    P: 0
+    D: 1
+    Q: 0
+    seasonal_period_days: 7
+
+m6_lr:
+  hp1:
+    num_features: 50
+
+m7_ann:
+  hp1:
+    seed: 99
+    hidden_size: 10
+    activation_function: relu
+    learning_rate: 0.001
+    solver: adam
+    epochs: 500
+  hp2:
+    seed: 99
+    hidden_size: 10
+    activation_function: relu
+    learning_rate: 0.01
+    solver: adam
+    epochs: 500
+
+m8_dnn:
+  hp1:
+    seed: 1
+    n_hidden: 3
+    hidden_size: 10
+    activation_function: relu
+    learning_rate: 0.001
+    solver: adam
+    epochs: 500
+  hp2:
+    seed: 1
+    n_hidden: 3
+    hidden_size: 10
+    activation_function: relu
+    learning_rate: 0.01
+    solver: adam
+    epochs: 500
+  hp3:
+    seed: 1
+    n_hidden: 4
+    hidden_size: 10
+    activation_function: relu
+    learning_rate: 0.01
+    solver: adam
+    epochs: 500
+
+m9_rt:
+  hp1:
+    seed: 1
+    max_depth: 3
+    min_samples_split: 2
+    min_samples_leaf: 1
+    max_features: sqrt
+  hp2:
+    seed: 1
+    max_depth: 30
+    min_samples_split: 2
+    min_samples_leaf: 1
+    max_features: sqrt
+  hp3:
+    seed: 1
+    max_depth: 15
+    min_samples_split: 2
+    min_samples_leaf: 1
+    max_features: sqrt
+
+m10_rf:
+  hp1:
+    seed: 1
+    n_estimators: 100
+    max_depth: 3
+    min_samples_split: 2
+    min_samples_leaf: 1
+  hp2:
+    seed: 1
+    n_estimators: 50
+    max_depth: 3
+    min_samples_split: 2
+    min_samples_leaf: 1
+
+m11_svr:
+  hp1:
+    seed: 1
+    kernel: rbf
+    C: 100
+    gamma: 0.001
+    epsilon: 0.3
+
+m12_rnn:
+  hp1:
+    seed: 1
+    input_size: 1
+    hidden_size: 64
+    num_layers: 1
+    output_size: 1
+    batch_size: 4096
+    epochs: 2
+    learning_rate: 0.001
+  hp2:
+    seed: 1
+    input_size: 1
+    hidden_size: 64
+    num_layers: 1
+    output_size: 1
+    batch_size: 4096
+    epochs: 100
+    learning_rate: 0.001
+
+m13_lstm:
+  hp1:
+    seed: 1
+    input_size: 1
+    hidden_size: 64
+    num_layers: 1
+    output_size: 1
+    batch_size: 4096
+    epochs: 2
+    learning_rate: 0.001
+  hp2:
+    seed: 1
+    input_size: 1
+    hidden_size: 64
+    num_layers: 1
+    output_size: 1
+    batch_size: 4096
+    epochs: 100
+    learning_rate: 0.001
+
+m14_gru:
+  hp1:
+    seed: 1
+    input_size: 1
+    hidden_size: 64
+    num_layers: 1
+    output_size: 1
+    batch_size: 4096
+    epochs: 2
+    learning_rate: 0.001
+  hp2:
+    seed: 1
+    input_size: 1
+    hidden_size: 64
+    num_layers: 1
+    output_size: 1
+    batch_size: 4096
+    epochs: 100
+    learning_rate: 0.001
+
+m15_transformer:
+  hp1:
+    seed: 1
+    input_size: 1
+    hidden_size: 64
+    num_layers: 1
+    output_size: 1
+    batch_size: 4096
+    nhead: 4
+    epochs: 2
+    learning_rate: 0.001
+  hp2:
+    seed: 1
+    input_size: 1
+    hidden_size: 64
+    num_layers: 1
+    output_size: 1
+    batch_size: 4096
+    nhead: 4
+    epochs: 100
+    learning_rate: 0.001
+
+m16_prophet:
+  hp1:
+    seed: 1
+    seasonality_prior_scale: 10
+    seasonality_mode: additive
+    weekly_seasonality: true
+    daily_seasonality: true
+    growth: linear
+
+m17_xgb:
+  hp1:
+    xgb_seed: 1
+    n_estimators: 200
+    learning_rate: 0.1
+    max_depth: 6
+    subsample: 0.8
+    colsample_bytree: 0.8
+  hp2:
+    xgb_seed: 1
+    n_estimators: 100
+    learning_rate: 0.1
+    max_depth: 3
+    subsample: 0.8
+    colsample_bytree: 0.8
+
+m18_nbeats:
+  hp1:
+    seed: 1
+    hidden_size: 64
+    num_layers: 1
+    num_blocks: 3
+    output_size: 1
+    epochs: 2
+    lr: 0.001
+  hp2:
+    seed: 1
+    hidden_size: 64
+    num_layers: 1
+    num_blocks: 3
+    output_size: 1
+    epochs: 100
+    lr: 0.001

@@ -9,43 +9,56 @@ A visual illustration of the tool's workflow is shown below.
 ![Home Illustration](./docs/img/home_illustration.png)
 
 # Input
-1. **Forecast Target**: Dataset and forecast horizon. A list of possible Forecast Target values is available in`notebooks/config/config.ipynb`.
-2. **Model Specification**: Model and hyperparameters. A list of possible model specifications can be found in `notebooks/config/model_hyperparameters.ipynb`.
+1. **Forecast Target**: Dataset and forecast horizon defined in the YAML spec at [example_project/specs/experiment.yaml](example_project/specs/experiment.yaml).
+2. **Model Specification**: Model and hyperparameters defined in the YAML spec at [example_project/specs/experiment.yaml](example_project/specs/experiment.yaml).
 
 # Output
-1. `a1_experiment_result.csv` – Contains accuracy (cross-validated test n-RMSE), stability (accuracy standard deviation), and training time.
-2. `a2_hyperparameter.csv` – Lists the hyperparameters used for each model.
-3. `a3_cross_validation_result.csv` – Detailed results for each cross-validation split.
-4. `cv_plots/` – Folder with plots including:
+1. [a1_experiment_result.csv](example_project/experiment_result/a1_experiment_result.csv) – Contains accuracy (cross-validated test n-RMSE), stability (accuracy standard deviation), and training time.
+2. [a2_hyperparameter.csv](example_project/experiment_result/a2_hyperparameter.csv) – Lists the hyperparameters used for each model.
+3. [a3_cross_validation_result.csv](example_project/experiment_result/a3_cross_validation_result.csv) – Detailed results for each cross-validation split.
+4. [cv_plots](example_project/experiment_result/cv_plots) – Folder with plots including:
    - Observation vs forecast (time plot)
    - Observation vs forecast (scatter plot)
    - Residual time plot
    - Residual histogram
-5. `cv_test/` and `cv_train/` – Folders containing time series of observations, forecasts, and residuals for each cross-validation split.
+5. [cv_test](example_project/experiment_result/cv_test) and [cv_train](example_project/experiment_result/cv_train) – Folders containing time series of observations, forecasts, and residuals for each cross-validation split.
 
 # Tool Output Naming Convention
 Format:
-`[experiment_no]_[experiment_date]_[dataset]_[forecast_horizon]_[model]_[hyperparameter]`
+[experiment_no]_[experiment_date]_[dataset]_[forecast_horizon]_[model]_[hyperparameter]
 
 Example:
-`E00001_250915_ds0_fh30_m6_lr_hp1`
+[E00001_250915_ds0_fh30_m6_lr_hp1](example_project/experiment_result/E00001_250915_ds0_fh30_m6_lr_hp1)
 
 # Installation Instruction
-1. Clone the whole repository to your personal computer.
-2. Create a python virtual environment and install the requirements using pip install -r requirements.txt. This will take ~10 minutes. Although newer Python version should work, this tool was tested using Python 3.12.3. 
+1. Install the package:
+```bash
+python -m pip install pynnlf
+```
 
 # How to Use The Tool
-1. Open `notebooks/model/run_experiments.ipynb`.
-2. Fill the input values (forecast problem & model specification) that you want. 
-3. Run `notebooks/model/run_experiments.ipynb`.
-4. Tool will output the evaluation result on `experiment_result/` as one folder. 
-5. If you want to evaluate several forecast problems and model specifications at once, you can use `notebooks/model/run_experiments_batch.ipynb`
+1. Initialize a workspace in any directory you want (example name: my_project). By default, only the sample dataset (ds0) is included. You can choose to download all datasets if needed:
+```bash
+python -c "import pynnlf; pynnlf.init('my_project')"
+```
+2. Set up your experiment in [example_project/specs/experiment.yaml](example_project/specs/experiment.yaml).
+3. Run the experiment:
+```bash
+python -c "import pynnlf; pynnlf.run_experiment('my_project/specs/experiment.yaml')"
+```
+4. View results under [example_project/experiment_result](example_project/experiment_result).
+
+# CI
+CI (Continuous Integration) is automated testing that runs on code changes. CI is available to run smoke tests on 3 models and check whether results fall within the standard benchmark.
+
+# Output
+The tool will output the evaluation result in [example_project/experiment_result](example_project/experiment_result) as one folder.
 
 # Full Documentation
 Detailed documentation including examples, testing, detailed guide, API reference, features & limitations, etc. can be seen here. [PyNNLF Documentation](https://mssamhan31.github.io/PyNNLF/)
 
 # Acknowledgements
-This project is part of Samhan's PhD study, supported by the University International Postgraduate Award (UIPA) Scholarship from UNSW and the Industry Collaboration Project Scholarship from Ausgrid. We also acknowledge Solcast and the Australian Bureau of Meteorology (BOM) for providing access to historical weather datasets for this research. We further acknowledge the use of Python libraries including Pandas, NumPy, PyTorch, Scikit-learn, XGBoost, Prophet, Statsmodels, and Matplotlib. Finally, we thank the reviewers and editor of the Journal of Open Source Software for their valuable feedback and guidance.
+This project is part of Samhan's PhD study, supported by the University International Postgraduate Award (UIPA) Scholarship from UNSW, the Industry Collaboration Project Scholarship from Ausgrid, and the RACE for 2030 Scholarship. We also acknowledge Solcast and the Australian Bureau of Meteorology (BOM) for providing access to historical weather datasets for this research. We further acknowledge the use of Python libraries including Pandas, NumPy, PyTorch, Scikit-learn, XGBoost, Prophet, Statsmodels, and Matplotlib. Finally, we thank the reviewers and editor of the Journal of Open Source Software for their valuable feedback and guidance.
 
 The authors declare that they have no competing financial, personal, or professional interests related to this work.
 

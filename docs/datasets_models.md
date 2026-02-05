@@ -1,5 +1,26 @@
 ## Dataset
-The available datasets are listed in the `data` folder, with metadata provided in `data/metadata.xlsx`. Below are some of the datasets currently included in the library:
+The available datasets are listed in the `data` folder, with metadata provided in `data/metadata.xlsx`. 
+
+
+Simple initialization example:
+```
+python -c "import pynnlf; pynnlf.init('my_project')"
+```
+In this example, only the sample dataset (ds0) is included by default. Additional datasets are downloaded only if you enable downloads.
+
+
+To download all datasets, use:
+```
+python -c "import pynnlf; pynnlf.init('my_project', download_data=True, all_data=True)"
+```
+
+To download a specific subset of datasets:
+```
+python -c "import pynnlf; pynnlf.init('my_project', download_data=True, datasets=['ds14','ds15'])"
+```
+The download is typically fast because the dataset files are relatively small.
+
+Below are some of the datasets currently included in the library.
 
 ### Ausgrid Solar Home Datasets 
 This dataset has been widely used in net load forecasting research since 2016. It includes data from 300 solar-equipped households within the Ausgrid network in Sydney. The original source is [here](https://data.nsw.gov.au/data/dataset/solar-home-electricty-data/resource/d2dc76f0-22e3-4efc-bed9).
@@ -65,4 +86,4 @@ Unlike the previous household-focused datasets, this dataset covers a zone subst
 | `m18_nbeats`| N-BEATS         | Deep learning model for univariate time series forecasting                       |
 
 ### Hyperparameter
-The list of available model and its hyperparameter can be seen on `config/model_hyperparameters.ipynb`. The values currently available are the hyperparameter values mostly used in academic literature, but not necessarily the optimum value. 
+The list of available model and its hyperparameter can be seen in `models/hyperparameters.yaml`. The values currently available are the hyperparameter values mostly used in academic literature, but not necessarily the optimum value. 

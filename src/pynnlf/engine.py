@@ -480,7 +480,7 @@ def call_train(train_fn, hyperparameter, train_df_X, train_df_y, forecast_horizo
 
     Args:
         train_fn (callable): train_model_<model_name> function
-        hyperparameter (dict): hyperparameter dict from JSON
+        hyperparameter (dict): hyperparameter dict from YAML
         train_df_X (df): predictors
         train_df_y (df): target
         forecast_horizon (int): minutes
@@ -843,7 +843,7 @@ def run_experiment_engine(
         hyperparameter (dict): hyperparameter dict for this run
         output_dir (str | Path): workspace/experiment_result
         models_dir (str | Path): workspace/models (workspace-only)
-        config (dict): parsed workspace/specs/pynnlf_config.json (cv + plot + paths + registries)
+        config (dict): parsed workspace/specs/pynnlf_config.yaml (cv + plot + paths + registries)
 
     Returns:
         None

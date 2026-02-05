@@ -1,6 +1,6 @@
 ## Dataset Format
 
-All datasets are stored in the `data/` folder in `.csv` format. Each file is named using the pattern `[dataset_id]_[dataset_name].csv`, e.g., `ds4_ashd_with_weather.csv`.
+All datasets are stored in the workspace `data/` folder in `.csv` format. Each file is named using the pattern `[dataset_id]_[dataset_name].csv`, e.g., `ds4_ashd_with_weather.csv`.
 
 Some datasets may share the same net load data but differ in the availability of exogenous variables. For instance, `ds1_ashd.csv` is equivalent to `ds4_ashd_with_weather.csv` but without weather data.
 
@@ -13,5 +13,10 @@ Calendar features are excluded from the CSV files, as PyNNLF generates them dyna
 
 ## How to Add a Dataset
 
-To add a new dataset, simply create a `.csv` file in the `data/` folder following the naming convention above.  
-Make sure to update `data/metadata.xlsx` to document the new dataset.
+1. Create a `.csv` file in your workspace `data/` folder following the naming convention above.
+2. Update `data/metadata.xlsx` to document the new dataset.
+3. Use the dataset ID in your experiment spec:
+
+```
+dataset: ds19
+```

@@ -708,26 +708,28 @@
 
 <h1 id="how-to-use-the-tool">How to Use The Tool<a class="headerlink" href="#how-to-use-the-tool" title="Permanent link">&para;</a></h1>
 <ol>
-<li>Initialize a workspace (example name: <code>my_project</code>). By default, only the sample dataset (ds0) is included. You can choose to download all datasets if needed:
-On macOS, use <code>python3 -c</code> if <code>python -c</code> is not available.</li>
-</ol>
-<pre><code>python -c &quot;import pynnlf; pynnlf.init('my_project')&quot;
-</code></pre>
-<ol>
-<li>Fill in the input values for your forecast problem and model specification in <code>specs/experiment.yaml</code>. Example:</li>
-</ol>
-<pre><code>dataset: ds0
-forecast_horizon: fh1   # fh1 = 30 minutes ahead
-model: m6               # Linear regression
-hyperparameter: hp1     # Hyperparameter ID
-</code></pre>
-<ol>
-<li>Run the experiment:</li>
-</ol>
-<pre><code>python -c &quot;import pynnlf; pynnlf.run_experiment('my_project/specs/experiment.yaml')&quot;
-</code></pre>
-<ol>
-<li>The tool outputs evaluation results to the <code>experiment_result/</code> folder inside your workspace.</li>
+<li>
+<p>Initialize a workspace (example name: <code>my_project</code>). By default, only the sample dataset (ds0) is included. You can choose to download all datasets if needed:
+    On macOS, use <code>python3 -c</code> if <code>python -c</code> is not available.</p>
+<p><code>bash
+python -c "import pynnlf; pynnlf.init('my_project')"</code></p>
+</li>
+<li>
+<p>Fill in the input values for your forecast problem and model specification in <code>specs/experiment.yaml</code>. Example:
+    <code>yaml
+    dataset: ds0
+    forecast_horizon: fh1   # fh1 = 30 minutes ahead
+    model: m6               # Linear regression
+    hyperparameter: hp1     # Hyperparameter ID</code></p>
+</li>
+<li>
+<p>Run the experiment:
+    <code>bash
+    python -c "import pynnlf; pynnlf.run_experiment('my_project/specs/experiment.yaml')"</code></p>
+</li>
+<li>
+<p>The tool outputs evaluation results to the <code>experiment_result/</code> folder inside your workspace.</p>
+</li>
 </ol>
 <p>For the list of available datasets &amp; models, how to modify model hyperparameter, how to add a model, how to add a dataset, and exhaustive list of API Reference see the Detailed Guide page.</p>
 

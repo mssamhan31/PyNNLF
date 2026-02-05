@@ -706,28 +706,34 @@
 
 <h1 id="installation-instructions">Installation Instructions<a class="headerlink" href="#installation-instructions" title="Permanent link">&para;</a></h1>
 <ol>
-<li>Install the package:
-On macOS, use <code>python3</code>/<code>pip3</code> if <code>python</code>/<code>pip</code> are not available.</li>
+<li>
+<p>Install the package:
+    On macOS, use <code>python3</code>/<code>pip3</code> if <code>python</code>/<code>pip</code> are not available.</p>
+<p><code>bash
+python -m pip install pynnlf</code></p>
+</li>
 </ol>
-<pre><code class="language-bash">python -m pip install pynnlf
-</code></pre>
 <p>⚠️ This may take ~10 minutes.
 Although newer Python versions may work, the tool was tested on Python 3.12.3.</p>
 <h1 id="how-to-use-the-tool">How to Use The Tool<a class="headerlink" href="#how-to-use-the-tool" title="Permanent link">&para;</a></h1>
 <ol>
-<li>Initialize a workspace in any directory you want (example name: <code>my_project</code>). By default, only the sample dataset (ds0) is included. You can choose to download all datasets if needed:
-On macOS, use <code>python3 -c</code> if <code>python -c</code> is not available.</li>
-</ol>
-<pre><code class="language-bash">python -c &quot;import pynnlf; pynnlf.init('my_project')&quot;
-</code></pre>
-<ol>
-<li>Set up your experiment in <code>specs/experiment.yaml</code>.</li>
-<li>Run the experiment:</li>
-</ol>
-<pre><code class="language-bash">python -c &quot;import pynnlf; pynnlf.run_experiment('my_project/specs/experiment.yaml')&quot;
-</code></pre>
-<ol>
-<li>The tool outputs evaluation results in the <code>experiment_result/</code> folder inside your workspace.</li>
+<li>
+<p>Initialize a workspace in any directory you want (example name: <code>my_project</code>). By default, only the sample dataset (ds0) is included. You can choose to download all datasets if needed:
+    On macOS, use <code>python3 -c</code> if <code>python -c</code> is not available.</p>
+<p><code>bash
+python -c "import pynnlf; pynnlf.init('my_project')"</code></p>
+</li>
+<li>
+<p>Set up your experiment in <code>specs/experiment.yaml</code>.</p>
+</li>
+<li>
+<p>Run the experiment:
+    <code>bash
+    python -c "import pynnlf; pynnlf.run_experiment('my_project/specs/experiment.yaml')"</code></p>
+</li>
+<li>
+<p>The tool outputs evaluation results in the <code>experiment_result/</code> folder inside your workspace.</p>
+</li>
 </ol>
 <p>Example YAML inputs in <code>specs/experiment.yaml</code>:</p>
 <pre><code>dataset: ds0

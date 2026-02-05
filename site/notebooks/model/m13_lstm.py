@@ -19,20 +19,22 @@ from torch.utils.data import DataLoader, TensorDataset
 
 
 def train_model_m13_lstm(hyperparameter, train_df_X, train_df_y):
-    ''' Train and test an LSTM model for point forecasting. 
-    Essentially we use the LSTM block to learn the temporal patterns of the time series, and then use a fully connected layer to learn the relationship between the lag features.
-    We take the last hidden state of the LSTM as the output, and concatenate it with the exogenous features (like calendar) to make the final prediction using a fully connected layer.
-    Future imporvement maybe to improve the architecture of the fully connected layer after LSTM. 
-        
-    Args:
-        hyperparameter (df) : hyperparameter value of the model consisting of number of features
-        train_df_X (df) : features matrix for training
-        train_df_y (df) : target matrix for training
+    """Train an LSTM model for point forecasting using lag and exogenous features.
 
-    
+    The LSTM captures temporal patterns from lag features. The last hidden state 
+    is concatenated with exogenous features and passed through a fully connected 
+    layer to produce the forecast.
+
+    Args:
+        hyperparameter (dict): Model hyperparameters (seed, input_size, hidden_size, 
+                               num_layers, output_size, batch_size, epochs, learning_rate).
+        train_df_X (pd.DataFrame): Training predictors including lag and exogenous features.
+        train_df_y (pd.DataFrame): Training target values.
+
     Returns:
-        model (model) : trained model with all features
-    '''
+        model (dict): Dictionary containing the trained LSTM model, hyperparameters, 
+                      and original training data.
+    """
     
     #UNPACK HYPERPARAMETER
     seed = int(hyperparameter['seed'])
@@ -151,17 +153,19 @@ def train_model_m13_lstm(hyperparameter, train_df_X, train_df_y):
 
 
 def produce_forecast_m13_lstm(model, train_df_X, test_df_X):
-    """Create forecast at the train and test set using the trained model
+    """Generate forecasts for train and test sets using a trained LSTM model.
+
+    The function handles lag and exogenous features, applies mini-batching 
+    to avoid memory issues, and returns predictions for both train and test sets.
 
     Args:
-        model (dictionary): all parameters of the trained model
-        train_df_X (df): predictors of train set
-        test_df_X (df): predictors of test set
+        model (dict): Dictionary containing the trained LSTM model and hyperparameters.
+        train_df_X (pd.DataFrame): Training predictors including lag and exogenous features.
+        test_df_X (pd.DataFrame): Test predictors including lag and exogenous features.
 
     Returns:
-        train_df_y_hat (df) : forecast result at train set
-        test_df_y_hat (df) : forecast result at test set
-        
+        train_df_y_hat (np.ndarray): Forecasted values for the training set.
+        test_df_y_hat (np.ndarray): Forecasted values for the test set.
     """
     
     # UNPACK MODEL
@@ -223,18 +227,18 @@ def produce_forecast_m13_lstm(model, train_df_X, test_df_X):
 
 
 def separate_lag_and_exogenous_features(train_df_X, target_column='y', lag_prefix='y_lag'):
-    '''
-    This function separates the lag features and exogenous variables from the training dataframe.
+    """
+    Split a dataframe into lag features and exogenous variables.
 
     Args:
-        train_df_X (pd.DataFrame): The dataframe containing both lag features and exogenous variables.
-        target_column (str): The name of the target column (e.g., 'y').
-        lag_prefix (str): The prefix used for lag columns (e.g., 'y_lag').
+        train_df_X (pd.DataFrame): DataFrame containing lagged features, exogenous variables, and possibly the target.
+        target_column (str, optional): Name of the target column to exclude from exogenous features. Defaults to 'y'.
+        lag_prefix (str, optional): Prefix that identifies lagged features. Defaults to 'y_lag'.
 
     Returns:
-        X_lags (pd.DataFrame): DataFrame containing only the lag features.
-        X_exog (pd.DataFrame): DataFrame containing only the exogenous variables.
-    '''
+        X_lags (pd.DataFrame): DataFrame containing only columns that are lag features.
+        X_exog (pd.DataFrame): DataFrame containing only exogenous variables (excluding target and lag features).
+    """
     
     # Identify lag features (columns that start with 'y_lag')
     lag_features = [col for col in train_df_X.columns if col.startswith(lag_prefix)]

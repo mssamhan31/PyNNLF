@@ -13,17 +13,20 @@ from sklearn.linear_model import LinearRegression
 
 
 def train_model_m6_lr(hyperparameter, train_df_X, train_df_y):
-    ''' Train and test a linear model for point forecasting. 
-        
-    Args:
-        hyperparameter (df) : hyperparameter value of the model consisting of number of features
-        train_df_X (df) : features matrix for training
-        train_df_y (df) : target matrix for training
+    """Train a linear regression model with feature selection.
 
-    
+    Selects the K best features from the predictors and fits a linear regression model.
+
+    Args:
+        hyperparameter (pd.Series): Hyperparameter values for the model (e.g., number of features).
+        train_df_X (pd.DataFrame): Predictor variables for training.
+        train_df_y (pd.DataFrame): Target variable for training.
+
     Returns:
-        model (dictionary) : trained model with all features
-    '''
+        model (dict): Dictionary containing the fitted feature selector and linear regression model:
+            - 'feature_selector': SelectKBest object used to select features.
+            - 'regression_model': Trained LinearRegression object.
+    """
     
     #UNPACK HYPERPARAMETER
     num_feature = int(hyperparameter['num_features'])
@@ -59,21 +62,22 @@ def train_model_m6_lr(hyperparameter, train_df_X, train_df_y):
     return model
 
 
-# In[1]:
+# In[ ]:
 
 
 def produce_forecast_m6_lr(model, train_df_X, test_df_X):
-    """Create forecast at the train and test set using the trained model
+    """Generate forecasts for train and test sets using a trained linear regression model.
 
     Args:
-        model (dictionary): all parameters of the trained model
-        train_df_X (df): predictors of train set
-        test_df_X (df): predictors of test set
+        model (dict): Contains the trained feature selector and linear regression model:
+            - 'feature_selector': SelectKBest object for feature selection.
+            - 'regression_model': Fitted LinearRegression object.
+        train_df_X (pd.DataFrame): Predictor variables for the training set.
+        test_df_X (pd.DataFrame): Predictor variables for the test set.
 
     Returns:
-        train_df_y_hat (df) : forecast result at train set
-        test_df_y_hat (df) : forecast result at test set
-        
+        train_df_y_hat (np.ndarray): Predicted values for the training set.
+        test_df_y_hat (np.ndarray): Predicted values for the test set.
     """
     fs_lr = model['feature_selector']
     m06_lr = model['regression_model']

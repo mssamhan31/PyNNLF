@@ -19,12 +19,21 @@ from torch.utils.data import DataLoader, TensorDataset
 
 
 def train_model_m12_rnn(hyperparameter, train_df_X, train_df_y):
-    ''' Train and test an RNN model for point forecasting. 
-    Essentially we use the RNN block to learn the temporal patterns of the time series, 
-    and then use a fully connected layer to learn the relationship between the lag features.
-    We take the last hidden state of the RNN as the output, and concatenate it with the exogenous features 
-    (like calendar) to make the final prediction using a fully connected layer.
-    '''
+    """Train an RNN model for point forecasting using lag and exogenous features.
+
+    The RNN learns temporal patterns from lagged features. The last hidden state is 
+    concatenated with exogenous features (e.g., calendar variables) and passed through 
+    a fully connected layer to produce final forecasts.
+
+    Args:
+        hyperparameter (dict): Model hyperparameters including seed, input_size, hidden_size,
+                               num_layers, output_size, batch_size, epochs, and learning_rate.
+        train_df_X (pd.DataFrame): Predictor matrix with lag and exogenous features.
+        train_df_y (pd.DataFrame): Target vector for training.
+
+    Returns:
+        model (dict): Contains the trained RNN, hyperparameters, and training data.
+    """
 
     # UNPACK HYPERPARAMETER
     seed = int(hyperparameter['seed'])
@@ -168,18 +177,20 @@ def produce_forecast_m12_rnn(model, train_df_X, test_df_X):
 
 
 def separate_lag_and_exogenous_features(train_df_X, target_column='y', lag_prefix='y_lag'):
-    '''
-    This function separates the lag features and exogenous variables from the training dataframe.
+    """Generate forecasts for train and test sets using a trained RNN model.
+
+    The function separates lag and exogenous features, reshapes the lagged inputs 
+    into sequences, and produces batch-wise predictions using the trained RNN.
 
     Args:
-        train_df_X (pd.DataFrame): The dataframe containing both lag features and exogenous variables.
-        target_column (str): The name of the target column (e.g., 'y').
-        lag_prefix (str): The prefix used for lag columns (e.g., 'y_lag').
+        model (dict): Dictionary containing the trained RNN, hyperparameters, and training data.
+        train_df_X (pd.DataFrame): Predictor matrix for the training set.
+        test_df_X (pd.DataFrame): Predictor matrix for the test set.
 
     Returns:
-        X_lags (pd.DataFrame): DataFrame containing only the lag features.
-        X_exog (pd.DataFrame): DataFrame containing only the exogenous variables.
-    '''
+        train_df_y_hat (np.ndarray): Forecasted values for the training set.
+        test_df_y_hat (np.ndarray): Forecasted values for the test set.
+    """
     
     # Identify lag features (columns that start with 'y_lag')
     lag_features = [col for col in train_df_X.columns if col.startswith(lag_prefix)]

@@ -19,11 +19,11 @@ A visual illustration of the tool workflow is shown below.
 1. `a1_experiment_result.csv` – contains accuracy (cross-validated test n-RMSE), stability (accuracy stddev), and training time.
 2. `a2_hyperparameter.csv` – lists hyperparameters used for each model.
 3. `a3_cross_validation_result.csv` – detailed results for each cross-validation split.
-4. `cv_plots/` – folder with plots including:
-   - Observation vs forecast (time plot)
-   - Observation vs forecast (scatter plot)
-   - Residual time plot
-   - Residual histogram
+4. `cv_plots/` – Folder with plots including:
+   a) Observation vs forecast (time plot), 
+   b) Observation vs forecast (scatter plot),
+   c) Residual time plot, and
+   d) Residual histogram
 5. `cv_test/` and `cv_train/` – folders containing time series of observation, forecast, and residuals for each cross-validation split.
 
 # Tool Output Naming Convention

@@ -707,10 +707,9 @@
 <h1 id="installation-instructions">Installation Instructions<a class="headerlink" href="#installation-instructions" title="Permanent link">&para;</a></h1>
 <ol>
 <li>
-<p>Install the package:
-    On macOS, use <code>python3</code>/<code>pip3</code> if <code>python</code>/<code>pip</code> are not available.</p>
-<p><code>bash
-python -m pip install pynnlf</code></p>
+<p>Install the package:</p>
+<p>On macOS, use <code>python3</code>/<code>pip3</code> if <code>python</code>/<code>pip</code> are not available.</p>
+<p><code>python -m pip install pynnlf</code></p>
 </li>
 </ol>
 <p>⚠️ This may take ~10 minutes.
@@ -718,18 +717,16 @@ Although newer Python versions may work, the tool was tested on Python 3.12.3.</
 <h1 id="how-to-use-the-tool">How to Use The Tool<a class="headerlink" href="#how-to-use-the-tool" title="Permanent link">&para;</a></h1>
 <ol>
 <li>
-<p>Initialize a workspace in any directory you want (example name: <code>my_project</code>). By default, only the sample dataset (ds0) is included. You can choose to download all datasets if needed:
-    On macOS, use <code>python3 -c</code> if <code>python -c</code> is not available.</p>
-<p><code>bash
-python -c "import pynnlf; pynnlf.init('my_project')"</code></p>
+<p>Initialize a workspace in any directory you want (example name: <code>my_project</code>). By default, only the sample dataset (ds0) is included. You can choose to download all datasets if needed:</p>
+<p>On macOS, use <code>python3 -c</code> if <code>python -c</code> is not available.</p>
+<p><code>python -c "import pynnlf; pynnlf.init('my_project')"</code></p>
 </li>
 <li>
 <p>Set up your experiment in <code>specs/experiment.yaml</code>.</p>
 </li>
 <li>
-<p>Run the experiment:
-    <code>bash
-    python -c "import pynnlf; pynnlf.run_experiment('my_project/specs/experiment.yaml')"</code></p>
+<p>Run the experiment:</p>
+<p><code>python -c "import pynnlf; pynnlf.run_experiment('my_project/specs/experiment.yaml')"</code></p>
 </li>
 <li>
 <p>The tool outputs evaluation results in the <code>experiment_result/</code> folder inside your workspace.</p>
@@ -791,7 +788,7 @@ hyperparameter: hp1
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>

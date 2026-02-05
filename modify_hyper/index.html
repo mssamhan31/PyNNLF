@@ -778,7 +778,7 @@
 <strong>This design avoids hard-coded values and provides a centralized location for managing all hyperparameters.</strong></p>
 <h2 id="format">Format<a class="headerlink" href="#format" title="Permanent link">&para;</a></h2>
 <p>Hyperparameter values are stored as a list of dictionaries. For example, for <code>m7_ann</code>, the values are stored under the <code>m7</code> key. Each dictionary contains an <code>hp_no</code> (hyperparameter set ID) and key-value pairs for the parameters.</p>
-<pre><code class="language-yaml">m7:
+<pre><code>m7:
     - hp_no: hp1
         seed: 99
         hidden_size: 10
@@ -796,7 +796,7 @@
 </code></pre>
 <h1 id="how-to-modify-model-hyperparameter">How to Modify Model Hyperparameter<a class="headerlink" href="#how-to-modify-model-hyperparameter" title="Permanent link">&para;</a></h1>
 <p>If, for example, you want to modify the learning rate of the ANN model, create a new hyperparameter set with a new <code>hp_no</code>:</p>
-<pre><code class="language-yaml">m7:
+<pre><code>m7:
     - hp_no: hp1
         seed: 99
         hidden_size: 10
@@ -869,7 +869,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>

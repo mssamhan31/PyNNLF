@@ -712,41 +712,52 @@
 <li>
 <p>Initialize a workspace:
     On macOS, use <code>python3 -c</code> if <code>python -c</code> is not available.</p>
-<p><code>bash
-python -c "import pynnlf; pynnlf.init('my_project')"</code>
-2. Edit <code>specs/experiment.yaml</code> with your inputs, for example:
-<code>yaml
-dataset: ds0
-forecast_horizon: fh1   # fh1 = 30 minutes ahead
-model: m6               # m6 = Linear Regression
-hyperparameter: hp1</code>
-3. Run the experiment:
-<code>bash
-python -c "import pynnlf; pynnlf.run_experiment('my_project/specs/experiment.yaml')"</code>
-4. Check outputs under <code>my_project/experiment_result/</code>.</p>
+<p><code>python -c "import pynnlf; pynnlf.init('my_project')"</code></p>
+</li>
+<li>
+<p>Edit <code>specs/experiment.yaml</code> with your inputs, for example:
+    <code>dataset: ds0
+    forecast_horizon: fh1   # fh1 = 30 minutes ahead
+    model: m6               # m6 = Linear Regression
+    hyperparameter: hp1</code></p>
+</li>
+<li>
+<p>Run the experiment:
+    <code>python -c "import pynnlf; pynnlf.run_experiment('my_project/specs/experiment.yaml')"</code></p>
+</li>
+<li>
+<p>Check outputs under <code>my_project/experiment_result/</code>.</p>
 </li>
 </ol>
 <h2 id="2-local-smoke-test-3-models">2) Local smoke test (3 models)<a class="headerlink" href="#2-local-smoke-test-3-models" title="Permanent link">&para;</a></h2>
 <p>This runs the same 3-model check used in CI and compares results to the benchmark.</p>
 <ol>
-<li>Initialize a workspace (if you have not already):
-    <code>bash
-    python -c "import pynnlf; pynnlf.init('my_project')"</code></li>
-<li>Run the smoke test:
-    <code>bash
-    python -c "import pynnlf; pynnlf.run_tests('my_project/specs/tests_ci.yaml')"</code></li>
-<li>Check the report in <code>my_project/experiment_result/Archive/Testing Result/</code>.</li>
+<li>
+<p>Initialize a workspace (if you have not already):
+    <code>python -c "import pynnlf; pynnlf.init('my_project')"</code></p>
+</li>
+<li>
+<p>Run the smoke test:
+    <code>python -c "import pynnlf; pynnlf.run_tests('my_project/specs/tests_ci.yaml')"</code></p>
+</li>
+<li>
+<p>Check the report in <code>my_project/experiment_result/Archive/Testing Result/</code>.</p>
+</li>
 </ol>
 <h2 id="3-full-model-test-18-models">3) Full model test (18 models)<a class="headerlink" href="#3-full-model-test-18-models" title="Permanent link">&para;</a></h2>
 <p>This runs all 18 models and compares results to the benchmark.</p>
 <ol>
-<li>Initialize a workspace (if you have not already):
-    <code>bash
-    python -c "import pynnlf; pynnlf.init('my_project')"</code></li>
-<li>Run the full test:
-    <code>bash
-    python -c "import pynnlf; pynnlf.run_tests('my_project/specs/tests_full.yaml')"</code></li>
-<li>Check the report in <code>my_project/experiment_result/Archive/Testing Result/</code>.</li>
+<li>
+<p>Initialize a workspace (if you have not already):
+    <code>python -c "import pynnlf; pynnlf.init('my_project')"</code></p>
+</li>
+<li>
+<p>Run the full test:
+    <code>python -c "import pynnlf; pynnlf.run_tests('my_project/specs/tests_full.yaml')"</code></p>
+</li>
+<li>
+<p>Check the report in <code>my_project/experiment_result/Archive/Testing Result/</code>.</p>
+</li>
 </ol>
 <p>⏱ <strong>Estimated time</strong>: ~1 hour on a personal computer with an Intel i5 processor and 32GB RAM. Example historical results can be found in:</p>
 <pre><code>experiment_result/Archive/Testing Result/20250821_test_result_CEEM Computer.csv
@@ -802,7 +813,7 @@ experiment_result/Archive/Testing Result/20250822_test_result_SS Personal Laptop
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>

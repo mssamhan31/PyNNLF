@@ -1,1 +1,37 @@
-/.venv/
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Virtual environments ---
+.venv/
+.venv*
+.venv_test/
+venv/
+ENV/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- Local workspaces created by pynnlf.init() ---
+my_project/
+my_project_test*/
+my_project_smoke*/
+ws_ci/
+ws_full/
+
+# --- Outputs (big, generated) ---
+experiment_result/
+**/experiment_result/
+
+# --- OS/editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# --- Build artifacts ---
+dist/
+build/
+*.egg-info/

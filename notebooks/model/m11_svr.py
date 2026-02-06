@@ -4,24 +4,17 @@
 # In[ ]:
 
 
-
-
-
-# In[3]:
-
-
 def train_model_m11_svr(hyperparameter, train_df_X, train_df_y):
-    ''' Train and test a linear model for point forecasting. 
-        
-    Args:
-        hyperparameter (df) : hyperparameter value of the model consisting of number of features
-        train_df_X (df) : features matrix for training
-        train_df_y (df) : target matrix for training
+    """Train a Support Vector Regression (SVR) model for point forecasting.
 
-    
+    Args:
+        hyperparameter (dict): SVR hyperparameters including 'kernel', 'C', 'gamma', and 'epsilon'.
+        train_df_X (pd.DataFrame): Predictor matrix for training.
+        train_df_y (pd.DataFrame or pd.Series): Target values for training.
+
     Returns:
-        model (model) : trained model with all features
-    '''
+        model (dict): Trained model containing the SVR object under key 'svr'.
+    """
     
     from sklearn.svm import SVR
     
@@ -48,17 +41,16 @@ def train_model_m11_svr(hyperparameter, train_df_X, train_df_y):
 
 
 def produce_forecast_m11_svr(model, train_df_X, test_df_X):
-    """Create forecast at the train and test set using the trained model
+    """Generate forecasts using a trained SVR model.
 
     Args:
-        model (dictionary): all parameters of the trained model
-        train_df_X (df): predictors of train set
-        test_df_X (df): predictors of test set
+        model (dict): Trained model containing the SVR object under key 'svr'.
+        train_df_X (pd.DataFrame): Predictor matrix for the training set.
+        test_df_X (pd.DataFrame): Predictor matrix for the test set.
 
     Returns:
-        train_df_y_hat (df) : forecast result at train set
-        test_df_y_hat (df) : forecast result at test set
-        
+        train_df_y_hat (np.ndarray): Forecasted values for the training set.
+        test_df_y_hat (np.ndarray): Forecasted values for the test set.
     """
     
     svr = model['svr']

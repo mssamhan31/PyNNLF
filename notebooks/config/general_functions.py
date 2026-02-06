@@ -23,15 +23,18 @@ import dill # for saving trained model
 
 
 def compute_exp_no(path_result):
-    """Compute experiment number for folder & file naming based on the number of existing experiments that have been done.
-    For example, if on the folder there are already 5 experiment folders, then the new experiment no. is E00006.
+    """Compute experiment number for folder and file naming.
+
+    This function determines the experiment number based on the count of 
+    existing experiment folders. For example, if the folder already contains 
+    5 experiment folders, the new experiment number will be `E00006`.
 
     Args:
-        path_result (str): relative path of experiment folder, stored in config
+        path_result (str): Relative path of the experiment folder, stored in config.
 
     Returns:
-        int: exp no 
-        str: exp no in str
+        experiment_no (int): Experiment number as an integer.
+        experiment_no_str (str): Experiment number as a zero-padded string.
     """
     subfolders = os.listdir(path_result)
     number_of_folders = len(subfolders)
@@ -50,7 +53,7 @@ def compute_folder_name(experiment_no_str, forecast_horizon, model_name, hyperpa
         hyperparameter_no (str): for example, hp1
 
     Returns:
-        str: folder name
+        folder_name (str): folder name
     """
     folder_name = \
         experiment_no_str + '_' +\
@@ -62,21 +65,22 @@ def compute_folder_name(experiment_no_str, forecast_horizon, model_name, hyperpa
     return folder_name
 
 def prepare_directory(path_result, forecast_horizon, model_name, hyperparameter_no):
-    """Do two things,
-    1. Create folders inside the experiment result folder
-    2. Create some file names to be used when exporting result later
-    
+    """Prepare experiment result directories and file paths.
+
+    This function:
+        1. Creates required folders inside the experiment result folder.
+        2. Generates file paths to be used when exporting results.
 
     Args:
-        path_result (str): relative path to the experiment result folder
-        forecast_horizon (int): forecast horizon in minutes
-        model_name (str): eg m1_naive
-        hyperparameter_no (str): eg
+        path_result (str): Relative path to the experiment result folder.
+        forecast_horizon (int): Forecast horizon in minutes.
+        model_name (str): Model name (e.g., "m1_naive").
+        hyperparameter_no (str): Index or identifier of the chosen hyperparameter.
 
     Returns:
-        hyperparameter (df): pd df series of hyperparameter chosen
-        experiment_no_str (str) : experiment number
-        filepath (dict) : dict of all filepaths that will be exported
+        hyperparameter (pd.Series): Selected hyperparameter configuration.
+        experiment_no_str (str): Experiment number as a zero-padded string.
+        filepath (dict): Dictionary of file paths for results, plots, CV splits, and models.
     """
     
     hyperparameter_table = globals()[f"{model_name.split('_')[0]}_hp_table"]
@@ -163,13 +167,21 @@ def prepare_directory(path_result, forecast_horizon, model_name, hyperparameter_
     return hyperparameter,experiment_no_str, filepath
 
 def export_result(filepath, df_a1_result, cross_val_result_df, hyperparameter):
-    """Export experiment summary:
-    1. experiment result
-    2. hyperparameter
-    3. cross validation detailed result
+    """Export experiment summary results.
+
+    This function exports:
+        1. Experiment result.
+        2. Hyperparameters.
+        3. Cross-validation detailed results.
 
     Args:
-        filepath (dict): dictionary of filepaths for exporting result
+        filepath (dict): Dictionary of file paths for exporting results.
+        df_a1_result (pd.DataFrame): DataFrame containing the experiment results.
+        cross_val_result_df (pd.DataFrame): DataFrame containing cross-validation results.
+        hyperparameter (dict): Dictionary of hyperparameters used in the experiment.
+
+    Returns:
+        None
     """
     # Create a df of hyperparameter being used
     df_a2 = pd.DataFrame(hyperparameter)
@@ -232,32 +244,27 @@ def add_lag_features(df, forecast_horizon, max_lag_day):
 
 
 def separate_holdout(df, n_block):    
-    """Separating df into two parts:
-    1. df : df that will be used for training and blocked k-fold cross validation. 
-    The block is a multiple of a week because net load data has weekly seasonality
-    2. hold_out_df : this section is not used for now, but can be useful for final test of the chosen model
-    if wanted, to show the generalized error. This is at least 1 block of data. 
-    
-    By default, the chosen k for k-fold cross validation is 10.
-    
-    For example, the original df has 12 weeks worth of data. 
-    In this case,
-    new df is week 1-10,
-    hold_out_df is week 11-12,
-    
-    the new df will be used for cross validation, for example
-    CV1: training: week 1-9, validation (test) week 10
-    CV2: training: week 1-8, week 10, validation (test) week 9,
-    etc. 
+    """Separate dataset into training/validation blocks and holdout set.
+
+    The dataset is divided into weekly blocks due to weekly seasonality 
+    in net load data. The last block (or more) is reserved as a holdout set, 
+    while the remaining blocks are used for blocked k-fold cross-validation.
+
+    Example:
+        If the dataset has 12 weeks of data and n_block=12:
+        - Training/validation df: weeks 1–10.
+        - Holdout df: weeks 11–12.
+        With k=10, cross-validation folds are built from the first 10 weeks.
 
     Args:
-        df (df): cleaned df consisting of y and all predictors
-        n_block (int): number of blocks to divide the original df. This includes the block for hold_out_df, so if k=10, this n_block = k+1 = 11
+        df (pd.DataFrame): Cleaned DataFrame with target `y` and predictors.
+        n_block (int): Total number of blocks. Includes one block for the holdout set 
+            (e.g., for k=10, n_block=11).
 
     Returns:
-        block_length (int) : number of weeks per block
-        hodout_df (df) : unused df, can be used later for unbiased estimate of final model performance
-        df (df) : df that will be used for training and validation (test) set
+        block_length (int): Number of weeks per block.
+        holdout_df (pd.DataFrame): DataFrame reserved as holdout set, unused in CV.
+        df (pd.DataFrame): DataFrame for training and cross-validation.
     """
     
     dataset_length_week= ((df.index[-1] - df.index[0]).total_seconds() / 86400/7)
@@ -380,16 +387,17 @@ def input_and_process(path_data_cleaned, forecast_horizon, max_lag_day, n_block,
 
 # SPLIT TRAIN - DEV - TEST SET
 def split_time_series(df, cv_no):
-    """Split df to train and test set using blocked cross validation.
+    """Split dataset into training and validation sets using blocked cross-validation.
 
     Args:
-        df (df): df that will be used for training and validation (test) set, consists of X and Y
-        cv_no (int): number of current cv order. 
-                     cv_no=1 means the test set is at the last, cv_no = k means the test set is at the beginning
+        df (pd.DataFrame): Input DataFrame containing features (X) and target (y).
+        cv_no (int): Cross-validation fold number.
+            - cv_no=1 → test set is the last block.  
+            - cv_no=k → test set is the first block.  
 
     Returns:
-        train_df (df) : df used for training
-        test_df (df) : df used for validation, formal name is validation set / dev set. 
+        train_df (pd.DataFrame): Subset used for training.
+        test_df (pd.DataFrame): Subset used for validation (dev/test set).
     """
       
     n = len(df)
@@ -408,18 +416,18 @@ def split_time_series(df, cv_no):
 # SPLIT X AND y
 
 
-# In[2]:
+# In[ ]:
 
 
 def split_xy(df):
-    """separate forecast target y and all predictors X into two dfs
+    """Separate target variable y and predictors X into two DataFrames.
 
     Args:
-        df (df): df containing the forecast target y and all predictors X
-        
-    Return:
-        df_X (df): df of all predictors X
-        df_y (df): df of target forecast y
+        df (pd.DataFrame): DataFrame containing target y and predictors X.
+
+    Returns:
+        df_X (pd.DataFrame): DataFrame of predictors X.
+        df_y (pd.DataFrame): DataFrame of target variable y.
     """
 
     df_y = df[['y']]
@@ -461,18 +469,20 @@ def remove_jump_df(train_df_y):
 
 
 def train_model(model_name, hyperparameter, train_df_X, train_df_y, forecast_horizon):
-    """train model based on the model choice, hyperparamter, predictors X and target y
+    """Train a forecasting model given its identifier and data.
 
     Args:
-        model_name (string): eg 'm06_lr'
-        hyperparameter (pd series): list of hyperparameter for that model
-        train_df_X (df): matrix of predictors
-        train_df_y (df): target forecast y
+        model_name (str): Model identifier (e.g., 'm6_lr').
+        hyperparameter (pd.Series): Hyperparameters for the model.
+        train_df_X (pd.DataFrame): Predictor matrix.
+        train_df_y (pd.DataFrame): Target variable (y).
         forecast_horizon (int): Forecast horizon in minutes.
 
     Returns:
-        model (dict) : general object storing all models info including the predictor, feature selection, 
-        and all other relevant features
+        dict: Trained model object containing predictors, settings, and metadata.
+
+    Raises:
+        ValueError: If an unsupported model_name is provided.
     """
     
     if model_name == 'm1_naive':
@@ -586,12 +596,15 @@ def produce_forecast(model_name, model, train_df_X, test_df_X, train_df_y, forec
 
 
 def save_model(filepath, cv_no, model):
-    """Export model into binary file using pickle to a designated file
+    """Save a trained model to a binary file using pickle/dill.
 
     Args:
-        filepath (dictionary): dictionary of the file path
-        cv_no (int) : cv number
-        model (dictionary): trained model
+        filepath (dict): Dictionary containing file paths, including model paths.
+        cv_no (int): Cross-validation fold number.
+        model (object): Trained model object to be serialized.
+
+    Returns:
+        None
     """
     
     with open(filepath['model'][cv_no], "wb") as model_file:
@@ -603,31 +616,31 @@ def save_model(filepath, cv_no, model):
 
 
 def run_model(df, model_name, hyperparameter, filepath, forecast_horizon, experiment_no_str, block_length):
-    """Run model! This will be updated so that it can adapt to any model 
-    This consists of
-    1. Loop over all CV, then inside the loop,
-    2. Split df to train and test set
-    3. Train model on train set
-    4. Produce naive forecast on both trian and test set for benchmark
-    5. Produce forecast on both train and test set
-    6. Compute residual on both train and test set
-    7. Export the observation, naive, forecast, and residual of train and test set
-    8. Produce plots only on CV 1
-    9. Evaluate forecast performance on train and test set
-    10. Quit the loop,
-    11. Summarise the overall performance of the model using RMSE and its Stddev
-    12. Export all results     
-    
+    """Run model training, validation, and evaluation with cross-validation.
+
+    This function performs:
+        1. Cross-validation over multiple folds.
+        2. Train-test split for each fold.
+        3. Model training and saving.
+        4. Naive forecast benchmark.
+        5. Forecast generation for train and test sets.
+        6. Residual computation.
+        7. Export of results (forecasts, residuals, plots).
+        8. Forecast evaluation with multiple metrics (e.g., RMSE, MAE, MAPE, R²).
+        9. Aggregation of performance metrics (mean and stddev).
+        10. Export of experiment summary and results.
+
     Args:
-        df (df): df that will be used for training and validation (test) set, consists of X and Y
-        model_name (string): eg 'm06_lr'
-        hyperparameter (pd series): list of hyperparameter for that model
-        filepath (dict): dictionary of filepaths for exporting result
-        forecast_horizon : the forecast horizon
-        experiment_no : the experiment no. in string
-        block_length : block length of one cross validation set
-        
-    
+        df (pd.DataFrame): Input data with features (X) and target (y).
+        model_name (str): Model identifier (e.g., "m06_lr").
+        hyperparameter (pd.Series): Hyperparameter configuration for the model.
+        filepath (dict): Dictionary of file paths for saving outputs.
+        forecast_horizon (int): Forecast horizon in minutes.
+        experiment_no_str (str): Experiment number as a zero-padded string.
+        block_length (int): Block length for one cross-validation set.
+
+    Returns:
+        None
     """
     
     import warnings
@@ -793,17 +806,20 @@ def run_model(df, model_name, hyperparameter, filepath, forecast_horizon, experi
 
 # RUN THE TOOL
 def run_experiment(dataset, forecast_horizon, model_name, hyperparameter_no):
-    '''
-    Run the experiment with the specified parameters.
+    """Run the experiment with the specified parameters.
+
+    This function prepares directories, processes input data, 
+    and runs the chosen model. Results and models are saved to disk.
+
     Args:
         dataset (str): Name of the dataset file.
         forecast_horizon (int): Forecast horizon in minutes.
-        model_name (str): Model identifier (e.g., 'm6_lr').
+        model_name (str): Model identifier (e.g., "m6_lr").
         hyperparameter_no (str): Hyperparameter set identifier.
 
     Returns:
-        None. Results and models are saved to disk.
-    '''
+        None
+    """
     # PREPARE FOLDER
     hyperparameter, experiment_no_str, filepath = prepare_directory(path_result, forecast_horizon, model_name, hyperparameter_no)
     # INPUT DATA
@@ -814,7 +830,7 @@ def run_experiment(dataset, forecast_horizon, model_name, hyperparameter_no):
 
 # # PERFORMANCE COMPUTATION
 
-# In[3]:
+# In[ ]:
 
 
 # Mean Bias Error (MBE)
@@ -826,7 +842,7 @@ def compute_MBE(forecast, observation):
         observation (df): series of the observed value (actual value)
 
     Returns:
-        error as the name suggest (float): as the name suggest
+        MBE (float): as the name suggest
     """
     return round(((forecast - observation).sum()) / len(observation), 5)
 
@@ -835,11 +851,11 @@ def compute_MAE(forecast, observation):
     """As the name suggest.
 
     Args:
-        forecast (df): series of the forecast result from the model
-        observation (df): series of the observed value (actual value)
+        forecast (pd.Series): Forecasted values from the model.
+        observation (pd.Series): Observed (actual) values.
 
     Returns:
-        error as the name suggest (float): as the name suggest
+        MAE (float): Mean Absolute Error rounded to three decimals.
     """
     return round((abs(forecast - observation)).mean(), 3)
 
@@ -852,20 +868,23 @@ def compute_RMSE(forecast, observation):
         observation (df): series of the observed value (actual value)
 
     Returns:
-        error as the name suggest (float): as the name suggest
+        RMSE (float): as the name suggest
     """
     return round(np.sqrt(((forecast - observation) ** 2).mean()), 3)
 
 # Mean Absolute Percentage Error (MAPE)
 def compute_MAPE(forecast, observation):
-    """As the name suggest. Be careful with MAPE though because its value can go to inf since the observed value can be 0. 
+    """Compute the Mean Absolute Percentage Error (MAPE).
+
+    Note:
+        MAPE can approach infinity if any observed value is zero.
 
     Args:
-        forecast (df): series of the forecast result from the model
-        observation (df): series of the observed value (actual value)
+        forecast (pd.Series): Forecasted values from the model.
+        observation (pd.Series): Observed (actual) values.
 
     Returns:
-        error as the name suggest (float): as the name suggest
+        MAPE (float): Mean Absolute Percentage Error rounded to three decimals.
     """
     return round((abs((forecast - observation) / observation) * 100).mean(), 3)
 
@@ -880,7 +899,7 @@ def compute_MASE(forecast, observation, train_result):
         observation (df): series of the observed value (actual value)
 
     Returns:
-        error as the name suggest (float): as the name suggest
+        MASE (float): as the name suggest
     """
     errors = abs(forecast - observation)
     MAE_naive = compute_MAE(train_result['naive'], train_result['observation'])
@@ -898,7 +917,7 @@ def compute_fskill(forecast, observation, naive):
         observation (df): series of the observed value (actual value)
 
     Returns:
-        error as the name suggest (float): as the name suggest
+        fskill (float): as the name suggest
     """
     return round((1 - compute_RMSE(forecast, observation) / compute_RMSE(naive, observation)) * 100, 3)
 
@@ -912,7 +931,7 @@ def compute_R2(forecast, observation):
         observation (df): series of the observed value (actual value)
 
     Returns:
-        error as the name suggest (float): as the name suggest
+        R2 (float): as the name suggest
     """
     return round(forecast.corr(observation)**2, 3)
 
@@ -923,12 +942,18 @@ def compute_R2(forecast, observation):
 
 
 def timeplot_forecast(observation, forecast, pathname):
-    """Produce time plot of observation vs forecast value and save it on the designated folder
+    """Generate a time plot of observed vs. forecast values.
+
+    The function plots the last week of data (based on the observation 
+    index frequency) and saves the figure as a PNG.
 
     Args:
-        observation (df): observed value
-        forecast (df): forecast value
-        pathname (str): filepath to save the figure
+        observation (pd.Series or pd.DataFrame): Observed values with datetime index.
+        forecast (pd.Series or pd.DataFrame): Forecasted values with datetime index.
+        pathname (str): File path to save the plot as PNG.
+
+    Returns:
+        None
     """
     consecutive_timedelta = observation.index[-1] - observation.index[-2]
     # Calculate total minutes in a week
@@ -1055,7 +1080,7 @@ def scatterplot_forecast(observation, forecast, R2, pathname):
 
 
 def timeplot_residual(residual, pathname):
-    """Produce time plot of resodia; value and save it on the designated folder
+    """Produce time plot of residual; value and save it on the designated folder
 
     Args:
         residual (df): forecast - observation

@@ -13,17 +13,25 @@ from prophet import Prophet
 
 
 def train_model_m16_prophet(hyperparameter, train_df_X, train_df_y, forecast_horizon):
-    ''' Train a prophet model for point forecasting. 
-        
+    """
+    Train a Prophet model for point forecasting using lag and exogenous features.
+
+    The model captures trend and seasonality components in the target series,
+    and optionally includes exogenous regressors. A gap is introduced between
+    training and forecast horizon to prevent data leakage.
+
     Args:
-        hyperparameter (df) : hyperparameter value of the model consisting of number of features
-        train_df_X (df) : features matrix for training
-        train_df_y (df) : target matrix for training
-        forecast_horizon (int) : forecast horizon for the model
-    
+        hyperparameter (dict): Dictionary containing model hyperparameters, including
+            seed, seasonality_prior_scale, seasonality_mode, weekly_seasonality,
+            daily_seasonality, and growth.
+        train_df_X (pd.DataFrame): Feature matrix for training (lag + exogenous features).
+        train_df_y (pd.DataFrame): Target variable for training.
+        forecast_horizon (int): Forecast horizon to define the gap between training and testing.
+
     Returns:
-        model (model) : trained model with all features
-    '''
+        model (dict): Dictionary containing the trained Prophet model, the processed
+            target DataFrame, and associated hyperparameters.
+    """
     
     #UNPACK HYPERPARAMETER
     seed = hyperparameter["seed"]
@@ -86,19 +94,19 @@ def train_model_m16_prophet(hyperparameter, train_df_X, train_df_y, forecast_hor
 
 
 def produce_forecast_m16_prophet(model, train_df_X, test_df_X, train_df_y, forecast_horizon):
-    """Create forecast at the train and test set using the trained model
+    """
+    Generate forecasts for train and test sets using a trained Prophet model, with warm-start updates for test set.
 
     Args:
-        model (dictionary): all parameters of the trained model
-        train_df_X (df): predictors of train set
-        test_df_X (df): predictors of test set
-        train_df_y (df): target of train set
-        forecast_horizon (int): forecast horizon for the model
+        model (dict): Dictionary containing the trained Prophet model, training data, and hyperparameters.
+        train_df_X (pd.DataFrame): Predictors of the training set (lag + exogenous features).
+        test_df_X (pd.DataFrame): Predictors of the test set (lag + exogenous features).
+        train_df_y (pd.DataFrame): Target series of the training set.
+        forecast_horizon (int): Forecast horizon in minutes.
 
     Returns:
-        train_df_y_hat (df) : forecast result at train set
-        test_df_y_hat (df) : forecast result at test set
-        
+        train_df_y_hat (pd.DataFrame): Forecast results for the training set, indexed by datetime.
+        test_df_y_hat (pd.DataFrame): Forecast results for the test set, indexed by datetime.
     """
     
     # UNPACK MODEL

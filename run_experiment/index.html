@@ -722,7 +722,16 @@ hyperparameter: hp1     # Hyperparameter ID</code></p>
 </li>
 <li>
 <p>Run the experiment:</p>
-<p><code>python -c "import pynnlf; pynnlf.run_experiment('my_project/specs/experiment.yaml')"</code></p>
+<p><code>python -c "import pynnlf; pynnlf.run_experiment('example_project/specs/experiment.yaml')"</code></p>
+</li>
+<li>
+<p>Run a batch of experiments (optional):</p>
+<p><code>python -c "import pynnlf; pynnlf.run_experiment_batch('example_project/specs/batch.yaml')"</code></p>
+</li>
+<li>
+<p>Recap multiple experiments into one CSV (optional):</p>
+<p><code>python -c "import pynnlf; pynnlf.recap_experiments('example_project/experiment_result')"</code></p>
+<p>This writes <code>example_project/experiment_result/a1_experiment_result.csv</code> and skips missing or malformed CSVs with warnings.</p>
 </li>
 <li>
 <p>The tool outputs evaluation results to the <code>experiment_result/</code> folder inside your workspace.</p>

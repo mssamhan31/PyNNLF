@@ -630,6 +630,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#recap_experimentsresults_rootexperiment_result-output_pathnone-return_dffalse-include_experiment_foldertrue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        recap_experiments(results_root='experiment_result', output_path=None, return_df=False, include_experiment_folder=True)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#run_testsspec_path" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -935,6 +946,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#recap_experimentsresults_rootexperiment_result-output_pathnone-return_dffalse-include_experiment_foldertrue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        recap_experiments(results_root='experiment_result', output_path=None, return_df=False, include_experiment_folder=True)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#run_testsspec_path" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1068,427 +1090,922 @@
 <h2 id="1-user-facing-api">1) User-facing API<a class="headerlink" href="#1-user-facing-api" title="Permanent link">&para;</a></h2>
 <h3 id="initworkspace_dir-download_datafalse-all_datafalse-datasetsnone-base_url_overridenone"><code>init(workspace_dir, *, download_data=False, all_data=False, datasets=None, base_url_override=None)</code><a class="headerlink" href="#initworkspace_dir-download_datafalse-all_datafalse-datasetsnone-base_url_overridenone" title="Permanent link">&para;</a></h3>
 <p>Create a workspace by copying the scaffold and optionally downloading datasets.</p>
-<p>Args:
-- <code>workspace_dir</code>: target directory to create the workspace.
-- <code>download_data</code>: whether to download datasets from the online source.
-- <code>all_data</code>: when <code>True</code>, download all datasets except <code>ds0</code>.
-- <code>datasets</code>: explicit list of dataset IDs to download (e.g., <code>['ds15']</code>).
-- <code>base_url_override</code>: override the download base URL.</p>
-<p>Returns:
-- <code>Path</code>: workspace directory path.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>workspace_dir</code>: target directory to create the workspace.</p>
+</li>
+<li>
+<p><code>download_data</code>: whether to download datasets from the online source.</p>
+</li>
+<li>
+<p><code>all_data</code>: when <code>True</code>, download all datasets except <code>ds0</code>.</p>
+</li>
+<li>
+<p><code>datasets</code>: explicit list of dataset IDs to download (e.g., <code>['ds15']</code>).</p>
+</li>
+<li>
+<p><code>base_url_override</code>: override the download base URL.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>Path</code>: workspace directory path.</li>
+</ul>
 <h3 id="run_experimentspec_path"><code>run_experiment(spec_path)</code><a class="headerlink" href="#run_experimentspec_path" title="Permanent link">&para;</a></h3>
 <p>Run a single experiment from <code>specs/experiment.yaml</code>.</p>
-<p>Args:
-- <code>spec_path</code>: path to the YAML spec file.</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li><code>spec_path</code>: path to the YAML spec file.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
 <h3 id="run_experiment_batchspec_path"><code>run_experiment_batch(spec_path)</code><a class="headerlink" href="#run_experiment_batchspec_path" title="Permanent link">&para;</a></h3>
 <p>Run a batch of experiments from <code>specs/batch.yaml</code>.</p>
-<p>Args:
-- <code>spec_path</code>: path to the YAML batch spec file.</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li><code>spec_path</code>: path to the YAML batch spec file.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
+<h3 id="recap_experimentsresults_rootexperiment_result-output_pathnone-return_dffalse-include_experiment_foldertrue"><code>recap_experiments(results_root='experiment_result', output_path=None, return_df=False, include_experiment_folder=True)</code><a class="headerlink" href="#recap_experimentsresults_rootexperiment_result-output_pathnone-return_dffalse-include_experiment_foldertrue" title="Permanent link">&para;</a></h3>
+<p>Aggregate experiment summary CSVs into a single recap file.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>results_root</code>: root folder containing <code>E00001_*</code> experiment directories.</p>
+</li>
+<li>
+<p><code>output_path</code>: output CSV path (default: <code>&lt;results_root&gt;/a1_experiment_result.csv</code>).</p>
+</li>
+<li>
+<p><code>return_df</code>: when <code>True</code>, return a <code>pd.DataFrame</code> instead of a path.</p>
+</li>
+<li>
+<p><code>include_experiment_folder</code>: add <code>experiment_folder</code> column to output.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>Path</code> or <code>pd.DataFrame</code> depending on <code>return_df</code>.</li>
+</ul>
 <h3 id="run_testsspec_path"><code>run_tests(spec_path)</code><a class="headerlink" href="#run_testsspec_path" title="Permanent link">&para;</a></h3>
 <p>Run regression tests defined in <code>specs/tests_ci.yaml</code> or <code>specs/tests_full.yaml</code> and write a report.</p>
-<p>Args:
-- <code>spec_path</code>: path to the YAML tests spec file.</p>
-<p>Returns:
-- <code>Path</code>: path to the generated report CSV.</p>
+<p>Args:</p>
+<ul>
+<li><code>spec_path</code>: path to the YAML tests spec file.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>Path</code>: path to the generated report CSV.</li>
+</ul>
 <h2 id="2-internal-api-advanced">2) Internal API (advanced)<a class="headerlink" href="#2-internal-api-advanced" title="Permanent link">&para;</a></h2>
 <h3 id="module-runner">Module: <code>runner</code><a class="headerlink" href="#module-runner" title="Permanent link">&para;</a></h3>
 <h4 id="run_singlespec_path"><code>run_single(spec_path)</code><a class="headerlink" href="#run_singlespec_path" title="Permanent link">&para;</a></h4>
 <p>Run one experiment from a YAML spec.</p>
-<p>Args:
-- <code>spec_path</code>: path to <code>specs/experiment.yaml</code>.</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li><code>spec_path</code>: path to <code>specs/experiment.yaml</code>.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
 <h4 id="run_batchspec_path"><code>run_batch(spec_path)</code><a class="headerlink" href="#run_batchspec_path" title="Permanent link">&para;</a></h4>
 <p>Run batch experiments from a YAML batch spec (cartesian product).</p>
-<p>Args:
-- <code>spec_path</code>: path to <code>specs/batch.yaml</code>.</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li><code>spec_path</code>: path to <code>specs/batch.yaml</code>.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
 <h4 id="_workspace_root_from_specspec_path"><code>_workspace_root_from_spec(spec_path)</code><a class="headerlink" href="#_workspace_root_from_specspec_path" title="Permanent link">&para;</a></h4>
 <p>Infer the workspace root from a spec path.</p>
-<p>Args:
-- <code>spec_path</code>: path to a spec file under <code>specs/</code>.</p>
-<p>Returns:
-- <code>Path</code>: workspace root directory.</p>
+<p>Args:</p>
+<ul>
+<li><code>spec_path</code>: path to a spec file under <code>specs/</code>.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>Path</code>: workspace root directory.</li>
+</ul>
 <h3 id="module-tests_runner">Module: <code>tests_runner</code><a class="headerlink" href="#module-tests_runner" title="Permanent link">&para;</a></h3>
 <h4 id="run_testsspec_path_1"><code>run_tests(spec_path)</code><a class="headerlink" href="#run_testsspec_path_1" title="Permanent link">&para;</a></h4>
 <p>Run regression tests and compare results to the benchmark.</p>
-<p>Args:
-- <code>spec_path</code>: path to <code>specs/tests_*.yaml</code>.</p>
-<p>Returns:
-- <code>Path</code>: report CSV path.</p>
+<p>Args:</p>
+<ul>
+<li><code>spec_path</code>: path to <code>specs/tests_*.yaml</code>.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>Path</code>: report CSV path.</li>
+</ul>
 <h4 id="_workspace_root_from_specspec_path_1"><code>_workspace_root_from_spec(spec_path)</code><a class="headerlink" href="#_workspace_root_from_specspec_path_1" title="Permanent link">&para;</a></h4>
 <p>Infer the workspace root from a tests spec path.</p>
-<p>Args:
-- <code>spec_path</code>: path to a tests spec file.</p>
-<p>Returns:
-- <code>Path</code>: workspace root directory.</p>
+<p>Args:</p>
+<ul>
+<li><code>spec_path</code>: path to a tests spec file.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>Path</code>: workspace root directory.</li>
+</ul>
 <h4 id="_find_latest_experiment_diroutput_dir"><code>_find_latest_experiment_dir(output_dir)</code><a class="headerlink" href="#_find_latest_experiment_diroutput_dir" title="Permanent link">&para;</a></h4>
 <p>Find the most recent experiment folder matching <code>E00001_*</code>.</p>
-<p>Args:
-- <code>output_dir</code>: workspace <code>experiment_result/</code> directory.</p>
-<p>Returns:
-- <code>Path</code>: latest experiment directory.</p>
+<p>Args:</p>
+<ul>
+<li><code>output_dir</code>: workspace <code>experiment_result/</code> directory.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>Path</code>: latest experiment directory.</li>
+</ul>
 <h4 id="_load_benchmark_csvworkspace_root-benchmark_rel"><code>_load_benchmark_csv(workspace_root, benchmark_rel)</code><a class="headerlink" href="#_load_benchmark_csvworkspace_root-benchmark_rel" title="Permanent link">&para;</a></h4>
 <p>Load the benchmark CSV and index it by <code>metric_id</code>.</p>
-<p>Args:
-- <code>workspace_root</code>: workspace root directory.
-- <code>benchmark_rel</code>: relative benchmark CSV path (e.g., <code>specs/testing_benchmark.csv</code>).</p>
-<p>Returns:
-- <code>pd.DataFrame</code>: benchmark table indexed by <code>metric_id</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>workspace_root</code>: workspace root directory.</p>
+</li>
+<li>
+<p><code>benchmark_rel</code>: relative benchmark CSV path (e.g., <code>specs/testing_benchmark.csv</code>).</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>pd.DataFrame</code>: benchmark table indexed by <code>metric_id</code>.</li>
+</ul>
 <h4 id="_write_reportreport_path-report_rows"><code>_write_report(report_path, report_rows)</code><a class="headerlink" href="#_write_reportreport_path-report_rows" title="Permanent link">&para;</a></h4>
 <p>Write a report CSV in the standard test format.</p>
-<p>Args:
-- <code>report_path</code>: output file path.
-- <code>report_rows</code>: list of report rows (dicts).</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>report_path</code>: output file path.</p>
+</li>
+<li>
+<p><code>report_rows</code>: list of report rows (dicts).</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
 <h3 id="module-discovery">Module: <code>discovery</code><a class="headerlink" href="#module-discovery" title="Permanent link">&para;</a></h3>
 <h4 id="discover_unique_filedirectory-prefix-suffix"><code>discover_unique_file(directory, prefix, suffix)</code><a class="headerlink" href="#discover_unique_filedirectory-prefix-suffix" title="Permanent link">&para;</a></h4>
 <p>Discover a unique file by prefix and suffix (e.g., <code>m19_*.py</code>).</p>
-<p>Args:
-- <code>directory</code>: directory to search.
-- <code>prefix</code>: required filename prefix.
-- <code>suffix</code>: required filename suffix.</p>
-<p>Returns:
-- <code>Path</code>: matching file path.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>directory</code>: directory to search.</p>
+</li>
+<li>
+<p><code>prefix</code>: required filename prefix.</p>
+</li>
+<li>
+<p><code>suffix</code>: required filename suffix.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>Path</code>: matching file path.</li>
+</ul>
 <h4 id="discover_model_namemodels_dir-model_id"><code>discover_model_name(models_dir, model_id)</code><a class="headerlink" href="#discover_model_namemodels_dir-model_id" title="Permanent link">&para;</a></h4>
 <p>Find a model file and return its stem (e.g., <code>m19_my_model</code>).</p>
-<p>Args:
-- <code>models_dir</code>: workspace <code>models/</code> directory.
-- <code>model_id</code>: model ID from spec (e.g., <code>m6</code>).</p>
-<p>Returns:
-- <code>str</code>: model file stem.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>models_dir</code>: workspace <code>models/</code> directory.</p>
+</li>
+<li>
+<p><code>model_id</code>: model ID from spec (e.g., <code>m6</code>).</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>str</code>: model file stem.</li>
+</ul>
 <h4 id="discover_dataset_pathdata_dir-dataset_id"><code>discover_dataset_path(data_dir, dataset_id)</code><a class="headerlink" href="#discover_dataset_pathdata_dir-dataset_id" title="Permanent link">&para;</a></h4>
 <p>Find a dataset CSV path by dataset ID.</p>
-<p>Args:
-- <code>data_dir</code>: workspace <code>data/</code> directory.
-- <code>dataset_id</code>: dataset ID from spec (e.g., <code>ds0</code>).</p>
-<p>Returns:
-- <code>Path</code>: dataset file path.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>data_dir</code>: workspace <code>data/</code> directory.</p>
+</li>
+<li>
+<p><code>dataset_id</code>: dataset ID from spec (e.g., <code>ds0</code>).</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>Path</code>: dataset file path.</li>
+</ul>
 <h3 id="module-hyperparams">Module: <code>hyperparams</code><a class="headerlink" href="#module-hyperparams" title="Permanent link">&para;</a></h3>
 <h4 id="load_hyperparameterspath"><code>load_hyperparameters(path)</code><a class="headerlink" href="#load_hyperparameterspath" title="Permanent link">&para;</a></h4>
 <p>Load model hyperparameters from YAML.</p>
-<p>Args:
-- <code>path</code>: path to <code>models/hyperparameters.yaml</code>.</p>
-<p>Returns:
-- <code>dict</code>: <code>{model_name: {hp_no: hyperparameter_dict}}</code>.</p>
+<p>Args:</p>
+<ul>
+<li><code>path</code>: path to <code>models/hyperparameters.yaml</code>.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>dict</code>: <code>{model_name: {hp_no: hyperparameter_dict}}</code>.</li>
+</ul>
 <h4 id="get_hphparams-model_name-hp_no"><code>get_hp(hparams, model_name, hp_no)</code><a class="headerlink" href="#get_hphparams-model_name-hp_no" title="Permanent link">&para;</a></h4>
 <p>Retrieve a hyperparameter dict for a model and <code>hp_no</code>.</p>
-<p>Args:
-- <code>hparams</code>: output of <code>load_hyperparameters()</code>.
-- <code>model_name</code>: model file stem (e.g., <code>m6_lr</code>).
-- <code>hp_no</code>: hyperparameter ID (e.g., <code>hp1</code>).</p>
-<p>Returns:
-- <code>dict</code>: hyperparameter dict.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>hparams</code>: output of <code>load_hyperparameters()</code>.</p>
+</li>
+<li>
+<p><code>model_name</code>: model file stem (e.g., <code>m6_lr</code>).</p>
+</li>
+<li>
+<p><code>hp_no</code>: hyperparameter ID (e.g., <code>hp1</code>).</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>dict</code>: hyperparameter dict.</li>
+</ul>
 <h3 id="module-yamlio">Module: <code>yamlio</code><a class="headerlink" href="#module-yamlio" title="Permanent link">&para;</a></h3>
 <h4 id="load_yamlpath"><code>load_yaml(path)</code><a class="headerlink" href="#load_yamlpath" title="Permanent link">&para;</a></h4>
 <p>Load a YAML file into a dictionary using <code>safe_load</code>.</p>
-<p>Args:
-- <code>path</code>: path to a <code>.yaml</code>/<code>.yml</code> file.</p>
-<p>Returns:
-- <code>dict</code>: parsed YAML content.</p>
+<p>Args:</p>
+<ul>
+<li><code>path</code>: path to a <code>.yaml</code>/<code>.yml</code> file.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>dict</code>: parsed YAML content.</li>
+</ul>
 <h3 id="module-model_utils-legacy-json-workflow">Module: <code>model_utils</code> (legacy JSON workflow)<a class="headerlink" href="#module-model_utils-legacy-json-workflow" title="Permanent link">&para;</a></h3>
 <h4 id="_load_jsonpath"><code>_load_json(path)</code><a class="headerlink" href="#_load_jsonpath" title="Permanent link">&para;</a></h4>
 <p>Load a JSON file into a dictionary.</p>
-<p>Args:
-- <code>path</code>: path to a JSON file.</p>
-<p>Returns:
-- <code>dict</code>: parsed JSON content.</p>
+<p>Args:</p>
+<ul>
+<li><code>path</code>: path to a JSON file.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>dict</code>: parsed JSON content.</li>
+</ul>
 <h4 id="_workspace_root_from_specspec_path_2"><code>_workspace_root_from_spec(spec_path)</code><a class="headerlink" href="#_workspace_root_from_specspec_path_2" title="Permanent link">&para;</a></h4>
 <p>Infer workspace root from a JSON spec path.</p>
-<p>Args:
-- <code>spec_path</code>: path to <code>specs/experiment.json</code> or <code>specs/batch.json</code>.</p>
-<p>Returns:
-- <code>Path</code>: workspace root directory.</p>
+<p>Args:</p>
+<ul>
+<li><code>spec_path</code>: path to <code>specs/experiment.json</code> or <code>specs/batch.json</code>.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>Path</code>: workspace root directory.</li>
+</ul>
 <h4 id="run_singlespec_path_1"><code>run_single(spec_path)</code><a class="headerlink" href="#run_singlespec_path_1" title="Permanent link">&para;</a></h4>
 <p>Run one experiment from a legacy JSON spec.</p>
-<p>Args:
-- <code>spec_path</code>: path to <code>specs/experiment.json</code>.</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li><code>spec_path</code>: path to <code>specs/experiment.json</code>.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
 <h4 id="run_batchspec_path_1"><code>run_batch(spec_path)</code><a class="headerlink" href="#run_batchspec_path_1" title="Permanent link">&para;</a></h4>
 <p>Run batch experiments from a legacy JSON spec.</p>
-<p>Args:
-- <code>spec_path</code>: path to <code>specs/batch.json</code>.</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li><code>spec_path</code>: path to <code>specs/batch.json</code>.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
 <h4 id="remove_jump_dftrain_df_y"><code>remove_jump_df(train_df_y)</code><a class="headerlink" href="#remove_jump_dftrain_df_y" title="Permanent link">&para;</a></h4>
 <p>Remove a time gap jump from a time series.</p>
-<p>Args:
-- <code>train_df_y</code>: time series data.</p>
-<p>Returns:
-- <code>pd.Series</code>: time series with the jump removed.</p>
+<p>Args:</p>
+<ul>
+<li><code>train_df_y</code>: time series data.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>pd.Series</code>: time series with the jump removed.</li>
+</ul>
 <h4 id="separate_lag_and_exogenous_featurestrain_df_x-target_columny-lag_prefixy_lag"><code>separate_lag_and_exogenous_features(train_df_X, target_column='y', lag_prefix='y_lag')</code><a class="headerlink" href="#separate_lag_and_exogenous_featurestrain_df_x-target_columny-lag_prefixy_lag" title="Permanent link">&para;</a></h4>
 <p>Split lag features and exogenous variables.</p>
-<p>Args:
-- <code>train_df_X</code>: dataframe with lag and exogenous features.
-- <code>target_column</code>: target column name.
-- <code>lag_prefix</code>: lag feature prefix.</p>
-<p>Returns:
-- <code>tuple</code>: <code>(X_lags, X_exog)</code> dataframes.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>train_df_X</code>: dataframe with lag and exogenous features.</p>
+</li>
+<li>
+<p><code>target_column</code>: target column name.</p>
+</li>
+<li>
+<p><code>lag_prefix</code>: lag feature prefix.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>tuple</code>: <code>(X_lags, X_exog)</code> dataframes.</li>
+</ul>
 <h3 id="module-engine">Module: <code>engine</code><a class="headerlink" href="#module-engine" title="Permanent link">&para;</a></h3>
 <h4 id="load_model_modulemodels_dir-model_name"><code>load_model_module(models_dir, model_name)</code><a class="headerlink" href="#load_model_modulemodels_dir-model_name" title="Permanent link">&para;</a></h4>
 <p>Load a model module from the workspace <code>models/</code> directory.</p>
-<p>Args:
-- <code>models_dir</code>: workspace <code>models/</code> directory.
-- <code>model_name</code>: model file stem (e.g., <code>m6_lr</code>).</p>
-<p>Returns:
-- <code>module</code>: imported model module.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>models_dir</code>: workspace <code>models/</code> directory.</p>
+</li>
+<li>
+<p><code>model_name</code>: model file stem (e.g., <code>m6_lr</code>).</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>module</code>: imported model module.</li>
+</ul>
 <h4 id="compute_exp_nopath_result"><code>compute_exp_no(path_result)</code><a class="headerlink" href="#compute_exp_nopath_result" title="Permanent link">&para;</a></h4>
 <p>Compute the next experiment number and formatted ID.</p>
-<p>Args:
-- <code>path_result</code>: <code>experiment_result/</code> directory.</p>
-<p>Returns:
-- <code>tuple</code>: <code>(experiment_no, experiment_no_str)</code>.</p>
+<p>Args:</p>
+<ul>
+<li><code>path_result</code>: <code>experiment_result/</code> directory.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>tuple</code>: <code>(experiment_no, experiment_no_str)</code>.</li>
+</ul>
 <h4 id="compute_folder_nameexperiment_no_str-dataset_file-forecast_horizon-model_name-hyperparameter_no"><code>compute_folder_name(experiment_no_str, dataset_file, forecast_horizon, model_name, hyperparameter_no)</code><a class="headerlink" href="#compute_folder_nameexperiment_no_str-dataset_file-forecast_horizon-model_name-hyperparameter_no" title="Permanent link">&para;</a></h4>
 <p>Generate the experiment folder name using the standard convention.</p>
-<p>Args:
-- <code>experiment_no_str</code>: experiment ID string (e.g., <code>E00001</code>).
-- <code>dataset_file</code>: dataset filename.
-- <code>forecast_horizon</code>: forecast horizon in minutes.
-- <code>model_name</code>: model file stem.
-- <code>hyperparameter_no</code>: hyperparameter ID.</p>
-<p>Returns:
-- <code>str</code>: folder name.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>experiment_no_str</code>: experiment ID string (e.g., <code>E00001</code>).</p>
+</li>
+<li>
+<p><code>dataset_file</code>: dataset filename.</p>
+</li>
+<li>
+<p><code>forecast_horizon</code>: forecast horizon in minutes.</p>
+</li>
+<li>
+<p><code>model_name</code>: model file stem.</p>
+</li>
+<li>
+<p><code>hyperparameter_no</code>: hyperparameter ID.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>str</code>: folder name.</li>
+</ul>
 <h4 id="prepare_directorypath_result-dataset_file-forecast_horizon-model_name-hyperparameter_no-hyperparameter_dict"><code>prepare_directory(path_result, dataset_file, forecast_horizon, model_name, hyperparameter_no, hyperparameter_dict)</code><a class="headerlink" href="#prepare_directorypath_result-dataset_file-forecast_horizon-model_name-hyperparameter_no-hyperparameter_dict" title="Permanent link">&para;</a></h4>
 <p>Create experiment folders and file paths for outputs.</p>
-<p>Args:
-- <code>path_result</code>: <code>experiment_result/</code> directory.
-- <code>dataset_file</code>: dataset filename.
-- <code>forecast_horizon</code>: forecast horizon in minutes.
-- <code>model_name</code>: model file stem.
-- <code>hyperparameter_no</code>: hyperparameter ID.
-- <code>hyperparameter_dict</code>: hyperparameter dict.</p>
-<p>Returns:
-- <code>tuple</code>: <code>(hyperparameter_dict, experiment_no_str, filepath_dict)</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>path_result</code>: <code>experiment_result/</code> directory.</p>
+</li>
+<li>
+<p><code>dataset_file</code>: dataset filename.</p>
+</li>
+<li>
+<p><code>forecast_horizon</code>: forecast horizon in minutes.</p>
+</li>
+<li>
+<p><code>model_name</code>: model file stem.</p>
+</li>
+<li>
+<p><code>hyperparameter_no</code>: hyperparameter ID.</p>
+</li>
+<li>
+<p><code>hyperparameter_dict</code>: hyperparameter dict.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>tuple</code>: <code>(hyperparameter_dict, experiment_no_str, filepath_dict)</code>.</li>
+</ul>
 <h4 id="export_resultfilepath-df_a1_result-cross_val_result_df-hyperparameter"><code>export_result(filepath, df_a1_result, cross_val_result_df, hyperparameter)</code><a class="headerlink" href="#export_resultfilepath-df_a1_result-cross_val_result_df-hyperparameter" title="Permanent link">&para;</a></h4>
 <p>Export summary CSVs for a1/a2/a3 outputs.</p>
-<p>Args:
-- <code>filepath</code>: dictionary of output paths.
-- <code>df_a1_result</code>: a1 summary dataframe.
-- <code>cross_val_result_df</code>: a3 cross-validation dataframe.
-- <code>hyperparameter</code>: hyperparameter dict.</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>filepath</code>: dictionary of output paths.</p>
+</li>
+<li>
+<p><code>df_a1_result</code>: a1 summary dataframe.</p>
+</li>
+<li>
+<p><code>cross_val_result_df</code>: a3 cross-validation dataframe.</p>
+</li>
+<li>
+<p><code>hyperparameter</code>: hyperparameter dict.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
 <h4 id="add_lag_featuresdf-forecast_horizon-max_lag_day"><code>add_lag_features(df, forecast_horizon, max_lag_day)</code><a class="headerlink" href="#add_lag_featuresdf-forecast_horizon-max_lag_day" title="Permanent link">&para;</a></h4>
 <p>Add lagged features to the dataframe based on horizon and max lag days.</p>
-<p>Args:
-- <code>df</code>: input dataframe with datetime index and <code>y</code> column.
-- <code>forecast_horizon</code>: horizon in minutes.
-- <code>max_lag_day</code>: max lag depth in days.</p>
-<p>Returns:
-- <code>pd.DataFrame</code>: dataframe with lag features.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>df</code>: input dataframe with datetime index and <code>y</code> column.</p>
+</li>
+<li>
+<p><code>forecast_horizon</code>: horizon in minutes.</p>
+</li>
+<li>
+<p><code>max_lag_day</code>: max lag depth in days.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>pd.DataFrame</code>: dataframe with lag features.</li>
+</ul>
 <h4 id="separate_holdoutdf-n_block"><code>separate_holdout(df, n_block)</code><a class="headerlink" href="#separate_holdoutdf-n_block" title="Permanent link">&para;</a></h4>
 <p>Split the dataset into CV data and a holdout block.</p>
-<p>Args:
-- <code>df</code>: cleaned dataframe with features and target.
-- <code>n_block</code>: number of blocks (k + 1).</p>
-<p>Returns:
-- <code>tuple</code>: <code>(block_length, holdout_df, df)</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>df</code>: cleaned dataframe with features and target.</p>
+</li>
+<li>
+<p><code>n_block</code>: number of blocks (k + 1).</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>tuple</code>: <code>(block_length, holdout_df, df)</code>.</li>
+</ul>
 <h4 id="input_and_processdataset_path-model_name-forecast_horizon-max_lag_day-n_block-hyperparameter"><code>input_and_process(dataset_path, model_name, forecast_horizon, max_lag_day, n_block, hyperparameter)</code><a class="headerlink" href="#input_and_processdataset_path-model_name-forecast_horizon-max_lag_day-n_block-hyperparameter" title="Permanent link">&para;</a></h4>
 <p>Load data, add lags and calendar features, and split into blocks.</p>
-<p>Args:
-- <code>dataset_path</code>: dataset CSV path.
-- <code>model_name</code>: model file stem.
-- <code>forecast_horizon</code>: horizon in minutes.
-- <code>max_lag_day</code>: max lag depth in days.
-- <code>n_block</code>: number of blocks.
-- <code>hyperparameter</code>: hyperparameter dict.</p>
-<p>Returns:
-- <code>tuple</code>: <code>(block_length, holdout_df, df)</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>dataset_path</code>: dataset CSV path.</p>
+</li>
+<li>
+<p><code>model_name</code>: model file stem.</p>
+</li>
+<li>
+<p><code>forecast_horizon</code>: horizon in minutes.</p>
+</li>
+<li>
+<p><code>max_lag_day</code>: max lag depth in days.</p>
+</li>
+<li>
+<p><code>n_block</code>: number of blocks.</p>
+</li>
+<li>
+<p><code>hyperparameter</code>: hyperparameter dict.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>tuple</code>: <code>(block_length, holdout_df, df)</code>.</li>
+</ul>
 <h4 id="split_time_seriesdf-cv_no-test_pct"><code>split_time_series(df, cv_no, test_pct)</code><a class="headerlink" href="#split_time_seriesdf-cv_no-test_pct" title="Permanent link">&para;</a></h4>
 <p>Split into train and test sets for blocked CV.</p>
-<p>Args:
-- <code>df</code>: dataframe for CV.
-- <code>cv_no</code>: CV fold index.
-- <code>test_pct</code>: test fraction per fold.</p>
-<p>Returns:
-- <code>tuple</code>: <code>(train_df, test_df)</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>df</code>: dataframe for CV.</p>
+</li>
+<li>
+<p><code>cv_no</code>: CV fold index.</p>
+</li>
+<li>
+<p><code>test_pct</code>: test fraction per fold.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>tuple</code>: <code>(train_df, test_df)</code>.</li>
+</ul>
 <h4 id="split_xydf"><code>split_xy(df)</code><a class="headerlink" href="#split_xydf" title="Permanent link">&para;</a></h4>
 <p>Split dataframe into predictors and target.</p>
-<p>Args:
-- <code>df</code>: dataframe containing <code>y</code> and predictors.</p>
-<p>Returns:
-- <code>tuple</code>: <code>(df_X, df_y)</code>.</p>
+<p>Args:</p>
+<ul>
+<li><code>df</code>: dataframe containing <code>y</code> and predictors.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>tuple</code>: <code>(df_X, df_y)</code>.</li>
+</ul>
 <h4 id="remove_jump_dftrain_df_y_1"><code>remove_jump_df(train_df_y)</code><a class="headerlink" href="#remove_jump_dftrain_df_y_1" title="Permanent link">&para;</a></h4>
 <p>Remove time gaps from a time series.</p>
-<p>Args:
-- <code>train_df_y</code>: time series data.</p>
-<p>Returns:
-- <code>pd.Series</code>: cleaned time series.</p>
+<p>Args:</p>
+<ul>
+<li><code>train_df_y</code>: time series data.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>pd.Series</code>: cleaned time series.</li>
+</ul>
 <h4 id="call_traintrain_fn-hyperparameter-train_df_x-train_df_y-forecast_horizon"><code>call_train(train_fn, hyperparameter, train_df_X, train_df_y, forecast_horizon)</code><a class="headerlink" href="#call_traintrain_fn-hyperparameter-train_df_x-train_df_y-forecast_horizon" title="Permanent link">&para;</a></h4>
 <p>Call a model training function with a compatible signature.</p>
-<p>Args:
-- <code>train_fn</code>: model training function.
-- <code>hyperparameter</code>: hyperparameter dict.
-- <code>train_df_X</code>: training predictors.
-- <code>train_df_y</code>: training target.
-- <code>forecast_horizon</code>: horizon in minutes.</p>
-<p>Returns:
-- <code>object</code>: trained model object.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>train_fn</code>: model training function.</p>
+</li>
+<li>
+<p><code>hyperparameter</code>: hyperparameter dict.</p>
+</li>
+<li>
+<p><code>train_df_X</code>: training predictors.</p>
+</li>
+<li>
+<p><code>train_df_y</code>: training target.</p>
+</li>
+<li>
+<p><code>forecast_horizon</code>: horizon in minutes.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>object</code>: trained model object.</li>
+</ul>
 <h4 id="call_forecastforecast_fn-model-train_df_x-test_df_x-train_df_y-forecast_horizon"><code>call_forecast(forecast_fn, model, train_df_X, test_df_X, train_df_y, forecast_horizon)</code><a class="headerlink" href="#call_forecastforecast_fn-model-train_df_x-test_df_x-train_df_y-forecast_horizon" title="Permanent link">&para;</a></h4>
 <p>Call a model forecasting function with a compatible signature.</p>
-<p>Args:
-- <code>forecast_fn</code>: model forecast function.
-- <code>model</code>: trained model object.
-- <code>train_df_X</code>: training predictors.
-- <code>test_df_X</code>: testing predictors.
-- <code>train_df_y</code>: training target (optional for some models).
-- <code>forecast_horizon</code>: horizon in minutes.</p>
-<p>Returns:
-- <code>tuple</code>: <code>(train_df_y_hat, test_df_y_hat)</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>forecast_fn</code>: model forecast function.</p>
+</li>
+<li>
+<p><code>model</code>: trained model object.</p>
+</li>
+<li>
+<p><code>train_df_X</code>: training predictors.</p>
+</li>
+<li>
+<p><code>test_df_X</code>: testing predictors.</p>
+</li>
+<li>
+<p><code>train_df_y</code>: training target (optional for some models).</p>
+</li>
+<li>
+<p><code>forecast_horizon</code>: horizon in minutes.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>tuple</code>: <code>(train_df_y_hat, test_df_y_hat)</code>.</li>
+</ul>
 <h4 id="save_modelfilepath-cv_no-model"><code>save_model(filepath, cv_no, model)</code><a class="headerlink" href="#save_modelfilepath-cv_no-model" title="Permanent link">&para;</a></h4>
 <p>Serialize and save a model to disk.</p>
-<p>Args:
-- <code>filepath</code>: output path dictionary.
-- <code>cv_no</code>: CV fold index.
-- <code>model</code>: trained model object.</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>filepath</code>: output path dictionary.</p>
+</li>
+<li>
+<p><code>cv_no</code>: CV fold index.</p>
+</li>
+<li>
+<p><code>model</code>: trained model object.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
 <h4 id="to_seriesy_hat-target_index"><code>to_series(y_hat, target_index)</code><a class="headerlink" href="#to_seriesy_hat-target_index" title="Permanent link">&para;</a></h4>
 <p>Align model output to a target index as a 1D series.</p>
-<p>Args:
-- <code>y_hat</code>: model output (array/Series/DataFrame).
-- <code>target_index</code>: desired index.</p>
-<p>Returns:
-- <code>pd.Series</code>: aligned series.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>y_hat</code>: model output (array/Series/DataFrame).</p>
+</li>
+<li>
+<p><code>target_index</code>: desired index.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>pd.Series</code>: aligned series.</li>
+</ul>
 <h4 id="run_model"><code>run_model(...)</code><a class="headerlink" href="#run_model" title="Permanent link">&para;</a></h4>
 <p>Run cross-validation, training, forecasting, and export outputs for one model.</p>
-<p>Args:
-- <code>df</code>: processed dataframe for CV.
-- <code>model_mod</code>: loaded model module.
-- <code>model_name</code>: model file stem.
-- <code>hyperparameter</code>: hyperparameter dict.
-- <code>filepath</code>: export paths.
-- <code>forecast_horizon</code>: horizon in minutes.
-- <code>experiment_no_str</code>: experiment ID string.
-- <code>block_length</code>: weeks per block.
-- <code>dataset_file</code>: dataset filename.
-- <code>hyperparameter_no</code>: hyperparameter ID.
-- <code>k</code>: number of CV folds.
-- <code>test_pct</code>: test fraction.
-- <code>train_pct</code>: train fraction.
-- <code>n_block</code>: number of blocks.
-- <code>plot_enabled</code>: plot on/off.
-- <code>plot_style</code>: plot settings.</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>df</code>: processed dataframe for CV.</p>
+</li>
+<li>
+<p><code>model_mod</code>: loaded model module.</p>
+</li>
+<li>
+<p><code>model_name</code>: model file stem.</p>
+</li>
+<li>
+<p><code>hyperparameter</code>: hyperparameter dict.</p>
+</li>
+<li>
+<p><code>filepath</code>: export paths.</p>
+</li>
+<li>
+<p><code>forecast_horizon</code>: horizon in minutes.</p>
+</li>
+<li>
+<p><code>experiment_no_str</code>: experiment ID string.</p>
+</li>
+<li>
+<p><code>block_length</code>: weeks per block.</p>
+</li>
+<li>
+<p><code>dataset_file</code>: dataset filename.</p>
+</li>
+<li>
+<p><code>hyperparameter_no</code>: hyperparameter ID.</p>
+</li>
+<li>
+<p><code>k</code>: number of CV folds.</p>
+</li>
+<li>
+<p><code>test_pct</code>: test fraction.</p>
+</li>
+<li>
+<p><code>train_pct</code>: train fraction.</p>
+</li>
+<li>
+<p><code>n_block</code>: number of blocks.</p>
+</li>
+<li>
+<p><code>plot_enabled</code>: plot on/off.</p>
+</li>
+<li>
+<p><code>plot_style</code>: plot settings.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
 <h4 id="validate_model_modulemodel_mod-model_name"><code>validate_model_module(model_mod, model_name)</code><a class="headerlink" href="#validate_model_modulemodel_mod-model_name" title="Permanent link">&para;</a></h4>
 <p>Validate that a model module exposes required functions.</p>
-<p>Args:
-- <code>model_mod</code>: loaded model module.
-- <code>model_name</code>: model file stem.</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>model_mod</code>: loaded model module.</p>
+</li>
+<li>
+<p><code>model_name</code>: model file stem.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
 <h4 id="run_experiment_enginedataset_path-forecast_horizon_min-model_name-hyperparameter_no-hyperparameter-output_dir-models_dir-config"><code>run_experiment_engine(dataset_path, forecast_horizon_min, model_name, hyperparameter_no, hyperparameter, output_dir, models_dir, config)</code><a class="headerlink" href="#run_experiment_enginedataset_path-forecast_horizon_min-model_name-hyperparameter_no-hyperparameter-output_dir-models_dir-config" title="Permanent link">&para;</a></h4>
 <p>Run a single experiment end-to-end using explicit inputs.</p>
-<p>Args:
-- <code>dataset_path</code>: dataset CSV path.
-- <code>forecast_horizon_min</code>: forecast horizon in minutes.
-- <code>model_name</code>: model file stem.
-- <code>hyperparameter_no</code>: hyperparameter ID.
-- <code>hyperparameter</code>: hyperparameter dict.
-- <code>output_dir</code>: workspace <code>experiment_result/</code>.
-- <code>models_dir</code>: workspace <code>models/</code>.
-- <code>config</code>: parsed <code>pynnlf_config.yaml</code>.</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>dataset_path</code>: dataset CSV path.</p>
+</li>
+<li>
+<p><code>forecast_horizon_min</code>: forecast horizon in minutes.</p>
+</li>
+<li>
+<p><code>model_name</code>: model file stem.</p>
+</li>
+<li>
+<p><code>hyperparameter_no</code>: hyperparameter ID.</p>
+</li>
+<li>
+<p><code>hyperparameter</code>: hyperparameter dict.</p>
+</li>
+<li>
+<p><code>output_dir</code>: workspace <code>experiment_result/</code>.</p>
+</li>
+<li>
+<p><code>models_dir</code>: workspace <code>models/</code>.</p>
+</li>
+<li>
+<p><code>config</code>: parsed <code>pynnlf_config.yaml</code>.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
 <h4 id="compute_mbeforecast-observation"><code>compute_MBE(forecast, observation)</code><a class="headerlink" href="#compute_mbeforecast-observation" title="Permanent link">&para;</a></h4>
 <p>Compute Mean Bias Error.</p>
-<p>Args:
-- <code>forecast</code>: forecast series.
-- <code>observation</code>: observation series.</p>
-<p>Returns:
-- <code>float</code>: MBE.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>forecast</code>: forecast series.</p>
+</li>
+<li>
+<p><code>observation</code>: observation series.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>float</code>: MBE.</li>
+</ul>
 <h4 id="compute_maeforecast-observation"><code>compute_MAE(forecast, observation)</code><a class="headerlink" href="#compute_maeforecast-observation" title="Permanent link">&para;</a></h4>
 <p>Compute Mean Absolute Error.</p>
-<p>Args:
-- <code>forecast</code>: forecast series.
-- <code>observation</code>: observation series.</p>
-<p>Returns:
-- <code>float</code>: MAE.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>forecast</code>: forecast series.</p>
+</li>
+<li>
+<p><code>observation</code>: observation series.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>float</code>: MAE.</li>
+</ul>
 <h4 id="compute_rmseforecast-observation"><code>compute_RMSE(forecast, observation)</code><a class="headerlink" href="#compute_rmseforecast-observation" title="Permanent link">&para;</a></h4>
 <p>Compute Root Mean Square Error.</p>
-<p>Args:
-- <code>forecast</code>: forecast series.
-- <code>observation</code>: observation series.</p>
-<p>Returns:
-- <code>float</code>: RMSE.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>forecast</code>: forecast series.</p>
+</li>
+<li>
+<p><code>observation</code>: observation series.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>float</code>: RMSE.</li>
+</ul>
 <h4 id="compute_mapeforecast-observation"><code>compute_MAPE(forecast, observation)</code><a class="headerlink" href="#compute_mapeforecast-observation" title="Permanent link">&para;</a></h4>
 <p>Compute Mean Absolute Percentage Error.</p>
-<p>Args:
-- <code>forecast</code>: forecast series.
-- <code>observation</code>: observation series.</p>
-<p>Returns:
-- <code>float</code>: MAPE.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>forecast</code>: forecast series.</p>
+</li>
+<li>
+<p><code>observation</code>: observation series.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>float</code>: MAPE.</li>
+</ul>
 <h4 id="compute_maseforecast-observation-train_result"><code>compute_MASE(forecast, observation, train_result)</code><a class="headerlink" href="#compute_maseforecast-observation-train_result" title="Permanent link">&para;</a></h4>
 <p>Compute Mean Absolute Scaled Error.</p>
-<p>Args:
-- <code>forecast</code>: forecast series.
-- <code>observation</code>: observation series.
-- <code>train_result</code>: training result dataframe containing <code>naive</code> and <code>observation</code>.</p>
-<p>Returns:
-- <code>float</code>: MASE.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>forecast</code>: forecast series.</p>
+</li>
+<li>
+<p><code>observation</code>: observation series.</p>
+</li>
+<li>
+<p><code>train_result</code>: training result dataframe containing <code>naive</code> and <code>observation</code>.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>float</code>: MASE.</li>
+</ul>
 <h4 id="compute_fskillforecast-observation-naive"><code>compute_fskill(forecast, observation, naive)</code><a class="headerlink" href="#compute_fskillforecast-observation-naive" title="Permanent link">&para;</a></h4>
 <p>Compute forecast skill against a naive baseline.</p>
-<p>Args:
-- <code>forecast</code>: forecast series.
-- <code>observation</code>: observation series.
-- <code>naive</code>: naive forecast series.</p>
-<p>Returns:
-- <code>float</code>: forecast skill.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>forecast</code>: forecast series.</p>
+</li>
+<li>
+<p><code>observation</code>: observation series.</p>
+</li>
+<li>
+<p><code>naive</code>: naive forecast series.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>float</code>: forecast skill.</li>
+</ul>
 <h4 id="compute_r2forecast-observation"><code>compute_R2(forecast, observation)</code><a class="headerlink" href="#compute_r2forecast-observation" title="Permanent link">&para;</a></h4>
 <p>Compute $R^2$ for scatter plot diagnostics.</p>
-<p>Args:
-- <code>forecast</code>: forecast series.
-- <code>observation</code>: observation series.</p>
-<p>Returns:
-- <code>float</code>: $R^2$.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>forecast</code>: forecast series.</p>
+</li>
+<li>
+<p><code>observation</code>: observation series.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>float</code>: $R^2$.</li>
+</ul>
 <h4 id="timeplot_forecastobservation-forecast-pathname-dark_blue-orange"><code>timeplot_forecast(observation, forecast, pathname, dark_blue, orange)</code><a class="headerlink" href="#timeplot_forecastobservation-forecast-pathname-dark_blue-orange" title="Permanent link">&para;</a></h4>
 <p>Save a time plot of observation vs forecast.</p>
-<p>Args:
-- <code>observation</code>: observation series.
-- <code>forecast</code>: forecast series.
-- <code>pathname</code>: output image path.
-- <code>dark_blue</code>: color value.
-- <code>orange</code>: color value.</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>observation</code>: observation series.</p>
+</li>
+<li>
+<p><code>forecast</code>: forecast series.</p>
+</li>
+<li>
+<p><code>pathname</code>: output image path.</p>
+</li>
+<li>
+<p><code>dark_blue</code>: color value.</p>
+</li>
+<li>
+<p><code>orange</code>: color value.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
 <h4 id="scatterplot_forecastobservation-forecast-r2-pathname-dark_blue-orange"><code>scatterplot_forecast(observation, forecast, R2, pathname, dark_blue, orange)</code><a class="headerlink" href="#scatterplot_forecastobservation-forecast-r2-pathname-dark_blue-orange" title="Permanent link">&para;</a></h4>
 <p>Save a scatter plot of observation vs forecast.</p>
-<p>Args:
-- <code>observation</code>: observation series.
-- <code>forecast</code>: forecast series.
-- <code>R2</code>: $R^2$ value.
-- <code>pathname</code>: output image path.
-- <code>dark_blue</code>: color value.
-- <code>orange</code>: color value.</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>observation</code>: observation series.</p>
+</li>
+<li>
+<p><code>forecast</code>: forecast series.</p>
+</li>
+<li>
+<p><code>R2</code>: $R^2$ value.</p>
+</li>
+<li>
+<p><code>pathname</code>: output image path.</p>
+</li>
+<li>
+<p><code>dark_blue</code>: color value.</p>
+</li>
+<li>
+<p><code>orange</code>: color value.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
 <h4 id="timeplot_residualresidual-pathname-dark_blue-orange"><code>timeplot_residual(residual, pathname, dark_blue, orange)</code><a class="headerlink" href="#timeplot_residualresidual-pathname-dark_blue-orange" title="Permanent link">&para;</a></h4>
 <p>Save a residual time plot.</p>
-<p>Args:
-- <code>residual</code>: residual series.
-- <code>pathname</code>: output image path.
-- <code>dark_blue</code>: color value.
-- <code>orange</code>: color value.</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>residual</code>: residual series.</p>
+</li>
+<li>
+<p><code>pathname</code>: output image path.</p>
+</li>
+<li>
+<p><code>dark_blue</code>: color value.</p>
+</li>
+<li>
+<p><code>orange</code>: color value.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
 <h4 id="histogram_residualresidual-df-pathname-dark_blue-orange"><code>histogram_residual(residual, df, pathname, dark_blue, orange)</code><a class="headerlink" href="#histogram_residualresidual-df-pathname-dark_blue-orange" title="Permanent link">&para;</a></h4>
 <p>Save a residual histogram.</p>
-<p>Args:
-- <code>residual</code>: residual series.
-- <code>df</code>: full dataframe used to compute range.
-- <code>pathname</code>: output image path.
-- <code>dark_blue</code>: color value.
-- <code>orange</code>: color value.</p>
-<p>Returns:
-- <code>None</code>.</p>
+<p>Args:</p>
+<ul>
+<li>
+<p><code>residual</code>: residual series.</p>
+</li>
+<li>
+<p><code>df</code>: full dataframe used to compute range.</p>
+</li>
+<li>
+<p><code>pathname</code>: output image path.</p>
+</li>
+<li>
+<p><code>dark_blue</code>: color value.</p>
+</li>
+<li>
+<p><code>orange</code>: color value.</p>
+</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>None</code>.</li>
+</ul>
 
 
 

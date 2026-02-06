@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+title: "PyNNLF: Python for Network Net Load Forecasting"
+message: "If you use this software, please cite it using the metadata in this file."
+type: software
+version: "0.2.4"
+date-released: "2026-02-06"
+license: MIT
+repository-code: "https://github.com/mssamhan31/PyNNLF"
+url: "https://github.com/mssamhan31/PyNNLF"
+authors:
+  - family-names: Samhan
+    given-names: M. Syahman
+  - family-names: Bruce
+    given-names: Anna
+  - family-names: Yildiz
+    given-names: Baran

@@ -1,19 +1,18 @@
 # User Input
-Suppose we perform a simple test using the inputs below, which should take less than 1 minute in the `run_experiment.ipynb` file: 
+Suppose we perform a simple test using a YAML spec and the Python API. This should take less than 1 minute for the example below.
+
+Example `specs/experiment.yaml`:
 ```
-# 1. RUN CONFIG
-%run "../config/config.ipynb"
+dataset: ds0
+forecast_horizon: fh1   # fh1 = 30 minutes ahead, fh9 = 2 days ahead
+model: m6
+hyperparameter: hp1
+```
 
-# 2. SETUP FORECAST PROBLEM AND MODEL SPECIFICATION (USER TO INPUT)
-# FORECAST PROBLEM
-dataset = ds0
-forecast_horizon = fh1 # fh1 = 30 minutes ahead, fh9 = 2 days ahead
-# MODEL SPECIFICATION
-model_name = m6
-hyperparameter_no = 'hp1'
-
-# 3. RUN EXPERIMENT
-run_experiment(dataset, forecast_horizon, model_name, hyperparameter_no)
+Run the experiment:
+On macOS, use `python3 -c` if `python -c` is not available.
+```
+python -c "import pynnlf; pynnlf.run_experiment('my_project/specs/experiment.yaml')"
 ```
 
 # Output
@@ -29,7 +28,9 @@ The tool generates the following outputs.
 | `E00001_a2_hyperparameter.csv`    | File   | Hyperparameters used for each model                        |
 | `E00001_a3_cross_validation_result.csv` | File | Detailed results for each cross-validation split          |
 
-The file `a1_experiment_result.csv` summarises the results, including the cross validated nRMSE & its standard deviation
+The file `a1_experiment_result.csv` summarises the results, including the cross validated nRMSE & its standard deviation.
+
+To aggregate multiple experiments into one recap, run `recap_experiments` to write a workspace-level `a1_experiment_result.csv` that includes the `experiment_folder` column.
 
 | experiment_no | exp_date   | dataset_no | dataset | dataset_freq_min | dataset_length_week | forecast_horizon_min | train_pct | test_pct | model_no | hyperparameter_no | model_name   | hyperparameter       | runtime_ms  | train_RMSE | train_RMSE_stddev | test_RMSE | test_RMSE_stddev | train_nRMSE | train_nRMSE_stddev | test_nRMSE | test_nRMSE_stddev |
 |---------------|-----------|------------|--------|----------------|-------------------|--------------------|-----------|----------|----------|-----------------|-------------|--------------------|------------|------------|-----------------|-----------|-----------------|------------|------------------|------------|------------------|

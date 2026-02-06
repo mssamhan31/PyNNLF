@@ -1,0 +1,49 @@
+name: CI (smoke tests)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  smoke:
+    name: PyNNLF smoke tests
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .
+
+      - name: Prepare CI workspace
+        run: |
+          python -c "import pynnlf; pynnlf.init('ws_ci')"
+
+      - name: Run smoke tests
+        run: |
+          python -c "import pynnlf; pynnlf.run_tests('ws_ci/specs/tests_ci.yaml')"
+
+      - name: Run recap experiments
+        run: |
+          python -c "import pynnlf; pynnlf.recap_experiments('ws_ci/experiment_result')"
+          python -c "from pathlib import Path; p = Path('ws_ci/experiment_result/a1_experiment_result.csv'); assert p.exists(), f'Missing recap output: {p}'"
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pynnlf-test-report-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: "ws_ci/experiment_result/Archive/Testing Result/*.csv"
+          if-no-files-found: warn

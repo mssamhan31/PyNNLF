@@ -1,0 +1,23 @@
+datasets: [ds0]
+forecast_horizons: [fh1]
+model_and_hp:
+  - [m1, hp1]
+  - [m2, hp2]
+  - [m3, hp1]
+  - [m4, hp1]
+  - [m5, hp1]
+  - [m6, hp1]
+  - [m7, hp1]
+  - [m8, hp1]
+  - [m9, hp3]
+  - [m10, hp1]
+  - [m11, hp1]
+  - [m12, hp1]
+  - [m13, hp1]
+  - [m14, hp1]
+  - [m15, hp1]
+  - [m16, hp1]
+  - [m17, hp1]
+  - [m18, hp1]
+benchmark_csv: specs/testing_benchmark.csv
+mode: warn

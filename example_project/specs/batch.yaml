@@ -1,0 +1,4 @@
+datasets: [ds0]
+forecast_horizons: [fh1]
+model_and_hp:
+  - [m6, hp1]

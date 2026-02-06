@@ -7,9 +7,8 @@ name = "pynnlf"
 dynamic = ["version"]
 description = "Python Network Net Load Forecasting (PyNNLF): reproducible evaluation of net load forecasting models."
 readme = "README.md"
-requires-python = ">=3.12"
-license = "MIT"
-license-files = ["LICENSE"]
+requires-python = ">=3.11"
+license = { text = "MIT" }
 
 # --- Runtime dependencies (minimum versions for compatibility) ---
 dependencies = [
@@ -116,6 +115,7 @@ docs = [
 
 [tool.setuptools]
 package-dir = {"" = "src"}
+license-files = []
 
 [tool.setuptools.dynamic]
 version = { attr = "pynnlf.__about__.__version__" }

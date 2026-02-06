@@ -1,8 +1,0 @@
-datasets: [ds0]
-forecast_horizons: [fh1]
-model_and_hp:
-  - [m1, hp1]   # m1_naive
-  - [m6, hp1]   # m6_lr
-  - [m7, hp1]   # m7_ann
-benchmark_csv: specs/testing_benchmark.csv
-mode: warn

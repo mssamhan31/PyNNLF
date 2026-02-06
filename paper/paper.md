@@ -25,7 +25,7 @@ citeproc: true
 ---
 
 # Statement of need
-As solar photovoltaic (PV) system installations increase, network operators must forecast net6
+As solar photovoltaic (PV) system installations increase, network operators must forecast net
 electricity load—the difference between electricity consumption and PV generation. Since 2016 [@Kaur_2016], more than 100 net load forecasting papers have been published, and most (84 papers) introduced new models and claimed superior performance [@Tziolis_2025]. Typical statements include:
 
 | Statement                                                                                                                        | Reference         |

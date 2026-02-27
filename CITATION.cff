@@ -2,8 +2,9 @@ cff-version: 1.2.0
 title: "PyNNLF: Python for Network Net Load Forecasting"
 message: "If you use this software, please cite it using the metadata in this file."
 type: software
-version: "0.2.4"
-date-released: "2026-02-06"
+version: "0.2.6"
+date-released: "2026-02-27"
+doi: "10.5281/zenodo.18794991"
 license: MIT
 repository-code: "https://github.com/mssamhan31/PyNNLF"
 url: "https://github.com/mssamhan31/PyNNLF"

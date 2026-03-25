@@ -3,10 +3,10 @@
 
 from pathlib import Path
 
-from .yamlio import load_yaml
-from .hyperparams import load_hyperparameters, get_hp
 from .discovery import discover_model_name, discover_dataset_path
 from .engine import run_experiment_engine
+from .hyperparams import load_hyperparameters, get_hp
+from .yamlio import load_yaml
 
 def _workspace_root_from_spec(spec_path: Path) -> Path:
     """
@@ -20,7 +20,15 @@ def _workspace_root_from_spec(spec_path: Path) -> Path:
     """
     return spec_path.parent.parent
 
-def run_single(spec_path: str | Path) -> None:
+
+def _load_workspace_config(ws: Path, *, plot_enabled: bool | None = None) -> dict:
+    cfg = load_yaml(ws / "specs" / "pynnlf_config.yaml")
+    if plot_enabled is not None:
+        cfg.setdefault("plot", {})["enabled"] = bool(plot_enabled)
+    return cfg
+
+
+def run_single(spec_path: str | Path, *, plot_enabled: bool | None = None) -> None:
     """
     Run a single experiment from a 4-key YAML spec.
 
@@ -34,7 +42,7 @@ def run_single(spec_path: str | Path) -> None:
     ws = _workspace_root_from_spec(spec_path)
 
     spec = load_yaml(spec_path)
-    cfg = load_yaml(ws / "specs" / "pynnlf_config.yaml")
+    cfg = _load_workspace_config(ws, plot_enabled=plot_enabled)
 
     ds_id = spec["dataset"]              # e.g. ds19
     fh_id = spec["forecast_horizon"]     # e.g. fh1
@@ -66,7 +74,8 @@ def run_single(spec_path: str | Path) -> None:
         config=cfg,
     )
 
-def run_batch(spec_path: str | Path) -> None:
+
+def run_batch(spec_path: str | Path, *, plot_enabled: bool | None = None) -> None:
     """
     Run batch experiments from YAML batch spec (cartesian product).
 
@@ -80,7 +89,7 @@ def run_batch(spec_path: str | Path) -> None:
     ws = _workspace_root_from_spec(spec_path)
 
     batch = load_yaml(spec_path)
-    cfg = load_yaml(ws / "specs" / "pynnlf_config.yaml")
+    cfg = _load_workspace_config(ws, plot_enabled=plot_enabled)
 
     data_dir = ws / cfg["paths"]["data_dir"]
     out_dir  = ws / cfg["paths"]["output_dir"]

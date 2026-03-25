@@ -7,6 +7,7 @@ All models are stored in the workspace `models` folder as `.py` files. Each mode
 The training function trains the model using the training set predictors and target values. It returns a single object, `model`, which contains the trained model.
 
 ## Forecast Function
+
 The forecast function uses the trained model along with the training and testing predictors. It returns two outputs: forecasts for the training and testing sets.
 
 ## How to Add a Model
@@ -24,13 +25,21 @@ You can start from the template file `models/mXX_template.py` in your workspace.
 
 ### 2. Add hyperparameters for the new model
 
-Add a new section in `models/hyperparameters.yaml` under the model ID (e.g., `m19`), and include one or more `hp_no` entries.
+Add a new top-level key in `example_project/models/hyperparameters.yaml`. The key must match the full model file stem, for example `m19_my_model`.
+
+```yaml
+m19_my_model:
+  hp1:
+    bias: 0.0
+  hp2:
+    bias: 5.0
+```
 
 ### 3. Select the model in your experiment spec
 
-Set the model in `specs/experiment.yaml`:
+Set the model in `example_project/specs/experiment.yaml`:
 
-```
+```yaml
 model: m19
 hyperparameter: hp1
 ```

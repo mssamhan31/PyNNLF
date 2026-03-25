@@ -30,6 +30,7 @@ nav:
   - Support & Contributing: support_contributing.md
   - Contributors: contributors.md
 markdown_extensions:
+  - pymdownx.superfences
   - toc:
       permalink: true
       toc_depth: 3

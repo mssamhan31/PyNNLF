@@ -25,23 +25,27 @@ Returns:
 
 - `Path`: workspace directory path.
 
-### `run_experiment(spec_path)`
-Run a single experiment from `specs/experiment.yaml`.
+### `run_experiment(spec_path, *, plot_enabled=None)`
+Run a single experiment from a workspace `specs/experiment.yaml`.
 
 Args:
 
 - `spec_path`: path to the YAML spec file.
 
+- `plot_enabled`: optional per-run override for `pynnlf_config.yaml`. When `False`, PyNNLF skips plot generation and does not create the `*_cv1_plots/` folder.
+
 Returns:
 
 - `None`.
 
-### `run_experiment_batch(spec_path)`
-Run a batch of experiments from `specs/batch.yaml`.
+### `run_experiment_batch(spec_path, *, plot_enabled=None)`
+Run a batch of experiments from a workspace `specs/batch.yaml`.
 
 Args:
 
 - `spec_path`: path to the YAML batch spec file.
+
+- `plot_enabled`: optional per-run override for `pynnlf_config.yaml`. When `False`, PyNNLF skips plot generation and does not create the `*_cv1_plots/` folder.
 
 Returns:
 
@@ -64,12 +68,14 @@ Returns:
 
 - `Path` or `pd.DataFrame` depending on `return_df`.
 
-### `run_tests(spec_path)`
+### `run_tests(spec_path, *, plot_enabled=None)`
 Run regression tests defined in `specs/tests_ci.yaml` or `specs/tests_full.yaml` and write a report.
 
 Args:
 
 - `spec_path`: path to the YAML tests spec file.
+
+- `plot_enabled`: optional per-run override for `pynnlf_config.yaml`. When `False`, the test run skips plot generation and does not create the `*_cv1_plots/` folder.
 
 Returns:
 
@@ -79,23 +85,27 @@ Returns:
 
 ### Module: `runner`
 
-#### `run_single(spec_path)`
+#### `run_single(spec_path, *, plot_enabled=None)`
 Run one experiment from a YAML spec.
 
 Args:
 
 - `spec_path`: path to `specs/experiment.yaml`.
 
+- `plot_enabled`: optional per-run override for `pynnlf_config.yaml`.
+
 Returns:
 
 - `None`.
 
-#### `run_batch(spec_path)`
+#### `run_batch(spec_path, *, plot_enabled=None)`
 Run batch experiments from a YAML batch spec (cartesian product).
 
 Args:
 
 - `spec_path`: path to `specs/batch.yaml`.
+
+- `plot_enabled`: optional per-run override for `pynnlf_config.yaml`.
 
 Returns:
 
@@ -114,12 +124,14 @@ Returns:
 
 ### Module: `tests_runner`
 
-#### `run_tests(spec_path)`
+#### `run_tests(spec_path, *, plot_enabled=None)`
 Run regression tests and compare results to the benchmark.
 
 Args:
 
 - `spec_path`: path to `specs/tests_*.yaml`.
+
+- `plot_enabled`: optional per-run override for `pynnlf_config.yaml`.
 
 Returns:
 
@@ -374,7 +386,7 @@ Returns:
 
 - `str`: folder name.
 
-#### `prepare_directory(path_result, dataset_file, forecast_horizon, model_name, hyperparameter_no, hyperparameter_dict)`
+#### `prepare_directory(path_result, dataset_file, forecast_horizon, model_name, hyperparameter_no, hyperparameter_dict, *, plot_enabled)`
 Create experiment folders and file paths for outputs.
 
 Args:
@@ -390,6 +402,8 @@ Args:
 - `hyperparameter_no`: hyperparameter ID.
 
 - `hyperparameter_dict`: hyperparameter dict.
+
+- `plot_enabled`: whether plot file paths and the `*_cv1_plots/` folder should be created.
 
 Returns:
 
@@ -599,7 +613,7 @@ Args:
 
 - `n_block`: number of blocks.
 
-- `plot_enabled`: plot on/off.
+- `plot_enabled`: whether to write plot PNGs for the first CV fold.
 
 - `plot_style`: plot settings.
 

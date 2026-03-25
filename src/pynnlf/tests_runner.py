@@ -1,16 +1,19 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+import re
 import shutil
+
 import pandas as pd
 
-from .yamlio import load_yaml
-from .runner import run_batch
-from .engine import compute_exp_no  # or keep local helper if you moved it
-import re
 from .recap_experiments import recap_experiments
+from .runner import run_batch
+from .yamlio import load_yaml
+
+
+_EXPERIMENT_DIR_RE = re.compile(r"^E(\d{5})_")
 
 
 def _workspace_root_from_spec(spec_path: Path) -> Path:
@@ -36,15 +39,21 @@ def _find_latest_experiment_dir(output_dir: Path) -> Path:
     Returns:
         Path: latest experiment directory
     """
-    pat = re.compile(r"^E(\d{5})_")
-    dirs = []
-    for p in output_dir.iterdir():
-        if p.is_dir() and pat.match(p.name):
-            dirs.append(p)
+    dirs = _list_experiment_dirs(output_dir)
     if not dirs:
         raise FileNotFoundError(f"No experiment folders found in {output_dir}")
     # newest by modification time
     return max(dirs, key=lambda x: x.stat().st_mtime)
+
+
+def _list_experiment_dirs(output_dir: Path) -> list[Path]:
+    if not output_dir.exists():
+        return []
+    dirs = []
+    for p in output_dir.iterdir():
+        if p.is_dir() and _EXPERIMENT_DIR_RE.match(p.name):
+            dirs.append(p)
+    return sorted(dirs, key=lambda x: x.stat().st_mtime)
 
 
 def _load_benchmark_csv(workspace_root: Path, benchmark_rel: str) -> pd.DataFrame:
@@ -153,7 +162,7 @@ def _run_recap_smoke(output_dir: Path) -> list[str]:
     return warnings
 
 
-def run_tests(spec_path: str | Path) -> Path:
+def run_tests(spec_path: str | Path, *, plot_enabled: bool | None = None) -> Path:
     """
     Run regression tests described by specs/tests_ci.yaml or specs/tests_full.yaml.
 
@@ -172,8 +181,11 @@ def run_tests(spec_path: str | Path) -> Path:
 
     tests = load_yaml(spec_path)
     cfg = load_yaml(ws / "specs" / "pynnlf_config.yaml")
+    if plot_enabled is not None:
+        cfg.setdefault("plot", {})["enabled"] = bool(plot_enabled)
 
     output_dir = ws / cfg["paths"]["output_dir"]
+    existing_exp_dir_names = {p.name for p in _list_experiment_dirs(output_dir)}
 
     # 1) Run experiments (reuse batch runner)
     # Build a temporary batch spec in-memory and write to a temp yaml in specs/
@@ -193,7 +205,7 @@ def run_tests(spec_path: str | Path) -> Path:
         encoding="utf-8"
     )
 
-    run_batch(tmp_batch)
+    run_batch(tmp_batch, plot_enabled=plot_enabled)
 
     recap_warnings = _run_recap_smoke(output_dir)
     for w in recap_warnings:
@@ -211,9 +223,7 @@ def run_tests(spec_path: str | Path) -> Path:
     # 3) For each newly created experiment folder, read a3 and compare metrics
     # NOTE: simplest approach: compare using latest experiment folder repeatedly.
     # Since run_batch creates multiple experiment folders, we scan all new ones.
-    pat = re.compile(r"^E(\d{5})_")
-    exp_dirs = sorted([p for p in output_dir.iterdir() if p.is_dir() and pat.match(p.name)],
-                      key=lambda x: x.stat().st_mtime)
+    exp_dirs = [p for p in _list_experiment_dirs(output_dir) if p.name not in existing_exp_dir_names]
 
     report_rows = []
 

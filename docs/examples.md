@@ -1,18 +1,32 @@
 # User Input
 Suppose we perform a simple test using a YAML spec and the Python API. This should take less than 1 minute for the example below.
 
-Example `specs/experiment.yaml`:
-```
+Example `example_project/specs/experiment.yaml`:
+
+```yaml
 dataset: ds0
-forecast_horizon: fh1   # fh1 = 30 minutes ahead, fh9 = 2 days ahead
+forecast_horizon: fh1  # fh1 = 30 minutes ahead, fh9 = 2 days ahead
 model: m6
 hyperparameter: hp1
 ```
 
-Run the experiment:
-On macOS, use `python3 -c` if `python -c` is not available.
+Run the experiment in Python. On macOS, start Python with `python3` if `python` is not available.
+
+```python
+import pynnlf
+
+pynnlf.run_experiment("example_project/specs/experiment.yaml")
 ```
-python -c "import pynnlf; pynnlf.run_experiment('my_project/specs/experiment.yaml')"
+
+To skip plot generation and save storage:
+
+```python
+import pynnlf
+
+pynnlf.run_experiment(
+    "example_project/specs/experiment.yaml",
+    plot_enabled=False,
+)
 ```
 
 # Output
@@ -22,7 +36,7 @@ The tool generates the following outputs.
 |-----------------------------|--------|------------------------------------------------------------|
 | `E00001_cv_test/`           | Folder | Time series of observation, forecast, and residual for each cross-validation split |
 | `E00001_cv_train/`          | Folder | Time series of observation, forecast, and residual for each cross-validation split |
-| `E00001_cv1_plots/`         | Folder | Plots for the first cross-validation fold: time plot, scatter plot, residual plot, histogram |
+| `E00001_cv1_plots/`         | Folder | Optional folder with plots for the first cross-validation fold when plot generation is enabled |
 | `E00001_models/`            | Folder | Saved models used or generated during the experiment      |
 | `E00001_a1_experiment_result.csv` | File   | Accuracy (cross-validated test n-RMSE), stability, and training time |
 | `E00001_a2_hyperparameter.csv`    | File   | Hyperparameters used for each model                        |
@@ -55,7 +69,7 @@ The file `a3_cross_validation_result.csv` provides the detailed cross-validation
 | **stddev**| 33.2319    | 0         | 0.0693    | 0.2064     | 2.4352     | 0.00591    | 0.6866       | 0.00048  | 0.8405   | 0.5983   | 1.8273    | 21.106    | 0.02059   | 6.5729      | 0.00447 | 0.03552     | 0.31443    |
 
 
-Below are some plots on the test set:
+Below are some plots on the test set. These images are written only when plot generation is enabled:
 
 | ![Time Plot](img/E00001_c1_test_timeplot.png) | ![Scatter Plot](img/E00001_c2_test_scatterplot.png) |
 |:---:|:---:|

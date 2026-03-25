@@ -96,7 +96,16 @@ def compute_folder_name(experiment_no_str, dataset_file, forecast_horizon, model
     )
     return folder_name
 
-def prepare_directory(path_result, dataset_file, forecast_horizon, model_name, hyperparameter_no, hyperparameter_dict):
+def prepare_directory(
+    path_result,
+    dataset_file,
+    forecast_horizon,
+    model_name,
+    hyperparameter_no,
+    hyperparameter_dict,
+    *,
+    plot_enabled,
+):
     """
     Create experiment folders and filepaths for exports.
 
@@ -127,31 +136,48 @@ def prepare_directory(path_result, dataset_file, forecast_horizon, model_name, h
     path_result2 = path_result + folder_name +'/'
     path_result_train = path_result2 + cv_folder_train +'/'
     path_result_test = path_result2 + cv_folder_test +'/'
-    path_result_plot = path_result2 + cv1_plot_folder +'/'
+    path_result_plot = path_result2 + cv1_plot_folder +'/' if plot_enabled else None
     path_model = path_result2 + folder_model +'/'
 
     # MAKE FOLDERS
     os.makedirs(path_result2, exist_ok=False)
     os.mkdir(path_result_train)
     os.mkdir(path_result_test)
-    os.mkdir(path_result_plot)
     os.mkdir(path_model)
+    if path_result_plot is not None:
+        os.mkdir(path_result_plot)
+
+    plot_filepaths = {
+        'b1': None,
+        'b2': None,
+        'b3': None,
+        'b4': None,
+        'b5': None,
+        'c1': None,
+        'c2': None,
+        'c3': None,
+        'c4': None,
+        'c5': None,
+    }
+    if path_result_plot is not None:
+        plot_filepaths.update({
+            'b1' : path_result_plot + experiment_no_str + '_b1_train_timeplot.png',
+            'b2' : path_result_plot + experiment_no_str + '_b2_train_scatterplot.png',
+            'b3' : path_result_plot + experiment_no_str + '_b3_train_residual_timeplot.png',
+            'b4' : path_result_plot + experiment_no_str + '_b4_train_residual_histogram.png',
+            'b5' : path_result_plot + experiment_no_str + '_b5_train_learningcurve.png',
+            'c1' : path_result_plot + experiment_no_str + '_c1_test_timeplot.png',
+            'c2' : path_result_plot + experiment_no_str + '_c2_test_scatterplot.png',
+            'c3' : path_result_plot + experiment_no_str + '_c3_test_residual_timeplot.png',
+            'c4' : path_result_plot + experiment_no_str + '_c4_test_residual_histogram.png',
+            'c5' : path_result_plot + experiment_no_str + '_c5_test_learningcurve.png',
+        })
 
     # MAKE FILE PATH
     filepath = {
         'a1' : path_result2 + experiment_no_str + '_a1_experiment_result.csv',
         'a2' : path_result2 + experiment_no_str + '_a2_hyperparameter.csv',
         'a3' : path_result2 + experiment_no_str + '_a3_cross_validation_result.csv',
-        'b1' : path_result_plot + experiment_no_str + '_b1_train_timeplot.png', # Time Plot of Forecast vs Observation
-        'b2' : path_result_plot + experiment_no_str + '_b2_train_scatterplot.png', # Scatter Plot of Forecast vs Observation
-        'b3' : path_result_plot + experiment_no_str + '_b3_train_residual_timeplot.png', # Time Plot of Residual
-        'b4' : path_result_plot + experiment_no_str + '_b4_train_residual_histogram.png', # Histogram of Residual
-        'b5' : path_result_plot + experiment_no_str + '_b5_train_learningcurve.png', # Learning Curve vs Epoch
-        'c1' : path_result_plot + experiment_no_str + '_c1_test_timeplot.png',  # Time Plot of Forecast vs Observation
-        'c2' : path_result_plot + experiment_no_str + '_c2_test_scatterplot.png',  # Scatter Plot of Forecast vs Observation
-        'c3' : path_result_plot + experiment_no_str + '_c3_test_residual_timeplot.png',  # Time Plot of Residual
-        'c4' : path_result_plot + experiment_no_str + '_c4_test_residual_histogram.png',  # Histogram of Residual
-        'c5' : path_result_plot + experiment_no_str + '_c5_test_learningcurve.png',  # Learning Curve vs Epoch
         
         # B. FOLDER FOR CROSS VALIDATION TIME SERIES
         'train_cv' : {
@@ -193,6 +219,7 @@ def prepare_directory(path_result, dataset_file, forecast_horizon, model_name, h
             10 : path_model + experiment_no_str + '_cv10_model.pkl'
         }
     }
+    filepath.update(plot_filepaths)
     return hyperparameter,experiment_no_str, filepath
 
 def export_result(filepath, df_a1_result, cross_val_result_df, hyperparameter):
@@ -870,6 +897,7 @@ def run_experiment_engine(
         model_name,
         hyperparameter_no,
         hyperparameter,
+        plot_enabled=bool(config["plot"]["enabled"]),
     )
 
     # data prep

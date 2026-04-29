@@ -10,7 +10,9 @@ import dill # for saving trained model
 import importlib.util
 from pathlib import Path   
 import re
- 
+
+from .reproducibility import apply_reproducibility_config
+
 
 
 # # FOLDER PREPARATION
@@ -627,6 +629,8 @@ def run_model(
     n_block,
     plot_enabled,
     plot_style,
+    run_seed=None,
+    seed_keys_overridden=None,
 ):
     """
     Run CV loop, train model, forecast, export outputs.
@@ -649,6 +653,8 @@ def run_model(
         n_block (int): k + 1
         plot_enabled (bool): plot on/off
         plot_style (dict): colors + font
+        run_seed (int | None): central run seed from config
+        seed_keys_overridden (list[str] | None): seed-like hp keys forced to run_seed
 
     Returns:
         None
@@ -812,6 +818,8 @@ def run_model(
         "hyperparameter_no": hyperparameter_no,
         "model_name": model_name + '_' + hyperparameter_no,
         "hyperparamter": ', '.join(f"{k}: {v}" for k, v in hyperparameter.items()),  
+        "run_seed": run_seed if run_seed is not None else "",
+        "seed_keys_overridden": ", ".join(seed_keys_overridden or []),
         "runtime_ms": cross_val_result_df.loc['mean', 'runtime_ms'],
         "train_RMSE": cross_val_result_df.loc['mean', 'train_RMSE'],
         "train_RMSE_stddev": cross_val_result_df.loc['stddev', 'train_RMSE'],
@@ -877,6 +885,10 @@ def run_experiment_engine(
     """
     dataset_path = Path(dataset_path)
     dataset_file = dataset_path.name
+    hyperparameter, run_seed, seed_keys_overridden = apply_reproducibility_config(
+        config,
+        hyperparameter,
+    )
 
     # CV config
     k = int(config["cv"]["k"])
@@ -928,6 +940,8 @@ def run_experiment_engine(
         n_block=n_block,
         plot_enabled=bool(config["plot"]["enabled"]),
         plot_style=config["plot"],
+        run_seed=run_seed,
+        seed_keys_overridden=seed_keys_overridden,
     )
 
 # # PERFORMANCE COMPUTATION

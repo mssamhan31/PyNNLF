@@ -23,6 +23,8 @@ Create a new `.py` file under your workspace `models` folder. The file name must
 
 You can start from the template file `models/mXX_template.py` in your workspace.
 
+If the model uses randomness, use a standard seed-like hyperparameter key such as `seed`, `random_seed`, or `random_state`. PyNNLF can override these keys from the central `reproducibility.seed` value in `specs/pynnlf_config.yaml` so experiments remain comparable.
+
 ### 2. Add hyperparameters for the new model
 
 Add a new top-level key in `example_project/models/hyperparameters.yaml`. The key must match the full model file stem, for example `m19_my_model`.

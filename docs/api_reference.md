@@ -420,7 +420,7 @@ Args:
 
 - `cross_val_result_df`: a3 cross-validation dataframe.
 
-- `hyperparameter`: hyperparameter dict.
+- `hyperparameter`: effective hyperparameter dict used for the run.
 
 Returns:
 
@@ -616,6 +616,10 @@ Args:
 - `plot_enabled`: whether to write plot PNGs for the first CV fold.
 
 - `plot_style`: plot settings.
+
+- `run_seed`: optional central run seed recorded in `a1`.
+
+- `seed_keys_overridden`: optional seed-like hyperparameter keys overridden to `run_seed`.
 
 Returns:
 

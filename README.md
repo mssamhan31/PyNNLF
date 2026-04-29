@@ -5,6 +5,8 @@ This tool evaluates net load forecasting models aiming to make new net load fore
 
 It also allows users to add datasets, models, and modify hyperparameters. Researchers claiming a new or superior model can compare their model with existing ones on public datasets. The target audience includes researchers in academia or industry focused on evaluating and optimizing net load forecasting models.
 
+For worked guidance, see the documentation on [how to add a model](https://mssamhan31.github.io/PyNNLF/add_model/) and [how to modify model hyperparameters](https://mssamhan31.github.io/PyNNLF/modify_hyper/).
+
 A visual illustration of the tool workflow is shown below.
 
 ![Home Illustration](./docs/img/home_illustration.png)
@@ -14,8 +16,8 @@ A visual illustration of the tool workflow is shown below.
 2. **Model Specification**: model and hyperparameters defined in `example_project/specs/experiment.yaml`.
 
 # Output
-1. `a1_experiment_result.csv` - Contains accuracy (cross-validated test n-RMSE), stability (accuracy standard deviation), and training time.
-2. `a2_hyperparameter.csv` - Lists the hyperparameters used for each model.
+1. `a1_experiment_result.csv` - Contains accuracy (cross-validated test n-RMSE), stability (accuracy standard deviation), training time, and the run seed.
+2. `a2_hyperparameter.csv` - Lists the effective hyperparameters used for each model.
 3. `a3_cross_validation_result.csv` - Detailed results for each cross-validation split.
 4. `E00001_cv1_plots/` - Optional plot folder for the first CV fold when plot generation is enabled.
 5. `cv_test/` and `cv_train/` - Folders containing time series of observations, forecasts, and residuals for each cross-validation split.

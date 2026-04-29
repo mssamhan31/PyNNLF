@@ -3,6 +3,9 @@ paths:
   output_dir: experiment_result
   hyperparameters_path: models/hyperparameters.yaml
 
+reproducibility:
+  seed: 99
+
 dataset_download:
   base_url: "https://raw.githubusercontent.com/mssamhan31/PyNNLF/main/data/"
 

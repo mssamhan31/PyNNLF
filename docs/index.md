@@ -8,6 +8,8 @@ This tool evaluates net load forecasting models reliably and reproducibly. It in
 
 It also allows users to add datasets, models, and modify hyperparameters. Researchers claiming a new or superior model can compare their model with existing ones on public datasets. The target audience includes researchers in academia or industry focused on evaluating and optimizing net load forecasting models.
 
+For worked guidance, see [How to add a model](add_model.md) and [How to modify model hyperparameter](modify_hyper.md).
+
 A visual illustration of the tool workflow is shown below.
 ![Home Illustration](img/home_illustration.png)
 
@@ -16,8 +18,8 @@ A visual illustration of the tool workflow is shown below.
 2. **Model Specification**: model and hyperparameters defined in `example_project/specs/experiment.yaml`.
 
 # Output
-1. `a1_experiment_result.csv` - Contains accuracy (cross-validated test n-RMSE), stability (accuracy stddev), and training time.
-2. `a2_hyperparameter.csv` - Lists hyperparameters used for each model.
+1. `a1_experiment_result.csv` - Contains accuracy (cross-validated test n-RMSE), stability (accuracy stddev), training time, and the run seed.
+2. `a2_hyperparameter.csv` - Lists effective hyperparameters used for each model.
 3. `a3_cross_validation_result.csv` - Detailed results for each cross-validation split.
 4. `E00001_cv1_plots/` - Optional plot folder for the first CV fold when plot generation is enabled.
 5. `cv_test/` and `cv_train/` - Folders containing time series of observation, forecast, and residuals for each cross-validation split.

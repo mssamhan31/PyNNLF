@@ -38,17 +38,17 @@ The tool generates the following outputs.
 | `E00001_cv_train/`          | Folder | Time series of observation, forecast, and residual for each cross-validation split |
 | `E00001_cv1_plots/`         | Folder | Optional folder with plots for the first cross-validation fold when plot generation is enabled |
 | `E00001_models/`            | Folder | Saved models used or generated during the experiment      |
-| `E00001_a1_experiment_result.csv` | File   | Accuracy (cross-validated test n-RMSE), stability, and training time |
-| `E00001_a2_hyperparameter.csv`    | File   | Hyperparameters used for each model                        |
+| `E00001_a1_experiment_result.csv` | File   | Accuracy (cross-validated test n-RMSE), stability, training time, and run seed |
+| `E00001_a2_hyperparameter.csv`    | File   | Effective hyperparameters used for each model              |
 | `E00001_a3_cross_validation_result.csv` | File | Detailed results for each cross-validation split          |
 
-The file `a1_experiment_result.csv` summarises the results, including the cross validated nRMSE & its standard deviation.
+The file `a1_experiment_result.csv` summarises the results, including the cross validated nRMSE, its standard deviation, `run_seed`, and `seed_keys_overridden`.
 
 To aggregate multiple experiments into one recap, run `recap_experiments` to write a workspace-level `a1_experiment_result.csv` that includes the `experiment_folder` column.
 
-| experiment_no | exp_date   | dataset_no | dataset | dataset_freq_min | dataset_length_week | forecast_horizon_min | train_pct | test_pct | model_no | hyperparameter_no | model_name   | hyperparameter       | runtime_ms  | train_RMSE | train_RMSE_stddev | test_RMSE | test_RMSE_stddev | train_nRMSE | train_nRMSE_stddev | test_nRMSE | test_nRMSE_stddev |
-|---------------|-----------|------------|--------|----------------|-------------------|--------------------|-----------|----------|----------|-----------------|-------------|--------------------|------------|------------|-----------------|-----------|-----------------|------------|------------------|------------|------------------|
-| E00001        | 15/09/2025 | ds0       | test   | 30             | 10                | 30                 | 0.9       | 0.1      | m6       | hp1             | m6_lr_hp1   | num_features: 50   | 201.769185 | 17.33      | 0.206421         | 17.7066   | 1.82726         | 2.98206    | 0.03552          | 3.04686    | 0.31443          |
+| experiment_no | exp_date   | dataset_no | dataset | dataset_freq_min | dataset_length_week | forecast_horizon_min | train_pct | test_pct | model_no | hyperparameter_no | model_name   | hyperparameter       | run_seed | seed_keys_overridden | runtime_ms  | train_RMSE | train_RMSE_stddev | test_RMSE | test_RMSE_stddev | train_nRMSE | train_nRMSE_stddev | test_nRMSE | test_nRMSE_stddev |
+|---------------|-----------|------------|--------|----------------|-------------------|--------------------|-----------|----------|----------|-----------------|-------------|--------------------|----------|----------------------|------------|------------|-----------------|-----------|-----------------|------------|------------------|------------|------------------|
+| E00001        | 15/09/2025 | ds0       | test   | 30             | 10                | 30                 | 0.9       | 0.1      | m6       | hp1             | m6_lr_hp1   | num_features: 50   | 99       |                      | 201.769185 | 17.33      | 0.206421         | 17.7066   | 1.82726         | 2.98206    | 0.03552          | 3.04686    | 0.31443          |
 
 The file `a3_cross_validation_result.csv` provides the detailed cross-validation (CV) results, from CV1 to CV10.
 # Experiment Metrics

@@ -4,6 +4,8 @@ All hyperparameter values are stored separately from the model code in `models/h
 
 This design avoids hard-coded values and provides a central place to manage model settings.
 
+The workspace config also includes `reproducibility.seed` in `specs/pynnlf_config.yaml`. When this value is set, PyNNLF seeds common random number generators and overrides seed-like hyperparameter keys such as `seed`, `xgb_seed`, `random_seed`, and `random_state` at runtime. The experiment summary records the central seed in `a1_experiment_result.csv`, and `a2_hyperparameter.csv` records the effective hyperparameters used for the run.
+
 ## Format
 
 PyNNLF expects a YAML mapping:

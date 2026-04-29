@@ -39,3 +39,6 @@ build/
 
 # --- Site ---
 site/
+
+# --- Other ---
+ignored_from_git

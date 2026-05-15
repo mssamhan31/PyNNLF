@@ -45,9 +45,12 @@ This dataset has been widely used in net load forecasting research since 2016. I
 
 | Dataset Name | Description |
 | --- | --- |
-| `ds1_ahsd.csv` | Ausgrid Solar Home Dataset, aggregate of 300 household data in Ausgrid network |
+| `ds1_ashd.csv` | Ausgrid Solar Home Dataset, aggregate of 300 household data in Ausgrid network |
 | `ds4_ashd_with_weather.csv` | `ds1` enhanced with temperature, relative humidity, and wind speed data |
 | `ds13_ashd_with_cloud_solcast.csv` | `ds4` further enriched with cloud data from Solcast |
+| `ds19_ashd_148hh.csv` | ASHD aggregate of the 148 households nearest to Sydney Airport, selected by postcode-centroid distance |
+| `ds20_ashd_148hh_with_weather.csv` | `ds19` enhanced with Sydney Airport temperature, relative humidity, and wind speed data |
+| `ds21_ashd_148hh_with_weather_cloud_solcast.csv` | `ds20` further enriched with Sydney Airport Solcast cloud opacity data |
 
 ### Australia Energy Data Platform (AEDP) Datasets
 These datasets were compiled by UNSW Sydney using data from Solar Analytics and Wattwatchers. Sensitive information such as customer addresses, names, and NMIs has been removed. The original source is [here](https://darth.engineering.unsw.edu.au/).

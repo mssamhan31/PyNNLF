@@ -1,0 +1,13 @@
+model_hp,ASHD,AEDP
+xgb_hp1,6.1,17.8
+dnn_hp1,7.7,20.4
+lr_hp1,7.8,21.0
+rf_hp1,8.5,21.9
+ann_hp1,8.1,20.4
+naive_hp1,9.1,24.3
+ets_hp1,9.1,24.2
+rt_hp3,10.1,26.3
+lstm_hp2,9.9,25.9
+snaive_hp2,11.0,30.0
+prophet_hp1,9.2,33.4
+arima_hp1,16.2,37.0

@@ -96,7 +96,7 @@ def build_publication_tables(workspace_dir: str | Path | None = None) -> tuple[p
     """Create nRMSE and nRMSE standard-deviation comparison CSVs."""
 
     workspace = _workspace_path(workspace_dir)
-    results_dir = workspace / "results"
+    results_dir = workspace / "results" / "00_data_exploration_and_processing"
     results_dir.mkdir(parents=True, exist_ok=True)
 
     recap = _normalise_recap(load_recap(workspace))

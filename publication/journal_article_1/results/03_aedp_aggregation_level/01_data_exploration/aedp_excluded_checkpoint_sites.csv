@@ -1,0 +1,10 @@
+edp_site_id,raw_5min_points,status,first_raw_datetime,last_raw_datetime,native_missing_before_ffill,native_missing_after_ffill,checkpoint_rows,checkpoint_path,postcode,state,lat_deg,long_deg,date_of_first_data,date_of_last_data,number_of_days
+S0358,82329,excluded_leading_missing_after_ffill,2021-09-05 14:40:00,2024-06-30 07:15:00,233319,19184,0,,2325,NSW,-32.8887,151.2832,2019-01-01,2024-08-02,2040
+S0156,0,excluded_no_ac_load_net_rows,,,315648,,0,,2142,NSW,-33.8197,151.0264,2019-04-08,2024-08-30,1971
+S0162,0,excluded_no_ac_load_net_rows,,,315648,,0,,2073,NSW,-33.7439,151.1419,2019-01-01,2024-08-30,2069
+S0195,0,excluded_no_ac_load_net_rows,,,315648,,0,,2752,NSW,-33.9152,150.6096,2019-01-01,2024-08-30,2069
+S0137,198450,excluded_leading_missing_after_ffill,2022-08-09 16:35:00,2024-06-30 23:55:00,117198,116551,0,,2234,NSW,-34.0341,151.0119,2019-01-01,2024-09-30,2100
+S0075,280620,excluded_leading_missing_after_ffill,2021-10-27 14:15:00,2024-06-30 23:55:00,35028,34155,0,,2567,NSW,-34.0434,150.7324,2018-01-01,2024-09-30,2465
+W0231,0,excluded_no_ac_load_net_rows,,,315648,,0,,2155,NSW,-33.6999,150.9411,2021-03-11,2024-09-30,1299
+S0167,17534,excluded_leading_missing_after_ffill,2024-04-01 00:00:00,2024-05-31 23:55:00,298114,289440,0,,2233,NSW,-34.0535,151.0356,2021-03-03,2024-09-30,1308
+S0081,235957,excluded_leading_missing_after_ffill,2022-04-01 11:00:00,2024-06-30 23:55:00,79691,79044,0,,2233,NSW,-34.0535,151.0356,2018-01-01,2024-09-30,2465

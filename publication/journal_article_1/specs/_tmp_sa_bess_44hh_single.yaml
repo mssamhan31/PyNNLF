@@ -1,0 +1,7 @@
+datasets:
+- ds22
+forecast_horizons:
+- fh8
+model_and_hp:
+- - m13
+  - hp2

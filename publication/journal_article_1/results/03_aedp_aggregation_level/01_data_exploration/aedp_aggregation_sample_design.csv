@@ -1,0 +1,13 @@
+dataset_id,dataset_no,aggregation_level_hh,sample_no,sample_label,filename,unique_households,total_household_weight
+ds25,25,1,1,1hh_sample01,ds25_aedp_1hh_sample01_30min_with_weather.csv,1,1
+ds26,26,1,2,1hh_sample02,ds26_aedp_1hh_sample02_30min_with_weather.csv,1,1
+ds27,27,1,3,1hh_sample03,ds27_aedp_1hh_sample03_30min_with_weather.csv,1,1
+ds28,28,10,1,10hh_sample01,ds28_aedp_10hh_sample01_30min_with_weather.csv,10,10
+ds29,29,10,2,10hh_sample02,ds29_aedp_10hh_sample02_30min_with_weather.csv,10,10
+ds30,30,10,3,10hh_sample03,ds30_aedp_10hh_sample03_30min_with_weather.csv,10,10
+ds31,31,100,1,100hh_sample01,ds31_aedp_100hh_sample01_30min_with_weather.csv,100,100
+ds32,32,100,2,100hh_sample02,ds32_aedp_100hh_sample02_30min_with_weather.csv,100,100
+ds33,33,100,3,100hh_sample03,ds33_aedp_100hh_sample03_30min_with_weather.csv,100,100
+ds34,34,1000,1,1000hh_sample01,ds34_aedp_1000hh_sample01_30min_with_weather.csv,139,1000
+ds35,35,1000,2,1000hh_sample02,ds35_aedp_1000hh_sample02_30min_with_weather.csv,139,1000
+ds36,36,1000,3,1000hh_sample03,ds36_aedp_1000hh_sample03_30min_with_weather.csv,139,1000

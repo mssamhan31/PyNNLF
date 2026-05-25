@@ -1,0 +1,7 @@
+datasets:
+- ds36
+forecast_horizons:
+- fh8
+model_and_hp:
+- - m17
+  - hp1

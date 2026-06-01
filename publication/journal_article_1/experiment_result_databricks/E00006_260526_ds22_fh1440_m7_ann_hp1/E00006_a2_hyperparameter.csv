@@ -1,0 +1,7 @@
+,hyperparameter,value
+0,seed,99
+1,hidden_size,10
+2,activation_function,relu
+3,learning_rate,0.001
+4,solver,adam
+5,epochs,500

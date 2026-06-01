@@ -40,5 +40,9 @@ build/
 # --- Site ---
 site/
 
+# --- Unimoprtant Model Artifcats ---
+publication/journal_article_1/experiment_result_databricks/**/E*models/
+publication/journal_article_1/experiment_result_databricks/**/*.pkl
+
 # --- Other ---
 ignored_from_git

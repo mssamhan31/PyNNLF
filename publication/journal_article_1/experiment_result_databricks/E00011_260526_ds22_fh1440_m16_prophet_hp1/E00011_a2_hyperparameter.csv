@@ -1,0 +1,7 @@
+,hyperparameter,value
+0,seed,1
+1,seasonality_prior_scale,10
+2,seasonality_mode,additive
+3,weekly_seasonality,True
+4,daily_seasonality,True
+5,growth,linear

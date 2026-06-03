@@ -1,35 +1,129 @@
-# Welcome to PyNNLF
-PyNNLF (Python for Network Net Load Forecast) is a tool to evaluate net load forecasting model performance in a reliable and reproducible way.
+---
+hide:
+  - navigation
+  - toc
+---
 
-You can access the [GitHub repository here](https://github.com/mssamhan31/PyNNLF).
+<section class="pynnlf-landing">
+  <header class="pynnlf-hero">
+    <p class="pynnlf-eyebrow">PyNNLF</p>
+    <h1>Reliable net load forecasting evaluation, not just another new model.</h1>
+    <p class="pynnlf-hero__lead">
+      PyNNLF is an open-source Python tool for comparing net load forecasting models with public datasets, simple benchmarks, cross-validation, and reproducible experiment outputs.
+    </p>
+    <div class="pynnlf-actions">
+      <a class="pynnlf-button pynnlf-button--primary" href="getting_started/">Install PyNNLF</a>
+      <a class="pynnlf-button" href="examples/">Read the docs</a>
+      <a class="pynnlf-button" href="https://github.com/mssamhan31/PyNNLF">GitHub</a>
+    </div>
+  </header>
 
-# Objective
-This tool evaluates net load forecasting models reliably and reproducibly. It includes a library of public net load datasets and common forecasting models, including simple benchmark models. Users define the forecast problem and model specification in a YAML spec and run experiments through the Python package.
+  <section class="pynnlf-section pynnlf-problem">
+    <div class="pynnlf-section__intro">
+      <p class="pynnlf-eyebrow">The research issue</p>
+      <h2>Many papers claim superior forecasting accuracy. Fewer make the comparison easy to trust.</h2>
+      <p>
+        Since 2016, more than 102 academic papers have been published on net load forecasting. At least 84 introduced a novel method. However, many papers did not use simple benchmark models, relied on private datasets, or did not publicly share implementation code.
+      </p>
+    </div>
 
-It also allows users to add datasets, models, and modify hyperparameters. Researchers claiming a new or superior model can compare their model with existing ones on public datasets. The target audience includes researchers in academia or industry focused on evaluating and optimizing net load forecasting models.
+    <div class="pynnlf-quote-stack">
+      <figure>
+        <blockquote>&ldquo;&hellip; and it is concluded that the proposed method has higher prediction accuracy and better prediction effect &hellip;&rdquo;</blockquote>
+        <figcaption>[1] Cao et al., 2023</figcaption>
+      </figure>
+      <figure>
+        <blockquote>&ldquo;Comparative tests utilizing real-world data verify the superiority of the proposed method over other state-of-the-art net load forecasting algorithms.&rdquo;</blockquote>
+        <figcaption>[2] Hu et al., 2024</figcaption>
+      </figure>
+      <figure>
+        <blockquote>&ldquo;More-over, the performance of the BDLSTM model also dominates when compared with the best of the state-of-the-art methods, &hellip;&rdquo;</blockquote>
+        <figcaption>[3] Sun et al., 2020</figcaption>
+      </figure>
+    </div>
+  </section>
 
-For worked guidance, see [How to add a model](add_model.md) and [How to modify model hyperparameter](modify_hyper.md).
+  <section class="pynnlf-section">
+    <div class="pynnlf-stat-grid" aria-label="Literature review summary facts">
+      <div>
+        <strong>102+</strong>
+        <span>net load forecasting papers since 2016</span>
+      </div>
+      <div>
+        <strong>84</strong>
+        <span>introduced a novel method</span>
+      </div>
+      <div>
+        <strong>75%</strong>
+        <span>did not compare with naive or seasonal naive benchmarks</span>
+      </div>
+      <div>
+        <strong>58%</strong>
+        <span>did not use a publicly available dataset</span>
+      </div>
+      <div>
+        <strong>94%+</strong>
+        <span>did not make their code publicly available</span>
+      </div>
+    </div>
+  </section>
 
-A visual illustration of the tool workflow is shown below.
-![Home Illustration](img/home_illustration.png)
+  <section class="pynnlf-section pynnlf-solution">
+    <div class="pynnlf-section__intro">
+      <p class="pynnlf-eyebrow">The tool</p>
+      <h2>PyNNLF turns model comparison into a repeatable workflow.</h2>
+      <p>
+        Users define the forecast problem and model specification in a YAML file. PyNNLF prepares the data, creates lag and calendar features, runs cross-validation, and stores the result using a consistent output structure.
+      </p>
+    </div>
+    <div class="pynnlf-workflow">
+      <span>Dataset</span>
+      <span>Forecast horizon</span>
+      <span>Model and hyperparameters</span>
+      <span>Cross-validated outputs</span>
+    </div>
+  </section>
 
-# Input
-1. **Forecast Target**: dataset and forecast horizon defined in `example_project/specs/experiment.yaml`.
-2. **Model Specification**: model and hyperparameters defined in `example_project/specs/experiment.yaml`.
+  <section class="pynnlf-section pynnlf-capability">
+    <p class="pynnlf-eyebrow">What it outputs</p>
+    <h2>Accuracy, stability, runtime, plots, and trained models in one experiment folder.</h2>
+    <div class="pynnlf-capability-grid">
+      <article>
+        <h3>Accuracy</h3>
+        <p>Train and test errors, including RMSE and nRMSE.</p>
+      </article>
+      <article>
+        <h3>Stability</h3>
+        <p>Cross-validation standard deviation to show whether performance is consistent.</p>
+      </article>
+      <article>
+        <h3>Runtime</h3>
+        <p>Training time so accuracy can be weighed against computational cost.</p>
+      </article>
+      <article>
+        <h3>Reproducibility</h3>
+        <p>Fold-level forecasts, residuals, trained models, and recap files.</p>
+      </article>
+    </div>
+  </section>
 
-# Output
-1. `a1_experiment_result.csv` - Contains accuracy (cross-validated test n-RMSE), stability (accuracy stddev), training time, and the run seed.
-2. `a2_hyperparameter.csv` - Lists effective hyperparameters used for each model.
-3. `a3_cross_validation_result.csv` - Detailed results for each cross-validation split.
-4. `E00001_cv1_plots/` - Optional plot folder for the first CV fold when plot generation is enabled.
-5. `cv_test/` and `cv_train/` - Folders containing time series of observation, forecast, and residuals for each cross-validation split.
-6. `experiment_result/a1_experiment_result.csv` - Optional recap across multiple experiments generated by `recap_experiments`.
+  <section class="pynnlf-section pynnlf-install">
+    <div>
+      <p class="pynnlf-eyebrow">Use it</p>
+      <h2>Install PyNNLF with pip and run an experiment from a YAML spec.</h2>
+    </div>
+    <div class="pynnlf-code-pair">
+      <pre><code>python -m pip install pynnlf</code></pre>
+      <pre><code>import pynnlf
 
-To skip plot generation and save storage, pass `plot_enabled=False` to `run_experiment(...)`, `run_experiment_batch(...)`, or `run_tests(...)`.
+pynnlf.init("example_project")
+pynnlf.run_experiment("example_project/specs/experiment.yaml")</code></pre>
+    </div>
+  </section>
 
-# Tool Output Naming Convention
-Format:
-`[experiment_no]_[experiment_date]_[dataset]_[forecast_horizon]_[model]_[hyperparameter]`
-
-Example:
-`E00001_250915_ds0_fh30_m6_lr_hp1`
+  <section class="pynnlf-references" aria-label="References">
+    <p>[1] H. Cao, L. Yang, H. Li, K. Wang, Net Power Prediction for High Permeability Distributed Photovoltaic Integration System, J. Phys. Conf. Ser., 2023. <a href="https://doi.org/10.1088/1742-6596/2418/1/012069">https://doi.org/10.1088/1742-6596/2418/1/012069</a>.</p>
+    <p>[2] J. Hu, W. Hu, D. Cao, X. Sun, J. Chen, Y. Huang, Z. Chen, F. Blaabjerg, Probabilistic net load forecasting based on transformer network and Gaussian process-enabled residual modeling learning method, Renew. Energy 225 (2024). <a href="https://doi.org/10.1016/j.renene.2024.120253">https://doi.org/10.1016/j.renene.2024.120253</a>.</p>
+    <p>[3] M. Sun, T. Zhang, Y. Wang, G. Strbac, C. Kang, Using Bayesian Deep Learning to Capture Uncertainty for Residential Net Load Forecasting, IEEE Transactions on Power Systems 35 (2020) 188-201. <a href="https://doi.org/10.1109/TPWRS.2019.2924294">https://doi.org/10.1109/TPWRS.2019.2924294</a>.</p>
+  </section>
+</section>

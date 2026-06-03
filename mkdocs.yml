@@ -1,10 +1,14 @@
-site_name: PyNNLF Documentation
+site_name: PyNNLF
 site_url: https://mssamhan31.github.io/PyNNLF/
 
 theme:
   name: material
   features:
+    - navigation.sections
+    - navigation.top
     - content.code.copy
+extra_css:
+  - assets/css/website.css
 plugins:
   - search
   - mkdocstrings:
@@ -12,12 +16,12 @@ plugins:
         python:
           options:
             show_source: true
-nav: 
+nav:
   - Home: index.md
-  - Getting Started: getting_started.md
-  - Examples: examples.md
-  - Tool Testing: tool_testing.md
-  - Detailed Guide:
+  - Docs:
+      - Getting Started: getting_started.md
+      - Examples: examples.md
+      - Tool Testing: tool_testing.md
       - Datasets & Models: datasets_models.md
       - How to run an experiment: run_experiment.md
       - How to modify model hyperparameter: modify_hyper.md
@@ -25,10 +29,10 @@ nav:
       - How to add a dataset: add_dataset.md
       - Repo structure: repo_structure.md
       - API Reference: api_reference.md
-  - Features & Limitations: features_limitations.md
-  - Acknowledgement & License: ack_license.md
-  - Support & Contributing: support_contributing.md
-  - Contributors: contributors.md
+      - Features & Limitations: features_limitations.md
+      - Acknowledgement & License: ack_license.md
+      - Support & Contributing: support_contributing.md
+      - Contributors: contributors.md
 markdown_extensions:
   - pymdownx.superfences
   - toc:

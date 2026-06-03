@@ -1,0 +1,286 @@
+:root {
+  --pynnlf-ink: #18212a;
+  --pynnlf-muted: #5d6770;
+  --pynnlf-line: #dfe6eb;
+  --pynnlf-soft: #f6f8f9;
+  --pynnlf-teal: #007a78;
+  --pynnlf-teal-dark: #005f5e;
+  --pynnlf-rust: #bd573f;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+  letter-spacing: 0;
+}
+
+.md-typeset .pynnlf-landing {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.md-typeset .pynnlf-hero {
+  min-height: 68vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4.5rem 0 3.5rem;
+  border-bottom: 1px solid var(--pynnlf-line);
+}
+
+.pynnlf-eyebrow {
+  margin: 0 0 0.9rem;
+  color: var(--pynnlf-teal);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.md-typeset .pynnlf-hero h1 {
+  max-width: 920px;
+  margin: 0;
+  color: var(--pynnlf-ink);
+  font-size: clamp(2.5rem, 6vw, 5.6rem);
+  font-weight: 850;
+  line-height: 0.98;
+}
+
+.pynnlf-hero__lead {
+  max-width: 780px;
+  margin: 1.45rem 0 1.7rem;
+  color: var(--pynnlf-muted);
+  font-size: clamp(1.05rem, 2vw, 1.28rem);
+  line-height: 1.65;
+}
+
+.pynnlf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.pynnlf-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.45rem;
+  padding: 0.62rem 1rem;
+  border: 1px solid var(--pynnlf-line);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--pynnlf-ink);
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.pynnlf-button:hover {
+  border-color: var(--pynnlf-teal);
+  color: var(--pynnlf-teal-dark);
+}
+
+.pynnlf-button--primary {
+  border-color: var(--pynnlf-teal);
+  background: var(--pynnlf-teal);
+  color: #fff;
+}
+
+.pynnlf-button--primary:hover {
+  background: var(--pynnlf-teal-dark);
+  color: #fff;
+}
+
+.pynnlf-section {
+  padding: 4rem 0;
+  border-bottom: 1px solid var(--pynnlf-line);
+}
+
+.pynnlf-section__intro {
+  max-width: 840px;
+}
+
+.md-typeset .pynnlf-section h2 {
+  max-width: 900px;
+  margin: 0 0 1rem;
+  color: var(--pynnlf-ink);
+  font-size: clamp(1.85rem, 4vw, 3.35rem);
+  line-height: 1.05;
+  font-weight: 820;
+}
+
+.pynnlf-section p {
+  color: var(--pynnlf-muted);
+  font-size: 1.02rem;
+  line-height: 1.68;
+}
+
+.pynnlf-problem {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
+  gap: 3rem;
+  align-items: start;
+}
+
+.pynnlf-quote-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.pynnlf-quote-stack figure {
+  margin: 0;
+  padding: 1.1rem 1.15rem;
+  border-left: 4px solid var(--pynnlf-rust);
+  background: var(--pynnlf-soft);
+}
+
+.pynnlf-quote-stack blockquote {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  color: var(--pynnlf-ink);
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
+
+.pynnlf-quote-stack figcaption {
+  margin-top: 0.7rem;
+  color: var(--pynnlf-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.pynnlf-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.pynnlf-stat-grid div {
+  padding-top: 0.75rem;
+  border-top: 3px solid var(--pynnlf-teal);
+}
+
+.pynnlf-stat-grid strong {
+  display: block;
+  color: var(--pynnlf-rust);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1;
+}
+
+.pynnlf-stat-grid span {
+  display: block;
+  margin-top: 0.6rem;
+  color: var(--pynnlf-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.pynnlf-solution,
+.pynnlf-install {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(300px, 1.05fr);
+  gap: 3rem;
+  align-items: start;
+}
+
+.pynnlf-workflow {
+  display: grid;
+  gap: 0.8rem;
+  counter-reset: workflow;
+}
+
+.pynnlf-workflow span {
+  counter-increment: workflow;
+  display: grid;
+  grid-template-columns: 2.2rem 1fr;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--pynnlf-line);
+  color: var(--pynnlf-ink);
+  font-weight: 800;
+}
+
+.pynnlf-workflow span::before {
+  content: counter(workflow);
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--pynnlf-teal);
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+.pynnlf-capability-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.6rem;
+}
+
+.pynnlf-capability-grid article {
+  padding: 1rem 0 0;
+  border-top: 1px solid var(--pynnlf-line);
+}
+
+.md-typeset .pynnlf-capability-grid h3 {
+  margin: 0 0 0.5rem;
+  color: var(--pynnlf-ink);
+  font-size: 1rem;
+}
+
+.pynnlf-capability-grid p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.pynnlf-code-pair {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.pynnlf-code-pair pre {
+  margin: 0;
+  border-radius: 4px;
+}
+
+.pynnlf-references {
+  padding: 1.5rem 0 3rem;
+}
+
+.pynnlf-references p {
+  margin: 0.45rem 0;
+  color: var(--pynnlf-muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 1020px) {
+  .pynnlf-stat-grid,
+  .pynnlf-capability-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .md-typeset .pynnlf-hero {
+    min-height: 58vh;
+    padding-top: 3rem;
+  }
+
+  .pynnlf-problem,
+  .pynnlf-solution,
+  .pynnlf-install {
+    grid-template-columns: 1fr;
+    gap: 1.6rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .pynnlf-stat-grid,
+  .pynnlf-capability-grid {
+    grid-template-columns: 1fr;
+  }
+}

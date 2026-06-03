@@ -1,0 +1,4 @@
+Model Name,underlying_load Train nRMSE (%),underlying_load Test nRMSE (%),underlying_load Training Time (s),net_load_with_pv Train nRMSE (%),net_load_with_pv Test nRMSE (%),net_load_with_pv Training Time (s),net_load_with_pv_battery Train nRMSE (%),net_load_with_pv_battery Test nRMSE (%),net_load_with_pv_battery Training Time (s)
+xgb_hp1,1.8,4.9,25.4,4.3,15.9,15.3,5.4,20.4,15.0
+naive_hp1,5.8,5.7,0.0,17.0,16.8,0.0,21.6,21.2,0.0
+arima_hp1,3.7,10.5,1.5,10.4,51.5,2.3,12.1,57.7,1.9

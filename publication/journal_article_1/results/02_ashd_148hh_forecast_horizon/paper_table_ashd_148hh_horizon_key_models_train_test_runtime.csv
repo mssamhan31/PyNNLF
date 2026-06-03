@@ -1,0 +1,4 @@
+Model Name,30 minutes Train nRMSE (%),30 minutes Test nRMSE (%),30 minutes Training Time (s),1 day Train nRMSE (%),1 day Test nRMSE (%),1 day Training Time (s),1 week Train nRMSE (%),1 week Test nRMSE (%),1 week Training Time (s)
+xgb_hp1,1.8,2.6,21.7,2.7,6.1,22.3,2.9,6.6,22.1
+naive_hp1,4.3,4.2,0.0,9.1,9.1,0.0,11.0,10.9,0.0
+arima_hp1,3.7,3.6,2.2,3.7,16.2,2.1,3.7,17.8,2.1

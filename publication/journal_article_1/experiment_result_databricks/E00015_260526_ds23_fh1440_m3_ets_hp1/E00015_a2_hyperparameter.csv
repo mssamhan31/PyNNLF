@@ -1,0 +1,4 @@
+,hyperparameter,value
+0,trend,False
+1,damped_trend,False
+2,seasonal_periods_days,

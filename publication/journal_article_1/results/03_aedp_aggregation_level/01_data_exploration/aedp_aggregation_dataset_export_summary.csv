@@ -1,0 +1,13 @@
+dataset_id,filename,aggregation_level_hh,sample_no,rows,start,end,unique_households,total_household_weight,fill_order
+ds25,ds25_aedp_1hh_sample01_30min_with_weather.csv,1,1,52608,2021-07-01,2024-06-30 23:30:00,1,1,per_household_forward_fill_before_aggregation
+ds26,ds26_aedp_1hh_sample02_30min_with_weather.csv,1,2,52608,2021-07-01,2024-06-30 23:30:00,1,1,per_household_forward_fill_before_aggregation
+ds27,ds27_aedp_1hh_sample03_30min_with_weather.csv,1,3,52608,2021-07-01,2024-06-30 23:30:00,1,1,per_household_forward_fill_before_aggregation
+ds28,ds28_aedp_10hh_sample01_30min_with_weather.csv,10,1,52608,2021-07-01,2024-06-30 23:30:00,10,10,per_household_forward_fill_before_aggregation
+ds29,ds29_aedp_10hh_sample02_30min_with_weather.csv,10,2,52608,2021-07-01,2024-06-30 23:30:00,10,10,per_household_forward_fill_before_aggregation
+ds30,ds30_aedp_10hh_sample03_30min_with_weather.csv,10,3,52608,2021-07-01,2024-06-30 23:30:00,10,10,per_household_forward_fill_before_aggregation
+ds31,ds31_aedp_100hh_sample01_30min_with_weather.csv,100,1,52608,2021-07-01,2024-06-30 23:30:00,100,100,per_household_forward_fill_before_aggregation
+ds32,ds32_aedp_100hh_sample02_30min_with_weather.csv,100,2,52608,2021-07-01,2024-06-30 23:30:00,100,100,per_household_forward_fill_before_aggregation
+ds33,ds33_aedp_100hh_sample03_30min_with_weather.csv,100,3,52608,2021-07-01,2024-06-30 23:30:00,100,100,per_household_forward_fill_before_aggregation
+ds34,ds34_aedp_1000hh_sample01_30min_with_weather.csv,1000,1,52608,2021-07-01,2024-06-30 23:30:00,139,1000,per_household_forward_fill_before_aggregation
+ds35,ds35_aedp_1000hh_sample02_30min_with_weather.csv,1000,2,52608,2021-07-01,2024-06-30 23:30:00,139,1000,per_household_forward_fill_before_aggregation
+ds36,ds36_aedp_1000hh_sample03_30min_with_weather.csv,1000,3,52608,2021-07-01,2024-06-30 23:30:00,139,1000,per_household_forward_fill_before_aggregation

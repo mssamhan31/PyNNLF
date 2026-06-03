@@ -1,0 +1,31 @@
+datasets:
+- ds22
+- ds23
+- ds24
+forecast_horizons:
+- fh8
+model_and_hp:
+- - m1
+  - hp1
+- - m2
+  - hp2
+- - m3
+  - hp1
+- - m4
+  - hp1
+- - m6
+  - hp1
+- - m7
+  - hp1
+- - m8
+  - hp1
+- - m9
+  - hp3
+- - m10
+  - hp1
+- - m13
+  - hp2
+- - m16
+  - hp1
+- - m17
+  - hp1

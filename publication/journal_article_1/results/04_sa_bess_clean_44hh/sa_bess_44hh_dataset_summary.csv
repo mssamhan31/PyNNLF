@@ -1,0 +1,4 @@
+dataset_id,filename,label,rows,start,end,min_netload_kW,max_netload_kW
+ds22,ds22_sa_bess_44hh_pos_underlying_load_30min.csv,underlying_load,17520,2024-02-26,2025-02-24 23:30:00,18.35034355,137.51997058333333
+ds23,ds23_sa_bess_44hh_pos_net_load_with_pv_30min.csv,net_load_with_pv,17520,2024-02-26,2025-02-24 23:30:00,-214.17745764999998,101.36665935
+ds24,ds24_sa_bess_44hh_pos_net_load_with_pv_battery_30min.csv,net_load_with_pv_battery,17520,2024-02-26,2025-02-24 23:30:00,-199.75735346666667,71.73407893333334

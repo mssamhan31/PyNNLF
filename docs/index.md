@@ -9,10 +9,13 @@ hide:
     <p class="pynnlf-eyebrow">PyNNLF</p>
     <h1>Reliable net load forecasting evaluation, not just another new model.</h1>
     <p class="pynnlf-hero__lead">
-      PyNNLF is an open-source Python tool for comparing net load forecasting models with public datasets, simple benchmarks, cross-validation, and reproducible experiment outputs.
+      PyNNLF (Python for Network Net Load Forecasting) is an open-source Python tool for comparing net load forecasting models with public datasets, simple benchmarks, cross-validation, and reproducible experiment outputs.
+    </p>
+    <p class="pynnlf-definition">
+      Net load is the underlying electricity load minus renewable energy generation. Net load forecasting means predicting that remaining demand over a future forecast horizon.
     </p>
     <div class="pynnlf-actions">
-      <a class="pynnlf-button pynnlf-button--primary" href="getting_started/">Install PyNNLF</a>
+      <a class="pynnlf-button pynnlf-button--primary pynnlf-button--install" href="getting_started/">Install PyNNLF</a>
       <a class="pynnlf-button" href="examples/">Read the docs</a>
       <a class="pynnlf-button" href="https://github.com/mssamhan31/PyNNLF">GitHub</a>
     </div>
@@ -23,22 +26,23 @@ hide:
       <p class="pynnlf-eyebrow">The research issue</p>
       <h2>Many papers claim superior forecasting accuracy. Fewer make the comparison easy to trust.</h2>
       <p>
-        Since 2016, more than 102 academic papers have been published on net load forecasting. At least 84 introduced a novel method. However, many papers did not use simple benchmark models, relied on private datasets, or did not publicly share implementation code.
+        Since 2016, more than 102 academic papers have been published on net load forecasting. At least 84 introduced a novel model. However, many papers did not use simple benchmark models, relied on private datasets, or did not publicly share implementation code.
       </p>
     </div>
 
     <div class="pynnlf-quote-stack">
+      <p class="pynnlf-quote-lead">Typical excerpts found in net load forecasting papers include:</p>
       <figure>
         <blockquote>&ldquo;&hellip; and it is concluded that the proposed method has higher prediction accuracy and better prediction effect &hellip;&rdquo;</blockquote>
-        <figcaption>[1] Cao et al., 2023</figcaption>
+        <figcaption><a href="https://doi.org/10.1088/1742-6596/2418/1/012069">[1] Cao et al., 2023</a></figcaption>
       </figure>
       <figure>
         <blockquote>&ldquo;Comparative tests utilizing real-world data verify the superiority of the proposed method over other state-of-the-art net load forecasting algorithms.&rdquo;</blockquote>
-        <figcaption>[2] Hu et al., 2024</figcaption>
+        <figcaption><a href="https://doi.org/10.1016/j.renene.2024.120253">[2] Hu et al., 2024</a></figcaption>
       </figure>
       <figure>
         <blockquote>&ldquo;More-over, the performance of the BDLSTM model also dominates when compared with the best of the state-of-the-art methods, &hellip;&rdquo;</blockquote>
-        <figcaption>[3] Sun et al., 2020</figcaption>
+        <figcaption><a href="https://doi.org/10.1109/TPWRS.2019.2924294">[3] Sun et al., 2020</a></figcaption>
       </figure>
     </div>
   </section>
@@ -51,7 +55,7 @@ hide:
       </div>
       <div>
         <strong>84</strong>
-        <span>introduced a novel method</span>
+        <span>introduced a novel model</span>
       </div>
       <div>
         <strong>75%</strong>
@@ -125,5 +129,9 @@ pynnlf.run_experiment("example_project/specs/experiment.yaml")</code></pre>
     <p>[1] H. Cao, L. Yang, H. Li, K. Wang, Net Power Prediction for High Permeability Distributed Photovoltaic Integration System, J. Phys. Conf. Ser., 2023. <a href="https://doi.org/10.1088/1742-6596/2418/1/012069">https://doi.org/10.1088/1742-6596/2418/1/012069</a>.</p>
     <p>[2] J. Hu, W. Hu, D. Cao, X. Sun, J. Chen, Y. Huang, Z. Chen, F. Blaabjerg, Probabilistic net load forecasting based on transformer network and Gaussian process-enabled residual modeling learning method, Renew. Energy 225 (2024). <a href="https://doi.org/10.1016/j.renene.2024.120253">https://doi.org/10.1016/j.renene.2024.120253</a>.</p>
     <p>[3] M. Sun, T. Zhang, Y. Wang, G. Strbac, C. Kang, Using Bayesian Deep Learning to Capture Uncertainty for Residential Net Load Forecasting, IEEE Transactions on Power Systems 35 (2020) 188-201. <a href="https://doi.org/10.1109/TPWRS.2019.2924294">https://doi.org/10.1109/TPWRS.2019.2924294</a>.</p>
+  </section>
+
+  <section class="pynnlf-disclosure" aria-label="Disclosure">
+    <p>Disclosure: PyNNLF is an open-source tool developed as part of Samhan's PhD study, which is funded by UNSW Sydney, Ausgrid, RACE for 2030, and the NSW Decarbonisation Innovation Hub.</p>
   </section>
 </section>

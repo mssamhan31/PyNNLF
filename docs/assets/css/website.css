@@ -54,6 +54,14 @@
   line-height: 1.65;
 }
 
+.pynnlf-definition {
+  max-width: 780px;
+  margin: -0.55rem 0 1.7rem;
+  color: var(--pynnlf-muted);
+  font-size: clamp(1.05rem, 2vw, 1.28rem);
+  line-height: 1.65;
+}
+
 .pynnlf-actions {
   display: flex;
   flex-wrap: wrap;
@@ -87,6 +95,20 @@
 
 .pynnlf-button--primary:hover {
   background: var(--pynnlf-teal-dark);
+  color: #fff;
+}
+
+.md-typeset .pynnlf-button--install,
+.md-typeset .pynnlf-button--install:visited {
+  border-color: #1f5fbf;
+  background: #1f5fbf;
+  color: #fff;
+}
+
+.md-typeset .pynnlf-button--install:hover,
+.md-typeset .pynnlf-button--install:focus {
+  border-color: #164a99;
+  background: #164a99;
   color: #fff;
 }
 
@@ -126,6 +148,13 @@
   gap: 1rem;
 }
 
+.pynnlf-quote-lead {
+  margin: 0;
+  color: var(--pynnlf-ink);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
 .pynnlf-quote-stack figure {
   margin: 0;
   padding: 1.1rem 1.15rem;
@@ -147,6 +176,10 @@
   color: var(--pynnlf-muted);
   font-size: 0.76rem;
   font-weight: 700;
+}
+
+.pynnlf-quote-stack figcaption a {
+  color: var(--pynnlf-muted);
 }
 
 .pynnlf-stat-grid {
@@ -255,6 +288,19 @@
   color: var(--pynnlf-muted);
   font-size: 0.72rem;
   line-height: 1.45;
+}
+
+.pynnlf-disclosure {
+  padding: 0 0 3rem;
+}
+
+.pynnlf-disclosure p {
+  margin: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--pynnlf-line);
+  color: var(--pynnlf-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
 }
 
 @media (max-width: 1020px) {

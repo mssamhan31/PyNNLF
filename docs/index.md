@@ -132,6 +132,6 @@ pynnlf.run_experiment("example_project/specs/experiment.yaml")</code></pre>
   </section>
 
   <section class="pynnlf-disclosure" aria-label="Disclosure">
-    <p>Disclosure: PyNNLF is an open-source tool developed as part of Samhan's PhD study, which is funded by UNSW Sydney, Ausgrid, RACE for 2030, and the NSW Decarbonisation Innovation Hub.</p>
+    <p>Disclosure: PyNNLF is an open-source tool developed as part of Samhan's PhD study, which is funded by UNSW Sydney, Ausgrid, RACE for 2030, and the NSW Decarbonisation Innovation Hub (NSW Decarb Hub).</p>
   </section>
 </section>

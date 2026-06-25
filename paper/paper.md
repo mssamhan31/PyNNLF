@@ -51,6 +51,6 @@ By standardizing datasets, baselines, and reporting, PyNNLF makes net load forec
 We used AI for simple editing assistance (spelling and grammar) and for coding assistance, especially with syntax. The overall architecture of the software and the user requirements were defined by the authors. We used GitHub Copilot with the GPT-5.2-Codex model, and all AI-proposed code and actions were manually reviewed and verified to ensure correctness and preserve software functionality.
 
 # Acknowledgements
-This research is part of Samhan’s PhD study, which is sponsored by University International Postgraduate Award (UIPA) UNSW scholarship [@UNSW_2025] and industry collaboration partnership with Ausgrid [@Ausgrid_2025], a Distribution Network Service Provider in Australia, and RACE For 2030 Scholarship..
+This research is part of Samhan’s PhD study, which is sponsored by the University International Postgraduate Award (UIPA) UNSW scholarship [@UNSW_2025], an industry collaboration partnership with Ausgrid [@Ausgrid_2025] (a Distribution Network Service Provider in Australia), the RACE For 2030 Scholarship, and the NSW Decarbonisation Innovation Hub (NSW Decarb Hub).
 
 # References

@@ -1,0 +1,4 @@
+method,optimisation_metric,constraints,eligible_models,recommended_model,notes
+Pareto,"Minimise test_nRMSE with non-dominated filtering on (test_nRMSE, test_nRMSE_stddev, runtime_s)",Non-dominance constraints across all three criteria,m17_xgb_hp1; m1_naive_hp1; m6_lr_hp1; m8_dnn_hp1,m17_xgb_hp1,Final pick from Pareto set uses lowest nRMSE then stddev then runtime
+Utility,Minimise weighted utility score,"weights: nRMSE=0.6, stddev=0.3, runtime=0.1; min-max normalization",m17_xgb_hp1; m6_lr_hp1; m8_dnn_hp1; m7_ann_hp1; m10_rf_hp1; m9_rt_hp3; m1_naive_hp1; m2_snaive_hp2; m3_ets_hp1; m16_prophet_hp1; m13_lstm_hp2; m4_arima_hp1,m17_xgb_hp1,Single-score ranking of all models
+Satisficing,Minimise test_nRMSE,"test_nRMSE_stddev <= 1.0, runtime_s <= 180",m17_xgb_hp1; m8_dnn_hp1; m6_lr_hp1; m7_ann_hp1; m9_rt_hp3; m1_naive_hp1; m2_snaive_hp2; m3_ets_hp1,m17_xgb_hp1,Primary threshold was stddev<=1.0; relaxed to 1.5 if empty

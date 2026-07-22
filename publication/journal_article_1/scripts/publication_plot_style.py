@@ -32,6 +32,7 @@ def apply_publication_style() -> None:
             "ytick.labelsize": 9,
             "legend.fontsize": 9,
             "axes.grid": True,
+            "axes.axisbelow": True,
             "grid.alpha": 0.18,
             "grid.color": "#c7d0d8",
             "axes.edgecolor": "#22303d",

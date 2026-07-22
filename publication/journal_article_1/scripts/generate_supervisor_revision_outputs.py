@@ -338,6 +338,28 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
             means = [float(m.loc[m["aggregation_level_hh"].eq(l), m_col].iloc[0]) if (m["aggregation_level_hh"] == l).any() else np.nan for l in levels]
             stds = [float(m.loc[m["aggregation_level_hh"].eq(l), s_col].iloc[0]) if (m["aggregation_level_hh"] == l).any() else np.nan for l in levels]
 
+            ax.set_axisbelow(True)
+
+            # Always show the three sample-level results in the background.
+            sm = s.loc[s["model_name"].eq(model)]
+            sample_metric_col = "test_nRMSE" if metric == "nrmse" else "rmse_per_hh"
+            for i, lvl in enumerate(levels):
+                svals = sm.loc[sm["aggregation_level_hh"].eq(lvl), sample_metric_col].dropna().to_numpy()
+                if len(svals) == 0:
+                    continue
+                rng = np.random.default_rng(4321 + i)
+                jitter = rng.uniform(-0.06, 0.06, size=len(svals))
+                ax.scatter(
+                    np.full(len(svals), i) + jitter,
+                    svals,
+                    s=22,
+                    color=PALETTE["grey"],
+                    alpha=0.55,
+                    edgecolors="white",
+                    linewidths=0.4,
+                    zorder=2,
+                )
+
             if not fold_df.empty:
                 fm = fold_df.loc[fold_df["model_name"].eq(model)]
                 for i, lvl in enumerate(levels):
@@ -351,7 +373,7 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
                         vals,
                         s=13,
                         color=PALETTE["light_grey"],
-                        alpha=0.25,
+                        alpha=0.22,
                         edgecolors="none",
                         zorder=1,
                     )
@@ -374,7 +396,7 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
             if ax is axes[0]:
                 ax.set_ylabel(y_label)
         fig.suptitle(
-            "AEDP aggregation comparison: sample mean +/- std with fold-level background points",
+            "AEDP aggregation comparison: sample mean +/- std with sample points and fold-level background",
             y=1.03,
         )
         fig.tight_layout()
@@ -485,6 +507,70 @@ def _select_representative_day(df: pd.DataFrame) -> tuple[pd.Timestamp, pd.DataF
     return day, d.loc[d["date"].eq(day.date())].copy()
 
 
+def _select_representative_week(df: pd.DataFrame, points_per_day: int = 48) -> tuple[pd.Timestamp, pd.DataFrame]:
+    d = df.copy()
+    if "datetime" not in d.columns or d["datetime"].isna().all():
+        start_idx = 0
+        end_idx = min(len(d), points_per_day * 7)
+        return pd.Timestamp("1970-01-01"), d.iloc[start_idx:end_idx].copy()
+
+    d = d.sort_values("datetime").reset_index(drop=True)
+    window = points_per_day * 7
+    if len(d) <= window:
+        start = d["datetime"].iloc[0]
+        return start, d.copy()
+
+    rolling_vol = (
+        d["observation"]
+        .rolling(window=window, min_periods=max(2, points_per_day * 3))
+        .apply(lambda x: float(np.std(np.diff(x.to_numpy()))) if len(x) > 1 else np.nan, raw=False)
+    )
+    if rolling_vol.dropna().empty:
+        start_idx = 0
+    else:
+        start_idx = int(rolling_vol.dropna().idxmax() - window + 1)
+        start_idx = max(0, min(start_idx, len(d) - window))
+    out = d.iloc[start_idx : start_idx + window].copy()
+    return out["datetime"].iloc[0], out
+
+
+def _select_composition_week(frames: dict[str, pd.DataFrame], points_per_day: int = 48) -> tuple[pd.Timestamp, dict[str, pd.DataFrame], str]:
+    keys = ["underlying_load", "net_load_with_pv", "net_load_with_pv_battery"]
+    sorted_frames = {k: frames[k].sort_values("datetime").reset_index(drop=True) for k in keys}
+    min_len = min(len(sorted_frames[k]) for k in keys)
+    window = points_per_day * 7
+    if min_len <= window:
+        clipped = {k: sorted_frames[k].iloc[:min_len].copy() for k in keys}
+        start = clipped[keys[0]]["datetime"].iloc[0] if "datetime" in clipped[keys[0]].columns else pd.Timestamp("1970-01-01")
+        return start, clipped, "fallback_short_series"
+
+    best_idx = None
+    best_rank = None
+    best_gap = None
+    for i in range(0, min_len - window + 1):
+        rough = {}
+        for k in keys:
+            seg = sorted_frames[k].iloc[i : i + window]
+            vals = seg["observation"].to_numpy()
+            rough[k] = float(np.std(np.diff(vals))) if len(vals) > 1 else np.inf
+        ordered = sorted(rough.items(), key=lambda kv: kv[1])
+        rank_map = {name: idx for idx, (name, _) in enumerate(ordered)}
+        underlying_rank = rank_map["underlying_load"]
+        gap = rough["underlying_load"] - min(rough["net_load_with_pv"], rough["net_load_with_pv_battery"])
+
+        candidate = (underlying_rank, gap)
+        if best_rank is None or candidate < (best_rank, best_gap):
+            best_idx = i
+            best_rank = underlying_rank
+            best_gap = gap
+
+    assert best_idx is not None
+    clipped = {k: sorted_frames[k].iloc[best_idx : best_idx + window].copy() for k in keys}
+    start = clipped[keys[0]]["datetime"].iloc[0]
+    mode = "underlying_not_most_volatile" if best_rank == 0 else "best_available_rank"
+    return start, clipped, mode
+
+
 def _plot_ashd_vs_aedp_xgb(
     recap_exp: pd.DataFrame,
     recap_agg: pd.DataFrame,
@@ -535,39 +621,51 @@ def _plot_ashd_vs_aedp_xgb(
             "ASHD vs AEDP XGBoost figure used AEDP aggregation fallback (100 households, sample 1) because ds11 fh8 xgb folds are unavailable locally."
         )
 
-    day_info = {}
+    week_info = {}
     for label, row in rows.items():
         cv1 = _pick_cv1_file(str(row["experiment_folder"]))
         df = _read_forecast_frame(cv1)
         if "datetime" not in df.columns or df["datetime"].isna().all():
             raise ValueError(f"Datetime missing in {cv1}")
-        day, day_df = _select_representative_day(df)
-        day_info[label] = (day, day_df)
+        week_start, week_df = _select_representative_week(df, points_per_day=48)
+        week_info[label] = (week_start, week_df)
 
-    # actual vs forecast
+    # actual vs forecast (1-week)
     fig, axes = plt.subplots(2, 1, figsize=(14, 7), sharex=False)
     for ax, label in zip(axes, ["ASHD", "AEDP"]):
-        day, d = day_info[label]
+        week_start, d = week_info[label]
+        ax.set_axisbelow(True)
         ax.plot(d["datetime"], d["observation"], color=PALETTE["dark_blue"], linewidth=1.8, label="Actual")
         ax.plot(d["datetime"], d["forecast"], color=PALETTE["orange"], linewidth=1.4, label="Forecast")
+        peak_idx = d["observation"].idxmax()
+        peak_val = float(d.loc[peak_idx, "observation"])
+        peak_dt = pd.to_datetime(d.loc[peak_idx, "datetime"]).strftime("%Y-%m-%d %H:%M")
+        ax.axhline(
+            peak_val,
+            color=PALETTE["grey"],
+            linewidth=1.1,
+            linestyle="--",
+            label=f"Peak demand: {peak_val:.2f} kW @ {peak_dt}",
+        )
         title_label = "ASHD" if label == "ASHD" else aedp_label
-        ax.set_title(f"{title_label} - representative high-volatility day ({day.date()})")
+        ax.set_title(f"{title_label} - representative high-volatility week from {week_start.date()}")
         ax.set_ylabel("kW")
-    axes[0].legend(loc="upper right", ncol=2)
+        ax.legend(loc="upper right", ncol=1)
     axes[-1].set_xlabel("Time")
-    fig.suptitle("XGBoost actual vs forecast: ASHD vs AEDP", y=1.02)
+    fig.suptitle("XGBoost actual vs forecast (1-week): ASHD vs AEDP", y=1.02)
     fig.tight_layout()
     p1 = save_figure(fig, fig_dir / "fig30_ashd_vs_aedp_xgb_actual_vs_forecast_daypair.png")
 
     # error profile
     fig, axes = plt.subplots(2, 1, figsize=(14, 6.5), sharex=False)
     for ax, label in zip(axes, ["ASHD", "AEDP"]):
-        day, d = day_info[label]
+        week_start, d = week_info[label]
+        ax.set_axisbelow(True)
         err = d["forecast"] - d["observation"]
         ax.plot(d["datetime"], err, color=PALETTE["grey"], linewidth=1.4)
         ax.axhline(0, color=PALETTE["dark_blue"], linewidth=1.0, linestyle="--")
         title_label = "ASHD" if label == "ASHD" else aedp_label
-        ax.set_title(f"{title_label} forecast error profile ({day.date()})")
+        ax.set_title(f"{title_label} forecast error profile (week from {week_start.date()})")
         ax.set_ylabel("Forecast - Actual (kW)")
     axes[-1].set_xlabel("Time")
     fig.suptitle("XGBoost daily error profile: ASHD vs AEDP", y=1.02)
@@ -630,8 +728,9 @@ def _plot_horizon_xgb(recap_exp: pd.DataFrame) -> list[Path]:
     em = pd.DataFrame(rows)
 
     fig, ax = plt.subplots(figsize=(8, 4.6))
+    ax.set_axisbelow(True)
     x = np.arange(len(em))
-    ax.bar(x, em["mae_mean"], yerr=em["mae_std"], capsize=5, color=PALETTE["grey"], alpha=0.9)
+    ax.bar(x, em["mae_mean"], yerr=em["mae_std"], capsize=5, color=PALETTE["grey"], alpha=0.9, zorder=3)
     ax.set_xticks(x)
     ax.set_xticklabels(em["horizon"])
     ax.set_ylabel("CV-fold MAE (kW)")
@@ -655,6 +754,23 @@ def _plot_load_composition_timeseries(recap_sa: pd.DataFrame) -> list[Path]:
         "net_load_with_pv": "Net load with PV",
         "net_load_with_pv_battery": "Net load with PV and battery",
     }
+    dataset_files = {
+        "underlying_load": DATA_DIR / "ds22_sa_bess_44hh_pos_underlying_load_30min.csv",
+        "net_load_with_pv": DATA_DIR / "ds23_sa_bess_44hh_pos_net_load_with_pv_30min.csv",
+        "net_load_with_pv_battery": DATA_DIR / "ds24_sa_bess_44hh_pos_net_load_with_pv_battery_30min.csv",
+    }
+
+    actual_frames: dict[str, pd.DataFrame] = {}
+    for lbl in label_order:
+        path = dataset_files[lbl]
+        d = _load_csv(path)
+        if "datetime" not in d.columns or "netload_kW" not in d.columns:
+            raise ValueError(f"Missing datetime/netload_kW in {path}")
+        d = d[["datetime", "netload_kW"]].copy()
+        d["datetime"] = pd.to_datetime(d["datetime"], errors="coerce")
+        d["observation"] = pd.to_numeric(d["netload_kW"], errors="coerce")
+        d = d.dropna(subset=["datetime", "observation"]).sort_values("datetime").reset_index(drop=True)
+        actual_frames[lbl] = d[["datetime", "observation"]]
 
     frames = {}
     for lbl in label_order:
@@ -668,25 +784,109 @@ def _plot_load_composition_timeseries(recap_sa: pd.DataFrame) -> list[Path]:
         row = subset.iloc[-1]
         cv1 = _pick_cv1_file(str(row["experiment_folder"]))
         df = _read_forecast_frame(cv1)
-        frames[lbl] = df.iloc[: min(336, len(df))].copy()
+        if "datetime" not in df.columns or df["datetime"].isna().all():
+            raise ValueError(f"Datetime missing in {cv1}")
+        aligned = actual_frames[lbl].merge(df[["datetime", "forecast"]], on="datetime", how="inner")
+        if aligned.empty:
+            raise ValueError(f"No datetime overlap between actual readings and forecast in {cv1}")
+        frames[lbl] = aligned[["datetime", "observation", "forecast"]].sort_values("datetime").reset_index(drop=True)
+
+    week_start, week_frames, week_mode = _select_composition_week(frames, points_per_day=48)
+
+    # Component overlays based on actual measured series in ds22/ds23/ds24.
+    # Direct 30-minute PV/battery channels are not stored as standalone publication CSVs.
+    pv_generation_obs = (
+        week_frames["underlying_load"]["observation"].to_numpy()
+        - week_frames["net_load_with_pv"]["observation"].to_numpy()
+    )
+    battery_operation_obs = (
+        week_frames["net_load_with_pv_battery"]["observation"].to_numpy()
+        - week_frames["net_load_with_pv"]["observation"].to_numpy()
+    )
+
+    roughness = {
+        lbl: float(np.std(np.diff(week_frames[lbl]["observation"].to_numpy())))
+        for lbl in label_order
+    }
+    overlay_roughness = {
+        "net_load_with_pv": float(np.std(np.diff(pv_generation_obs))),
+        "net_load_with_pv_battery": float(np.std(np.diff(battery_operation_obs))),
+    }
+
+    y_values = []
+    for lbl in label_order:
+        y_values.append(week_frames[lbl]["observation"].to_numpy())
+        y_values.append(week_frames[lbl]["forecast"].to_numpy())
+    y_values.extend([pv_generation_obs, battery_operation_obs])
+    y_all = np.concatenate(y_values)
+    y_min = float(np.nanmin(y_all))
+    y_max = float(np.nanmax(y_all))
+    y_pad = 0.04 * (y_max - y_min if y_max > y_min else 1.0)
+    y_limits = (y_min - y_pad, y_max + y_pad)
 
     fig, axes = plt.subplots(3, 1, figsize=(14, 8.5), sharex=False)
     for ax, lbl in zip(axes, label_order):
-        d = frames[lbl]
+        d = week_frames[lbl]
+        ax.set_axisbelow(True)
         x = d["datetime"] if "datetime" in d.columns else np.arange(len(d))
         ax.plot(x, d["observation"], color=PALETTE["dark_blue"], linewidth=1.6, label="Actual")
         ax.plot(x, d["forecast"], color=PALETTE["orange"], linewidth=1.2, label="Forecast")
+        if lbl == "net_load_with_pv":
+            ax.plot(
+                x,
+                pv_generation_obs,
+                color=PALETTE["light_grey"],
+                linewidth=1.1,
+                linestyle="--",
+                label="PV generation (reading-based)",
+            )
+        elif lbl == "net_load_with_pv_battery":
+            ax.plot(
+                x,
+                battery_operation_obs,
+                color=PALETTE["grey"],
+                linewidth=1.1,
+                linestyle=":",
+                label="Battery operation (reading-based)",
+            )
         ax.set_title(pretty[lbl])
         ax.set_ylabel("kW")
+        ax.set_ylim(*y_limits)
+        if lbl == "net_load_with_pv":
+            ann = (
+                f"roughness sd(diff)={roughness[lbl]:.2f}\n"
+                f"pv sd(diff)={overlay_roughness[lbl]:.2f}"
+            )
+        elif lbl == "net_load_with_pv_battery":
+            ann = (
+                f"roughness sd(diff)={roughness[lbl]:.2f}\n"
+                f"battery sd(diff)={overlay_roughness[lbl]:.2f}"
+            )
+        else:
+            ann = f"roughness sd(diff)={roughness[lbl]:.2f}"
+        ax.text(
+            0.01,
+            0.98,
+            ann,
+            transform=ax.transAxes,
+            va="top",
+            ha="left",
+            fontsize=8,
+            bbox={"facecolor": "white", "alpha": 0.75, "edgecolor": "none"},
+        )
+        if lbl in {"net_load_with_pv", "net_load_with_pv_battery"}:
+            ax.legend(loc="upper right", ncol=1)
     axes[0].legend(loc="upper right", ncol=2)
     axes[-1].set_xlabel("Time")
-    fig.suptitle("SA BESS composition: XGBoost actual vs forecast", y=1.01)
+    suffix = "(week where underlying is not the roughest)" if week_mode == "underlying_not_most_volatile" else "(best available representative week)"
+    fig.suptitle(f"SA BESS composition: XGBoost actual vs forecast {suffix}, from {week_start.date()}", y=1.01)
     fig.tight_layout()
     p1 = save_figure(fig, fig_dir / "fig20_sa_bess_composition_actual_vs_forecast_timeseries.png")
 
     fig, axes = plt.subplots(3, 1, figsize=(14, 8.5), sharex=False)
     for ax, lbl in zip(axes, label_order):
-        d = frames[lbl]
+        d = week_frames[lbl]
+        ax.set_axisbelow(True)
         x = d["datetime"] if "datetime" in d.columns else np.arange(len(d))
         err = d["forecast"] - d["observation"]
         ax.plot(x, err, color=PALETTE["grey"], linewidth=1.3)
@@ -916,7 +1116,7 @@ def _build_reference_mapping() -> tuple[Path, Path]:
             "artifact_type": "figure",
             "manuscript_section": "Results - Load composition comparison",
             "manuscript_label_proposed": "Figure B1",
-            "caption_short": "Time series actual vs forecast across load compositions",
+            "caption_short": "Time series actual vs forecast across load compositions with reading-based PV and battery overlays",
             "status": "ready",
         },
         {
@@ -932,7 +1132,7 @@ def _build_reference_mapping() -> tuple[Path, Path]:
             "artifact_type": "figure",
             "manuscript_section": "Results - Dataset comparison",
             "manuscript_label_proposed": "Figure C1",
-            "caption_short": "XGBoost actual vs forecast for ASHD vs AEDP",
+            "caption_short": "XGBoost actual vs forecast for ASHD vs AEDP (representative 1-week windows) with peak-demand lines",
             "status": "ready",
         },
         {

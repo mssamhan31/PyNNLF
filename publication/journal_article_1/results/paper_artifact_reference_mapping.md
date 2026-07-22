@@ -24,11 +24,11 @@ This file maps generated CSV/PNG artifacts to their intended manuscript section 
 - Figure A4(d): results/03_aedp_aggregation_level/figures/fig13d_aedp_agg1000_actual_vs_forecast_scatter_naive_lr_xgb.png - Scatter actual vs forecast (1000 households)
 
 ## Results - Load composition comparison
-- Figure B1: results/04_sa_bess_clean_44hh/figures/fig20_sa_bess_composition_actual_vs_forecast_timeseries.png - Time series actual vs forecast across load compositions
+- Figure B1: results/04_sa_bess_clean_44hh/figures/fig20_sa_bess_composition_actual_vs_forecast_timeseries.png - Time series actual vs forecast across load compositions with reading-based PV and battery overlays
 - Figure B2: results/04_sa_bess_clean_44hh/figures/fig21_sa_bess_composition_error_timeseries.png - Forecast error time series across load compositions
 
 ## Results - Dataset comparison
-- Figure C1: results/01_ashd_aedp_148hh_comparison/figures/fig30_ashd_vs_aedp_xgb_actual_vs_forecast_daypair.png - XGBoost actual vs forecast for ASHD vs AEDP
+- Figure C1: results/01_ashd_aedp_148hh_comparison/figures/fig30_ashd_vs_aedp_xgb_actual_vs_forecast_daypair.png - XGBoost actual vs forecast for ASHD vs AEDP (representative 1-week windows) with peak-demand lines
 - Figure C2: results/01_ashd_aedp_148hh_comparison/figures/fig31_ashd_vs_aedp_xgb_error_profile_daypair.png - XGBoost error profile for ASHD vs AEDP
 
 ## Results - Forecast horizon comparison

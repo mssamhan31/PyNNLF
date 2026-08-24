@@ -1250,7 +1250,7 @@ fig, ax = plt.subplots(figsize=(8, 5))
 datasets[DATASET_ORDER].rename(columns=DATASET_LABELS).plot.box(ax=ax)
 ax.set_ylabel('Aggregate load (kW)')
 ax.set_title('Annual half-hourly load distributions')
-ax.tick_params(axis='x', rotation=12)
+ax.tick_params(axis='x', rotation=0)
 fig.tight_layout()
 save_figure(fig, 'fig1_dataset_distributions.png')
 plt.show()""",

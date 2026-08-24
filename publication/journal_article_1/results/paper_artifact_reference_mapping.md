@@ -22,6 +22,7 @@ This file maps generated CSV/PNG artifacts to their intended manuscript section 
 - Figure A4(b): results/03_aedp_aggregation_level/figures/fig13b_aedp_agg10_actual_vs_forecast_scatter_naive_lr_xgb.png - Scatter actual vs forecast (10 households)
 - Figure A4(c): results/03_aedp_aggregation_level/figures/fig13c_aedp_agg100_actual_vs_forecast_scatter_naive_lr_xgb.png - Scatter actual vs forecast (100 households)
 - Figure A4(d): results/03_aedp_aggregation_level/figures/fig13d_aedp_agg1000_actual_vs_forecast_scatter_naive_lr_xgb.png - Scatter actual vs forecast (1000 households)
+- Figure A5: results/03_aedp_aggregation_level/figures/fig14_aedp_aggregation_xgb_timeseries_aligned.png - Three-day time-aligned XGBoost actual vs forecast across 1, 10, 100, and 1000 households
 
 ## Results - Load composition comparison
 - Figure B1: results/04_sa_bess_clean_44hh/figures/fig20_sa_bess_composition_actual_vs_forecast_timeseries.png - Time series actual vs forecast across load compositions with reading-based PV and battery overlays

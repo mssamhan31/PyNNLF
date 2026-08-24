@@ -9,6 +9,8 @@ from typing import Iterable
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from matplotlib.ticker import MaxNLocator
 import yaml
 
 import pynnlf
@@ -28,6 +30,24 @@ MODEL_LABELS = {
     "m6_lr_hp1": "Linear Regression",
     "m17_xgb_hp1": "XGBoost",
 }
+
+
+def _format_numeric_axis(ax, *, x: bool = False, y: bool = True) -> None:
+    if x:
+        ax.xaxis.set_major_locator(MaxNLocator(nbins=5))
+    if y:
+        ax.yaxis.set_major_locator(MaxNLocator(nbins=5))
+
+
+def _format_datetime_axis(ax, *, rotation: float = 0, month_year_format: str = "%b-%Y") -> None:
+    locator = mdates.DayLocator(interval=1)
+    formatter = mdates.ConciseDateFormatter(locator)
+    formatter.offset_formats[2] = month_year_format
+    ax.xaxis.set_major_locator(locator)
+    ax.xaxis.set_major_formatter(formatter)
+    ax.tick_params(axis="x", labelrotation=rotation)
+    for label in ax.get_xticklabels():
+        label.set_horizontalalignment("center" if rotation == 0 else "right")
 
 
 def _print(msg: str) -> None:
@@ -331,7 +351,7 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
             "fig11_aedp_agg_rmse_per_hh_mean_std_cvbg.png",
         ),
     ]:
-        fig, axes = plt.subplots(1, 3, figsize=(16, 4.7), sharex=True)
+        fig, axes = plt.subplots(1, 3, figsize=(16, 4.7), sharex=True, sharey=True)
         for ax, model in zip(axes, MODEL_ORDER):
             m = summary.loc[summary["model_name"].eq(model)].sort_values("aggregation_level_hh")
             x = np.arange(len(levels))
@@ -392,7 +412,15 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
             ax.set_xticks(x)
             ax.set_xticklabels([str(l) for l in levels])
             ax.set_xlabel("Aggregation level (households)")
-            ax.set_title(MODEL_LABELS[model])
+            if metric == "rmse_per_hh":
+                ax.set_title({
+                    "m1_naive_hp1": "naive_hp1",
+                    "m6_lr_hp1": "lr_hp1",
+                    "m17_xgb_hp1": "xgb_hp1",
+                }[model])
+            else:
+                ax.set_title(MODEL_LABELS[model])
+            _format_numeric_axis(ax)
             if ax is axes[0]:
                 ax.set_ylabel(y_label)
         fig.suptitle(
@@ -431,7 +459,7 @@ def _plot_aggregation_forecast_views(recap_agg: pd.DataFrame) -> list[Path]:
             panel_rows.append(row)
 
         # Time series figure
-        fig, axes = plt.subplots(3, 1, figsize=(14, 8), sharex=True)
+        fig, axes = plt.subplots(3, 1, figsize=(14, 11), sharex=True)
         for ax, row in zip(axes, panel_rows):
             cv1 = _pick_cv1_file(str(row["experiment_folder"]))
             df = _read_forecast_frame(cv1)
@@ -448,8 +476,10 @@ def _plot_aggregation_forecast_views(recap_agg: pd.DataFrame) -> list[Path]:
             ax.plot(x, d["forecast"], color=PALETTE["orange"], linewidth=1.2, label="Forecast")
             ax.set_title(MODEL_LABELS[str(row['model_name'])])
             ax.set_ylabel("kW")
+            _format_datetime_axis(ax)
+            _format_numeric_axis(ax)
         axes[0].legend(loc="upper right", ncol=2, frameon=True)
-        axes[-1].set_xlabel("Time")
+        axes[-1].set_xlabel("Date")
         fig.suptitle(f"AEDP aggregation {lvl} households: actual vs forecast (sample 1, CV1)", y=1.02)
         fig.tight_layout()
         out_paths.append(
@@ -460,7 +490,7 @@ def _plot_aggregation_forecast_views(recap_agg: pd.DataFrame) -> list[Path]:
         )
 
         # Scatter figure
-        fig, axes = plt.subplots(1, 3, figsize=(14.2, 4.5), sharex=False, sharey=False)
+        fig, axes = plt.subplots(1, 3, figsize=(14.2, 5.5), sharex=False, sharey=False)
         for ax, row in zip(axes, panel_rows):
             cv1 = _pick_cv1_file(str(row["experiment_folder"]))
             df = _read_forecast_frame(cv1)
@@ -479,6 +509,7 @@ def _plot_aggregation_forecast_views(recap_agg: pd.DataFrame) -> list[Path]:
             ax.set_title(MODEL_LABELS[str(row["model_name"])])
             ax.set_xlabel("Actual (kW)")
             ax.set_ylabel("Forecast (kW)")
+            _format_numeric_axis(ax, x=True)
         fig.suptitle(f"AEDP aggregation {lvl} households: actual vs forecast scatter (sample 1, CV1)", y=1.03)
         fig.tight_layout()
         out_paths.append(
@@ -489,6 +520,52 @@ def _plot_aggregation_forecast_views(recap_agg: pd.DataFrame) -> list[Path]:
         )
 
     return out_paths
+
+
+def _plot_aggregation_xgb_timeseries(recap_agg: pd.DataFrame) -> Path:
+    fig_dir = RESULTS_DIR / "03_aedp_aggregation_level" / "figures"
+    levels = [1, 10, 100, 1000]
+    frames: dict[int, pd.DataFrame] = {}
+
+    recap = recap_agg.copy()
+    recap["aggregation_level_hh"] = pd.to_numeric(recap["aggregation_level_hh"], errors="coerce")
+    recap["sample_no"] = pd.to_numeric(recap["sample_no"], errors="coerce")
+
+    for level in levels:
+        subset = recap.loc[
+            recap["aggregation_level_hh"].eq(level)
+            & recap["model_name"].astype(str).eq("m17_xgb_hp1")
+        ].sort_values(["sample_no", "experiment_no"])
+        if subset.empty:
+            raise ValueError(f"Missing XGBoost aggregation result for {level} households")
+        row = subset.loc[subset["sample_no"].eq(1)].iloc[0] if subset["sample_no"].eq(1).any() else subset.iloc[0]
+        frame = _read_forecast_frame(_pick_cv1_file(str(row["experiment_folder"]))).iloc[:144].copy()
+        if "datetime" not in frame.columns or frame["datetime"].isna().any():
+            raise ValueError(f"Datetime unavailable for XGBoost aggregation level {level}")
+        frames[level] = frame
+
+    reference_dates = frames[levels[0]]["datetime"].reset_index(drop=True)
+    for level in levels[1:]:
+        if not frames[level]["datetime"].reset_index(drop=True).equals(reference_dates):
+            raise ValueError("XGBoost aggregation comparison requires identical timestamps across household levels")
+
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10), sharex=True)
+    for panel_index, (ax, level) in enumerate(zip(axes.flat, levels)):
+        frame = frames[level]
+        ax.plot(frame["datetime"], frame["observation"], color=PALETTE["dark_blue"], linewidth=1.6, label="Actual")
+        ax.plot(frame["datetime"], frame["forecast"], color=PALETTE["orange"], linewidth=1.3, label="xgb_hp1 forecast")
+        household_label = "household" if level == 1 else "households"
+        ax.set_title(f"({chr(97 + panel_index)}) {level:,} {household_label}")
+        ax.set_ylabel("kW")
+        _format_datetime_axis(ax, rotation=0, month_year_format="%b-%Y")
+        _format_numeric_axis(ax)
+    handles, labels = axes[0, 0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="upper center", bbox_to_anchor=(0.5, 0.94), ncol=2)
+    axes[1, 0].set_xlabel("Date")
+    axes[1, 1].set_xlabel("Date")
+    fig.suptitle("AEDP XGBoost actual vs forecast by aggregation level (sample 1, CV1)", y=1.01)
+    fig.tight_layout(rect=(0, 0, 1, 0.9))
+    return save_figure(fig, fig_dir / "fig14_aedp_aggregation_xgb_timeseries_aligned.png")
 
 
 def _select_representative_day(df: pd.DataFrame) -> tuple[pd.Timestamp, pd.DataFrame]:
@@ -621,54 +698,86 @@ def _plot_ashd_vs_aedp_xgb(
             "ASHD vs AEDP XGBoost figure used AEDP aggregation fallback (100 households, sample 1) because ds11 fh8 xgb folds are unavailable locally."
         )
 
+    fixed_windows = {
+        "ASHD": (pd.Timestamp("2013-02-06"), pd.Timestamp("2013-02-13")),
+        "AEDP": (pd.Timestamp("2024-02-06"), pd.Timestamp("2024-02-13")),
+    }
+
     week_info = {}
+    positive_peaks = {}
     for label, row in rows.items():
         cv1 = _pick_cv1_file(str(row["experiment_folder"]))
         df = _read_forecast_frame(cv1)
         if "datetime" not in df.columns or df["datetime"].isna().all():
             raise ValueError(f"Datetime missing in {cv1}")
-        week_start, week_df = _select_representative_week(df, points_per_day=48)
-        week_info[label] = (week_start, week_df)
+        positive_actual = pd.to_numeric(df["observation"], errors="coerce")
+        positive_actual = positive_actual.loc[positive_actual.gt(0)]
+        if positive_actual.empty:
+            raise ValueError(f"Positive actual peak unavailable in {cv1}")
+        positive_peaks[label] = float(positive_actual.max())
+        start, end = fixed_windows[label]
+        week_df = df.loc[(df["datetime"] >= start) & (df["datetime"] < end)].copy().reset_index(drop=True)
+        if len(week_df) < 336:
+            raise ValueError(
+                f"Insufficient rows for fixed {label} window {start.date()} to {end.date()} in {cv1}: {len(week_df)}"
+            )
+        week_info[label] = (start, week_df)
 
-    # actual vs forecast (1-week)
-    fig, axes = plt.subplots(2, 1, figsize=(14, 7), sharex=False)
+    normalized_limits = (-1.3, 1.3)
+    normalized_yticks = [-1.0, -0.5, 0.0, 0.5, 1.0]
+
+    fig, axes = plt.subplots(2, 1, figsize=(14, 11), sharex=False, sharey=True)
     for ax, label in zip(axes, ["ASHD", "AEDP"]):
         week_start, d = week_info[label]
+        peak = positive_peaks[label]
         ax.set_axisbelow(True)
-        ax.plot(d["datetime"], d["observation"], color=PALETTE["dark_blue"], linewidth=1.8, label="Actual")
-        ax.plot(d["datetime"], d["forecast"], color=PALETTE["orange"], linewidth=1.4, label="Forecast")
-        peak_idx = d["observation"].idxmax()
-        peak_val = float(d.loc[peak_idx, "observation"])
-        peak_dt = pd.to_datetime(d.loc[peak_idx, "datetime"]).strftime("%Y-%m-%d %H:%M")
-        ax.axhline(
-            peak_val,
-            color=PALETTE["grey"],
-            linewidth=1.1,
-            linestyle="--",
-            label=f"Peak demand: {peak_val:.2f} kW @ {peak_dt}",
-        )
+        ax.plot(d["datetime"], d["observation"] / peak, color=PALETTE["dark_blue"], linewidth=1.8, label="Actual")
+        ax.plot(d["datetime"], d["forecast"] / peak, color=PALETTE["orange"], linewidth=1.4, label="Forecast")
+        ax.axhline(1.0, color=PALETTE["grey"], linewidth=1.1, linestyle="--", label=f"CV1 actual peak: {peak:.2f} kW")
         title_label = "ASHD" if label == "ASHD" else aedp_label
-        ax.set_title(f"{title_label} - representative high-volatility week from {week_start.date()}")
-        ax.set_ylabel("kW")
-        ax.legend(loc="upper right", ncol=1)
-    axes[-1].set_xlabel("Time")
-    fig.suptitle("XGBoost actual vs forecast (1-week): ASHD vs AEDP", y=1.02)
-    fig.tight_layout()
-    p1 = save_figure(fig, fig_dir / "fig30_ashd_vs_aedp_xgb_actual_vs_forecast_daypair.png")
+        ax.set_title(f"{title_label} - representative week from {week_start.date()}")
+        ax.set_ylabel("Load / positive peak")
+        ax.set_ylim(*normalized_limits)
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.36), ncol=3)
+        _format_datetime_axis(ax)
+        _format_numeric_axis(ax, y=False)
+        ax.set_yticks(normalized_yticks)
+    axes[-1].set_xlabel("Date")
+    fig.suptitle("XGBoost actual vs forecast: peak-normalized shared scale", y=1.02)
+    fig.tight_layout(h_pad=3.0)
+    p1 = save_figure(
+        fig,
+        fig_dir / "fig30_ashd_vs_aedp_xgb_actual_vs_forecast_daypair.png",
+    )
+
+    normalized_errors = {
+        label: (
+            week_info[label][1]["forecast"] - week_info[label][1]["observation"]
+        ) / positive_peaks[label]
+        for label in ["ASHD", "AEDP"]
+    }
+    max_abs_normalized_error = max(
+        float(np.nanmax(np.abs(error.to_numpy(dtype=float))))
+        for error in normalized_errors.values()
+    )
+    normalized_error_limit = max_abs_normalized_error * 1.05
 
     # error profile
-    fig, axes = plt.subplots(2, 1, figsize=(14, 6.5), sharex=False)
+    fig, axes = plt.subplots(2, 1, figsize=(14, 8.5), sharex=False, sharey=True)
     for ax, label in zip(axes, ["ASHD", "AEDP"]):
         week_start, d = week_info[label]
         ax.set_axisbelow(True)
-        err = d["forecast"] - d["observation"]
+        err = normalized_errors[label]
         ax.plot(d["datetime"], err, color=PALETTE["grey"], linewidth=1.4)
         ax.axhline(0, color=PALETTE["dark_blue"], linewidth=1.0, linestyle="--")
         title_label = "ASHD" if label == "ASHD" else aedp_label
         ax.set_title(f"{title_label} forecast error profile (week from {week_start.date()})")
-        ax.set_ylabel("Forecast - Actual (kW)")
-    axes[-1].set_xlabel("Time")
-    fig.suptitle("XGBoost daily error profile: ASHD vs AEDP", y=1.02)
+        ax.set_ylabel("Error / positive peak")
+        ax.set_ylim(-normalized_error_limit, normalized_error_limit)
+        _format_datetime_axis(ax)
+        _format_numeric_axis(ax)
+    axes[-1].set_xlabel("Date")
+    fig.suptitle("XGBoost representative-week error profile: peak-normalized shared scale", y=1.02)
     fig.tight_layout()
     p2 = save_figure(fig, fig_dir / "fig31_ashd_vs_aedp_xgb_error_profile_daypair.png")
 
@@ -694,7 +803,7 @@ def _plot_horizon_xgb(recap_exp: pd.DataFrame) -> list[Path]:
         d = df.iloc[: min(336, len(df))].copy()
         selected[label] = d
 
-    fig, axes = plt.subplots(3, 1, figsize=(14, 9), sharex=False)
+    fig, axes = plt.subplots(3, 1, figsize=(14, 12), sharex=False)
     horizon_labels = ["30-minute", "1-day", "1-week"]
     for ax, label in zip(axes, horizon_labels):
         d = selected[label]
@@ -704,8 +813,13 @@ def _plot_horizon_xgb(recap_exp: pd.DataFrame) -> list[Path]:
         panel_index = horizon_labels.index(label)
         ax.set_title(f"({chr(97 + panel_index)}) {label} horizon")
         ax.set_ylabel("kW")
+        if "datetime" in d.columns:
+            _format_datetime_axis(ax)
+        else:
+            _format_numeric_axis(ax, x=True, y=False)
+        _format_numeric_axis(ax)
     axes[0].legend(loc="upper right", ncol=2)
-    axes[-1].set_xlabel("Time")
+    axes[-1].set_xlabel("Date")
     fig.suptitle("ASHD XGBoost actual vs forecast by horizon", y=1.01)
     fig.tight_layout()
     p1 = save_figure(fig, fig_dir / "fig40_ashd_horizons_xgb_actual_vs_forecast.png")
@@ -735,6 +849,7 @@ def _plot_horizon_xgb(recap_exp: pd.DataFrame) -> list[Path]:
     ax.set_xticklabels(em["horizon"])
     ax.set_ylabel("CV-fold MAE (kW)")
     ax.set_title("ASHD XGBoost error by horizon (mean +/- std over folds)")
+    _format_numeric_axis(ax)
     fig.tight_layout()
     p2 = save_figure(fig, fig_dir / "fig41_ashd_horizons_xgb_error_summary.png")
 
@@ -824,7 +939,7 @@ def _plot_load_composition_timeseries(recap_sa: pd.DataFrame) -> list[Path]:
     y_pad = 0.04 * (y_max - y_min if y_max > y_min else 1.0)
     y_limits = (y_min - y_pad, y_max + y_pad)
 
-    fig, axes = plt.subplots(3, 1, figsize=(14, 8.5), sharex=False)
+    fig, axes = plt.subplots(3, 1, figsize=(14, 12), sharex=False)
     for ax, lbl in zip(axes, label_order):
         d = week_frames[lbl]
         ax.set_axisbelow(True)
@@ -852,6 +967,8 @@ def _plot_load_composition_timeseries(recap_sa: pd.DataFrame) -> list[Path]:
         ax.set_title(pretty[lbl])
         ax.set_ylabel("kW")
         ax.set_ylim(*y_limits)
+        _format_datetime_axis(ax)
+        _format_numeric_axis(ax)
         if lbl == "net_load_with_pv":
             ann = (
                 f"roughness sd(diff)={roughness[lbl]:.2f}\n"
@@ -871,29 +988,42 @@ def _plot_load_composition_timeseries(recap_sa: pd.DataFrame) -> list[Path]:
             transform=ax.transAxes,
             va="top",
             ha="left",
-            fontsize=8,
+            fontsize=15,
             bbox={"facecolor": "white", "alpha": 0.75, "edgecolor": "none"},
         )
         if lbl in {"net_load_with_pv", "net_load_with_pv_battery"}:
             ax.legend(loc="upper right", ncol=1)
     axes[0].legend(loc="upper right", ncol=2)
-    axes[-1].set_xlabel("Time")
+    axes[-1].set_xlabel("Date")
     suffix = "(week where underlying is not the roughest)" if week_mode == "underlying_not_most_volatile" else "(best available representative week)"
     fig.suptitle(f"SA BESS composition: XGBoost actual vs forecast {suffix}, from {week_start.date()}", y=1.01)
     fig.tight_layout()
     p1 = save_figure(fig, fig_dir / "fig20_sa_bess_composition_actual_vs_forecast_timeseries.png")
 
-    fig, axes = plt.subplots(3, 1, figsize=(14, 8.5), sharex=False)
+    errors = {
+        lbl: week_frames[lbl]["forecast"] - week_frames[lbl]["observation"]
+        for lbl in label_order
+    }
+    max_abs_error = max(
+        float(np.nanmax(np.abs(error.to_numpy(dtype=float))))
+        for error in errors.values()
+    )
+    error_limit = max_abs_error * 1.05
+
+    fig, axes = plt.subplots(3, 1, figsize=(14, 12), sharex=False, sharey=True)
     for ax, lbl in zip(axes, label_order):
         d = week_frames[lbl]
         ax.set_axisbelow(True)
         x = d["datetime"] if "datetime" in d.columns else np.arange(len(d))
-        err = d["forecast"] - d["observation"]
+        err = errors[lbl]
         ax.plot(x, err, color=PALETTE["grey"], linewidth=1.3)
         ax.axhline(0, color=PALETTE["dark_blue"], linestyle="--", linewidth=1.0)
         ax.set_title(pretty[lbl])
         ax.set_ylabel("Error (kW)")
-    axes[-1].set_xlabel("Time")
+        ax.set_ylim(-error_limit, error_limit)
+        _format_datetime_axis(ax)
+        _format_numeric_axis(ax)
+    axes[-1].set_xlabel("Date")
     fig.suptitle("SA BESS composition: XGBoost error time series", y=1.01)
     fig.tight_layout()
     p2 = save_figure(fig, fig_dir / "fig21_sa_bess_composition_error_timeseries.png")
@@ -1112,6 +1242,14 @@ def _build_reference_mapping() -> tuple[Path, Path]:
             "status": "ready",
         },
         {
+            "artifact_path": "results/03_aedp_aggregation_level/figures/fig14_aedp_aggregation_xgb_timeseries_aligned.png",
+            "artifact_type": "figure",
+            "manuscript_section": "Results - Aggregation level comparison",
+            "manuscript_label_proposed": "Figure A5",
+            "caption_short": "Three-day time-aligned XGBoost actual vs forecast across 1, 10, 100, and 1000 households",
+            "status": "ready",
+        },
+        {
             "artifact_path": "results/04_sa_bess_clean_44hh/figures/fig20_sa_bess_composition_actual_vs_forecast_timeseries.png",
             "artifact_type": "figure",
             "manuscript_section": "Results - Load composition comparison",
@@ -1248,6 +1386,7 @@ def main() -> None:
         ("table_reference_mapping", lambda: list(_build_reference_mapping())),
         ("fig_aggregation_summary", lambda: _plot_aggregation_summary_and_cv(recap_agg)),
         ("fig_aggregation_forecast_views", lambda: _plot_aggregation_forecast_views(recap_agg)),
+        ("fig_aggregation_xgb_timeseries", lambda: [_plot_aggregation_xgb_timeseries(recap_agg)]),
         ("fig_load_composition", lambda: _plot_load_composition_timeseries(recap_sa)),
         (
             "fig_ashd_vs_aedp",

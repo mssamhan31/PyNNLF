@@ -786,10 +786,10 @@ def _plot_ashd_vs_aedp_xgb(
 
 def _plot_horizon_xgb(recap_exp: pd.DataFrame) -> list[Path]:
     fig_dir = RESULTS_DIR / "02_ashd_148hh_forecast_horizon" / "figures"
-    horizons = [(30, "30-minute"), (1440, "1-day"), (10080, "1-week")]
+    horizons = [(30, "30-minute", "30m"), (1440, "1-day", "1d"), (10080, "1-week", "1w")]
 
-    selected = {}
-    for h, label in horizons:
+    frames = {}
+    for h, label, short in horizons:
         subset = recap_exp.loc[
             recap_exp["dataset_no"].astype(str).eq("ds20")
             & recap_exp["forecast_horizon_min"].astype(int).eq(h)
@@ -799,11 +799,63 @@ def _plot_horizon_xgb(recap_exp: pd.DataFrame) -> list[Path]:
             raise ValueError(f"Missing ds20 horizon {h} xgb experiment row")
         row = subset.iloc[-1]
         cv1 = _pick_cv1_file(str(row["experiment_folder"]))
-        df = _read_forecast_frame(cv1)
-        d = df.iloc[: min(336, len(df))].copy()
-        selected[label] = d
+        df = _read_forecast_frame(cv1).sort_values("datetime").reset_index(drop=True)
+        if "datetime" not in df.columns or df["datetime"].isna().all():
+            raise ValueError(f"Datetime missing in {cv1}")
+        df = df[["datetime", "observation", "forecast"]].dropna(subset=["datetime", "observation", "forecast"])
+        frames[short] = df.rename(
+            columns={
+                "observation": f"observation_{short}",
+                "forecast": f"forecast_{short}",
+            }
+        )
+
+    common = frames["30m"][["datetime", "observation_30m", "forecast_30m"]].copy()
+    common = common.merge(frames["1d"][["datetime", "forecast_1d"]], on="datetime", how="inner")
+    common = common.merge(frames["1w"][["datetime", "forecast_1w"]], on="datetime", how="inner")
+    common = common.sort_values("datetime").reset_index(drop=True)
+    if common.empty:
+        raise ValueError("No common target timestamps found across 30-minute, 1-day, and 1-week horizons")
+
+    window_len = 336
+    diffs = common["datetime"].diff()
+    run_break = diffs.ne(pd.Timedelta(minutes=30)).fillna(True)
+    run_id = run_break.cumsum()
+    start_idx = None
+    for _, grp in common.groupby(run_id):
+        if len(grp) >= window_len:
+            start_idx = int(grp.index.min())
+            break
+    if start_idx is None:
+        raise ValueError("No contiguous common-target span with at least 336 points")
+    window = common.iloc[start_idx : start_idx + window_len].copy().reset_index(drop=True)
+
+    selected = {
+        "30-minute": pd.DataFrame(
+            {
+                "datetime": window["datetime"],
+                "observation": window["observation_30m"],
+                "forecast": window["forecast_30m"],
+            }
+        ),
+        "1-day": pd.DataFrame(
+            {
+                "datetime": window["datetime"],
+                "observation": window["observation_30m"],
+                "forecast": window["forecast_1d"],
+            }
+        ),
+        "1-week": pd.DataFrame(
+            {
+                "datetime": window["datetime"],
+                "observation": window["observation_30m"],
+                "forecast": window["forecast_1w"],
+            }
+        ),
+    }
 
     fig, axes = plt.subplots(3, 1, figsize=(14, 12), sharex=False)
+    shared_horizon_ylim = (-100.0, 180.0)
     horizon_labels = ["30-minute", "1-day", "1-week"]
     for ax, label in zip(axes, horizon_labels):
         d = selected[label]
@@ -813,6 +865,7 @@ def _plot_horizon_xgb(recap_exp: pd.DataFrame) -> list[Path]:
         panel_index = horizon_labels.index(label)
         ax.set_title(f"({chr(97 + panel_index)}) {label} horizon")
         ax.set_ylabel("kW")
+        ax.set_ylim(*shared_horizon_ylim)
         if "datetime" in d.columns:
             _format_datetime_axis(ax)
         else:
@@ -826,7 +879,7 @@ def _plot_horizon_xgb(recap_exp: pd.DataFrame) -> list[Path]:
 
     # optional summary figure
     rows = []
-    for h, label in horizons:
+    for h, label, _ in horizons:
         subset = recap_exp.loc[
             recap_exp["dataset_no"].astype(str).eq("ds20")
             & recap_exp["forecast_horizon_min"].astype(int).eq(h)
@@ -971,33 +1024,30 @@ def _plot_load_composition_timeseries(recap_sa: pd.DataFrame) -> list[Path]:
         _format_numeric_axis(ax)
         if lbl == "net_load_with_pv":
             ann = (
-                f"roughness sd(diff)={roughness[lbl]:.2f}\n"
-                f"pv sd(diff)={overlay_roughness[lbl]:.2f}"
+                f"Roughness (net load with PV): {roughness[lbl]:.2f} | "
+                f"Roughness (PV): {overlay_roughness[lbl]:.2f}"
             )
         elif lbl == "net_load_with_pv_battery":
             ann = (
-                f"roughness sd(diff)={roughness[lbl]:.2f}\n"
-                f"battery sd(diff)={overlay_roughness[lbl]:.2f}"
+                f"Roughness (net load with PV+battery): {roughness[lbl]:.2f} | "
+                f"Roughness (battery): {overlay_roughness[lbl]:.2f}"
             )
         else:
-            ann = f"roughness sd(diff)={roughness[lbl]:.2f}"
+            ann = f"Roughness (underlying load): {roughness[lbl]:.2f}"
         ax.text(
             0.01,
-            0.98,
+            -0.29,
             ann,
             transform=ax.transAxes,
-            va="top",
+            va="center",
             ha="left",
-            fontsize=15,
-            bbox={"facecolor": "white", "alpha": 0.75, "edgecolor": "none"},
+            fontsize=13,
         )
-        if lbl in {"net_load_with_pv", "net_load_with_pv_battery"}:
-            ax.legend(loc="upper right", ncol=1)
-    axes[0].legend(loc="upper right", ncol=2)
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.31), ncol=3)
     axes[-1].set_xlabel("Date")
     suffix = "(week where underlying is not the roughest)" if week_mode == "underlying_not_most_volatile" else "(best available representative week)"
     fig.suptitle(f"SA BESS composition: XGBoost actual vs forecast {suffix}, from {week_start.date()}", y=1.01)
-    fig.tight_layout()
+    fig.tight_layout(h_pad=4.2)
     p1 = save_figure(fig, fig_dir / "fig20_sa_bess_composition_actual_vs_forecast_timeseries.png")
 
     errors = {

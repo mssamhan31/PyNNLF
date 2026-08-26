@@ -119,9 +119,4 @@ def build_publication_tables(workspace_dir: str | Path | None = None) -> tuple[p
     return nrmse_table, nrmse_stddev_table
 
 
-if __name__ == "__main__":
-    nrmse, nrmse_stddev = build_publication_tables()
-    print("nRMSE comparison")
-    print(nrmse)
-    print("\nnRMSE stddev comparison")
-    print(nrmse_stddev)
+# Entry by notebooks/imported helpers only.

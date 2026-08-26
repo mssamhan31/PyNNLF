@@ -25,6 +25,6 @@ This folder contains dataset-preparation and audit outputs for the AEDP aggregat
 
 ## Producer Notebooks
 
-- `2.1_build_aedp_site_30min_checkpoints.ipynb` creates checkpoint and site-audit files.
-- `2.2_generate_aedp_aggregation_datasets.ipynb` creates sample-design, membership, and export-summary files.
+- `1_build_aedp_site_30min_checkpoints.ipynb` creates checkpoint and site-audit files.
+- `2_generate_aedp_aggregation_datasets.ipynb` creates sample-design, membership, and export-summary files.
 

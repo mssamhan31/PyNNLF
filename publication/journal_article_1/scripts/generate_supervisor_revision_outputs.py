@@ -1472,5 +1472,4 @@ def main() -> None:
         _print(f" - {p.relative_to(WORKSPACE_DIR)}")
 
 
-if __name__ == "__main__":
-    main()
+# Entry by notebooks/imported helpers only.

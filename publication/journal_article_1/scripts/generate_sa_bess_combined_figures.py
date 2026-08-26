@@ -365,5 +365,4 @@ def main() -> None:
         print(f"generated {p}")
 
 
-if __name__ == "__main__":
-    main()
+# Entry by notebooks/imported helpers only.

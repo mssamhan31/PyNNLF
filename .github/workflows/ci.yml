@@ -47,3 +47,35 @@ jobs:
           name: pynnlf-test-report-${{ matrix.os }}-py${{ matrix.python-version }}
           path: "ws_ci/experiment_result/Archive/Testing Result/*.csv"
           if-no-files-found: warn
+
+  publication-notebooks:
+    name: Publication notebook artifact rebuild
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .
+          python -m pip install jupyter nbconvert nbclient ipykernel
+
+      - name: Verify canonical artifacts
+        run: |
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          root = Path('.').resolve()
+          scripts = root / 'publication' / 'journal_article_1' / 'scripts'
+          sys.path.insert(0, str(scripts))
+          import notebook_artifact_build as nab
+          nab.assert_artifacts()
+          print('Canonical artifact parity check passed.')
+          PY

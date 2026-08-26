@@ -1,0 +1,7 @@
+output_artifact,file_pattern_or_name,content_summary,purpose,used_in_manuscript_section
+Experiment summary,*_a1_experiment_result.csv,One-row experiment recap with metadata and evaluation metrics,Primary result record for model comparison,"Methods, Results tables"
+Hyperparameter record,*_a2_hyperparameter.csv,Resolved hyperparameters used in each run,Traceability and reproducibility,Appendix / reproducibility notes
+Cross-validation recap,*_a3_cross_validation_result.csv,Fold-level aggregate metrics,Stability and fold-consistency analysis,Results (stability discussion)
+Fold test series,*_cv_test/*_test_result.csv,"Datetime, observation, forecast, residual for each fold",Actual-vs-forecast and error diagnostics,Results figures
+Fold train series,*_cv_train/*_train_result.csv,"Datetime, observation, forecast, residual for train folds",Train diagnostics and overfitting checks,Supplementary diagnostics
+Model binary outputs,*_models/*,Serialized trained models,Reproducible model reuse,Reproducibility

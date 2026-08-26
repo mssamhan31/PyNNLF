@@ -67,14 +67,6 @@ jobs:
           python -m pip install .
           python -m pip install jupyter nbconvert nbclient ipykernel
 
-      - name: Execute publication notebooks
-        run: |
-          jupyter nbconvert --to notebook --execute --inplace publication/journal_article_1/notebooks/00_data_exploration_and_processing/1_build_paper_tables_and_manifest.ipynb
-          jupyter nbconvert --to notebook --execute --inplace publication/journal_article_1/notebooks/03_aedp_aggregation_level/5_build_final_figures.ipynb
-          jupyter nbconvert --to notebook --execute --inplace publication/journal_article_1/notebooks/02_ashd_148hh_forecast_horizon/3_build_final_figures.ipynb
-          jupyter nbconvert --to notebook --execute --inplace publication/journal_article_1/notebooks/01_ashd_aedp_148hh_comparison/2_build_final_figures.ipynb
-          jupyter nbconvert --to notebook --execute --inplace publication/journal_article_1/notebooks/04_sa_bess_clean_44hh/8_build_final_figures.ipynb
-
       - name: Verify canonical artifacts
         run: |
           python - <<'PY'

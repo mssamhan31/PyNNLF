@@ -1,3 +1,13 @@
+"""Seed the random number generators so an experiment can be reproduced.
+
+Inputs:  the experiment configuration, which may carry reproducibility.seed, and a
+         hyperparameter mapping.
+Outputs: seeded random, NumPy and PyTorch generators, and hyperparameters with any
+         seed-like key overridden by the configured seed.
+Key steps: read the configured seed, seed each library in turn, then override
+           seed-named hyperparameter keys so a model cannot reseed itself differently.
+"""
+
 from __future__ import annotations
 
 from copy import deepcopy

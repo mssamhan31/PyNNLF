@@ -1,5 +1,12 @@
-import sklearn
-from sklearn.feature_selection import SelectKBest, chi2, f_regression
+"""Linear regression net load forecasting model with feature selection.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: select the k best features by univariate scoring, then fit ordinary least squares.
+"""
+
+from sklearn.feature_selection import SelectKBest, f_regression
 from sklearn.linear_model import LinearRegression
 
 def train_model_m6_lr(hyperparameter, train_df_X, train_df_y):

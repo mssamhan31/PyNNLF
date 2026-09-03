@@ -1,3 +1,11 @@
+"""Support vector regression (SVR) net load forecasting model.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: scale the features, then fit a scikit-learn support vector regressor.
+"""
+
 def train_model_m11_svr(hyperparameter, train_df_X, train_df_y):
     ''' Train and test a linear model for point forecasting. 
         

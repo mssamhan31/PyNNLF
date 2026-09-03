@@ -1,3 +1,12 @@
+"""Public entry points for PyNNLF, wrapping the internal runners.
+
+Inputs:  paths to workspace YAML specification files.
+Outputs: experiment result files written under the workspace output directory;
+         recap_experiments returns a path or a DataFrame.
+Key steps: delegate to runner.run_single and run_batch, tests_runner.run_tests and
+           recap_experiments, keeping the public names stable.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path

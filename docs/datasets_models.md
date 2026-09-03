@@ -118,3 +118,38 @@ Unlike the previous household-focused datasets, this dataset covers a zone subst
 
 ### Hyperparameter
 The list of available models and their hyperparameters can be seen in `models/hyperparameters.yaml`. The values currently available are the hyperparameter values mostly used in academic literature, but not necessarily the optimum value.
+
+## Data Provenance
+
+The datasets in `data/` are derived from the following sources, all cleared for public release:
+
+| Source | Used for |
+| --- | --- |
+| Ausgrid Solar Home Dataset (ASHD) | `ds1`, `ds4`, `ds12`, `ds13`, `ds19`–`ds21` |
+| Australia Energy Data Platform (AEDP) | `ds2`, `ds3`, `ds5`–`ds11`, `ds25`–`ds36` |
+| Ausgrid zone substation, Mascot | `ds14`, `ds15` |
+| Solar Analytics CICCADA battery energy storage system (BESS) cohort | South Australian BESS datasets |
+| Solcast and the Australian Bureau of Meteorology (BOM) | weather and cloud variables in the `_with_weather` variants |
+
+### Downloading datasets
+
+A new workspace ships with the `ds0` sample only. To add more:
+
+```python
+import pynnlf
+
+pynnlf.init("my_project", download_data=True, all_data=True)   # everything
+pynnlf.init("my_project", download_data=True, datasets=["ds15"])  # a specific set
+```
+
+### Source data for the publication notebooks
+
+The unaggregated source files these datasets are built from are not distributed with the repository: they are large, and the raw feeds are not ours to redistribute. The data preparation notebooks under `publication/journal_article_1/notebooks/` therefore read from a local directory instead.
+
+Set `PYNNLF_RAW_DATA_DIR` to the directory holding your source data folders before running them:
+
+```powershell
+$env:PYNNLF_RAW_DATA_DIR = "D:\pynnlf_source_data"
+```
+
+Those notebooks expect the `1. raw`, `2. processed` and `3. cleaned` folders beneath that root, plus `reference/ch5_data.xlsx` for the comparison tables in section 01. A notebook that needs the variable raises an error naming it if it is unset.

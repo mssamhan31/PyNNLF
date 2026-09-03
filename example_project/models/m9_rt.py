@@ -1,6 +1,14 @@
 # IMPORT IMPORTANT LIBRARY
+
+"""Regression tree net load forecasting model.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: fit a scikit-learn decision tree regressor on the feature matrix.
+"""
+
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.metrics import mean_squared_error
 import pandas as pd
 
 def train_model_m9_rt(hyperparameter, train_df_X, train_df_y):
@@ -40,7 +48,6 @@ def train_model_m9_rt(hyperparameter, train_df_X, train_df_y):
     # PACK MODEL
     model = {"rt": regressor}
     
-    # print('I am here after training the model')
   
     return model
 
@@ -66,9 +73,6 @@ def produce_forecast_m9_rt(model, train_df_X, test_df_X):
     train_df_y_hat = pd.DataFrame(regressor.predict(train_df_X), index = train_df_X.index, columns = ['y_hat'])
     test_df_y_hat = pd.DataFrame(regressor.predict(test_df_X), index = test_df_X.index, columns = ['y_hat'])
     
-    # print('I am here after training the model')
-    # print('train_df_y_hat', train_df_y_hat)
-    # print('test_df_y_hat', test_df_y_hat)
     
     return train_df_y_hat, test_df_y_hat
 

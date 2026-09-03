@@ -1,3 +1,12 @@
+"""Create a user workspace by copying the bundled scaffold.
+
+Inputs:  a target workspace directory, and optionally the dataset identifiers to download.
+Outputs: a workspace containing models/, data/, specs/, a README and an output directory.
+Key steps: copy the packaged scaffold into the target, read the workspace configuration,
+           create the output directory, then optionally download the requested datasets
+           over HTTP.
+"""
+
 from __future__ import annotations
 
 from importlib import resources
@@ -42,7 +51,7 @@ def init(
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dst)
 
-    cfg = yaml.safe_load((ws / "specs" / "pynnlf_config.yaml").read_text(encoding="utf-8"))  # safe_load recommended [1](https://playwright.dev/docs/ci-intro)[2](https://github.com/mssamhan31/CANVAS)
+    cfg = yaml.safe_load((ws / "specs" / "pynnlf_config.yaml").read_text(encoding="utf-8"))  # safe_load avoids executing arbitrary tags from the workspace configuration
     out_dir = ws / cfg["paths"]["output_dir"]
     out_dir.mkdir(parents=True, exist_ok=True)
 

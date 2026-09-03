@@ -1,6 +1,15 @@
 # IMPORT IMPORTANT LIBRARY
+
+"""Recurrent neural network (RNN) net load forecasting model.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: separate lag from exogenous features, build sequences, then train a PyTorch RNN in
+           minibatches.
+"""
+
 import time
-import pandas as pd
 import numpy as np
 import random
 import os
@@ -30,6 +39,12 @@ def train_model_m12_rnn(hyperparameter, train_df_X, train_df_y):
 
     # DEFINE MODEL AND TRAINING FUNCTION
     class RNNModel(nn.Module):
+        """A recurrent neural network (RNN) for net load forecasting.
+
+        Passes the lag sequence through the RNN, concatenates the final hidden
+        state with the exogenous features, then maps the result to a single output
+        through a fully connected layer.
+        """
         def __init__(self, input_size, hidden_size, num_layers, exog_size, output_size=1):
             super(RNNModel, self).__init__()
 
@@ -40,6 +55,17 @@ def train_model_m12_rnn(hyperparameter, train_df_X, train_df_y):
             self.fc = nn.Linear(hidden_size + exog_size, output_size)
 
         def forward(self, x, exogenous_data):
+            """Run one forward pass.
+
+            Called by PyTorch; do not call directly.
+
+            Args:
+                x (torch.Tensor): batch of lag feature sequences.
+                exogenous_data (torch.Tensor): batch of exogenous calendar and weather features.
+
+            Returns:
+                torch.Tensor: predicted net load, in kilowatts (kW).
+            """
             # Pass the input through the RNN
             out, h_n = self.rnn(x)
 
@@ -54,6 +80,19 @@ def train_model_m12_rnn(hyperparameter, train_df_X, train_df_y):
             return out
 
     def train_rnn_with_minibatches(model, train_loader, epochs, learning_rate=0.001):
+        """Train the RNN over minibatches.
+
+        Optimises mean squared error with Adam, printing loss and elapsed time per epoch.
+
+        Args:
+            model (nn.Module): the network being trained.
+            train_loader (DataLoader): minibatches of training sequences and targets.
+            epochs (int): number of passes over the training set.
+            learning_rate (float): Adam optimiser learning rate.
+
+        Returns:
+            nn.Module: the trained model, modified in place and returned for convenience.
+        """
         criterion = nn.MSELoss()
         optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
@@ -81,6 +120,16 @@ def train_model_m12_rnn(hyperparameter, train_df_X, train_df_y):
             print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.4f}, time taken: {epoch_time:.2f} seconds')
 
     def set_seed(seed=seed):
+        """Seed Python, NumPy and PyTorch so this model trains reproducibly.
+
+        Also sets PYTHONHASHSEED, which affects hash ordering in the same process.
+
+        Args:
+            seed (int): value used to seed every random number generator.
+
+        Returns:
+            None.
+        """
         random.seed(seed)
         np.random.seed(seed)
         torch.manual_seed(seed)
@@ -125,6 +174,18 @@ def produce_forecast_m12_rnn(model, train_df_X, test_df_X):
 
     # PRODUCE FORECAST
     def produce_forecast(rnn, X):
+        """Forecast net load from the fitted RNN.
+
+        Splits the frame into lag and exogenous features, reshapes the lags into
+        sequences, then runs the network in evaluation mode.
+
+        Args:
+            rnn (nn.Module): the fitted network.
+            X (pd.DataFrame): feature frame to forecast from.
+
+        Returns:
+            np.ndarray: forecast net load, in kilowatts (kW).
+        """
         X_lags, X_exog = separate_lag_and_exogenous_features(X)
         X_lags_tensor = torch.tensor(X_lags.values, dtype=torch.float32)
         X_exog_tensor = torch.tensor(X_exog.values, dtype=torch.float32)

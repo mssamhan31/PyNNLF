@@ -1,6 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+"""Resolve a YAML experiment specification and run it.
+
+Inputs:  path to a workspace specs/experiment.yaml for a single run, or specs/batch.yaml
+         for several.
+Outputs: experiment results written by the engine under the workspace output directory.
+Key steps: locate the workspace root from the specification path, load the configuration,
+           discover the dataset and model files, then call run_experiment_engine once per
+           requested run.
+"""
+
 from pathlib import Path
 
 from .discovery import discover_model_name, discover_dataset_path

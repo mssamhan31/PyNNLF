@@ -2,6 +2,7 @@ cff-version: 1.2.0
 title: "PyNNLF: Python for Network Net Load Forecasting"
 message: "If you use this software, please cite it using the metadata in this file."
 type: software
+abstract: "PyNNLF (Python for Network Net Load Forecasting) evaluates net load forecasting model performance in a reliable and reproducible way, with a library of public net load datasets and common forecasting models. Acknowledgements: This project is part of Samhan's PhD study, supported by the University International Postgraduate Award (UIPA) Scholarship from UNSW, the Industry Collaboration Project Scholarship from Ausgrid, the RACE for 2030 Scholarship, and the NSW Decarbonisation Innovation Hub (NSW Decarb Hub)."
 version: "0.2.7"
 date-released: "2026-08-26"
 doi: "10.5281/zenodo.22104164"

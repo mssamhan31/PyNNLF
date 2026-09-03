@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+"""Resolve short dataset and model identifiers to files inside a workspace.
+
+Inputs:  a workspace models/ or data/ directory and an identifier such as "m6" or "ds19".
+Outputs: the unique matching file path, or the model file stem.
+Key steps: glob the directory for "<id>_*<suffix>", fall back to an exact "<id><suffix>"
+           name, and raise if there is no match or more than one.
+"""
+
 from pathlib import Path
 
 def discover_unique_file(directory: Path, prefix: str, suffix: str):

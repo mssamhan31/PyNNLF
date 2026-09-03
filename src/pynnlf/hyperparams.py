@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+"""Load model hyperparameters from a workspace hyperparameters.yaml.
+
+Inputs:  path to a workspace hyperparameters.yaml, a model name and a hyperparameter number.
+Outputs: the hyperparameter mapping for that model and number.
+Key steps: load the YAML file, then index it by [model_name][hp_no].
+"""
+
 from typing import Any
 from .yamlio import load_yaml
 

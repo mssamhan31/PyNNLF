@@ -1,3 +1,11 @@
+"""Naive net load forecasting model: the last observed value.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: carry the lag feature matching the forecast horizon straight through as the forecast.
+"""
+
 def train_model_m1_naive(hyperparameter, train_df_X, train_df_y):
     ''' Train and test a naive model for point forecasting. 
         

@@ -1,4 +1,13 @@
 # IMPORT IMPORTANT LIBRARY
+
+"""Random forest net load forecasting model.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: fit a scikit-learn random forest regressor, an ensemble of decision trees.
+"""
+
 from sklearn.ensemble import RandomForestRegressor
 import pandas as pd
 

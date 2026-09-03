@@ -1,4 +1,14 @@
 # IMPORT IMPORTANT LIBRARY
+
+"""Seasonal ARIMA with exogenous regressors (SARIMAX) net load forecasting model.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: fit a statsmodels SARIMAX model with seasonal terms and exogenous weather and
+           calendar regressors.
+"""
+
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from pynnlf.model_utils import remove_jump_df
 import pandas as pd
@@ -122,7 +132,6 @@ def produce_forecast_m5_sarima(model, train_df_X, test_df_X, forecast_horizon):
             test_df_y_hat.iloc[i, 0] = model_fitted.forecast(steps=n_timestep_forecast_horizon).iloc[-1] # to update based on the forecast horizon
 
 
-    # test_df_y_hat = m06_lr.predict(test_df_X)
     
     return train_df_y_hat, test_df_y_hat
 

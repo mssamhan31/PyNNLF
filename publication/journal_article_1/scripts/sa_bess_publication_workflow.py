@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import os
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
@@ -14,9 +15,31 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[3]
 WORKSPACE_DIR = Path(__file__).resolve().parents[1]
 
-RAW_BESS_DIR = Path(
-    r"C:\Users\z5404477\OneDrive - UNSW\H0424909\04_Workspace\2. WIP\data\1. raw\Solar Analytics Data from CICCADA\bess_data"
-)
+
+def raw_data_root() -> Path:
+    """Locate the local source data tree, which is not distributed with this repository.
+
+    Set the PYNNLF_RAW_DATA_DIR environment variable to the directory holding the
+    "1. raw", "2. processed" and "3. cleaned" folders before running this script.
+
+    Returns:
+        Path: root of the local source data tree.
+
+    Raises:
+        RuntimeError: if PYNNLF_RAW_DATA_DIR is unset.
+    """
+    root = os.environ.get("PYNNLF_RAW_DATA_DIR")
+    if not root:
+        raise RuntimeError(
+            "PYNNLF_RAW_DATA_DIR is not set. Point it at your local source data "
+            "directory; see the Data section of the repository README."
+        )
+    return Path(root)
+
+
+RAW_DATA_ROOT = raw_data_root()
+
+RAW_BESS_DIR = RAW_DATA_ROOT / "1. raw" / "Solar Analytics Data from CICCADA" / "bess_data"
 SOURCE_NOTEBOOK_DIR = (
     REPO_ROOT
     / "ignored_from_git"
@@ -24,9 +47,7 @@ SOURCE_NOTEBOOK_DIR = (
     / "Process CICCADA Solar Analytics BESS data"
 )
 
-CLEANED_SA_BESS_DIR = Path(
-    r"C:\Users\z5404477\OneDrive - UNSW\H0424909\04_Workspace\2. WIP\data\3. cleaned\SA BESS"
-)
+CLEANED_SA_BESS_DIR = RAW_DATA_ROOT / "3. cleaned" / "SA BESS"
 DIAGNOSTICS_DIR = CLEANED_SA_BESS_DIR / "diagnostics"
 INTERMEDIATE_DIR = CLEANED_SA_BESS_DIR / "intermediate"
 PROCESSED_DIR = CLEANED_SA_BESS_DIR / "processed"

@@ -1,3 +1,11 @@
+"""Developer utility: strip Jupyter artefacts from exported Python files.
+
+Inputs:  Python files beneath the src directory, relative to the current working directory.
+Outputs: the same files rewritten in place with notebook-only lines removed.
+Key steps: drop get_ipython() calls, percent magics, exclamation-mark shell lines and
+           "# In[..]" cell markers.
+"""
+
 from pathlib import Path
 import re
 
@@ -9,6 +17,11 @@ PATTERNS = [
 ]
 
 def strip_file(p: Path) -> int:
+    """Rewrite one file in place, removing Jupyter-only lines.
+
+    Returns:
+        bool: True if the file was modified.
+    """
     lines = p.read_text(encoding="utf-8", errors="ignore").splitlines(True)
     out, removed = [], 0
     for line in lines:
@@ -21,6 +34,11 @@ def strip_file(p: Path) -> int:
     return removed
 
 def main():
+    """Strip Jupyter artefacts from every Python file under the src directory.
+
+    Returns:
+        None.
+    """
     root = Path("src")
     py_files = list(root.rglob("*.py"))
     total = 0

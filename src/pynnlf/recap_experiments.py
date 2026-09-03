@@ -1,3 +1,12 @@
+"""Aggregate many experiment result folders into one summary table.
+
+Inputs:  a results root directory containing E#####_* experiment folders.
+Outputs: a single CSV holding the first row of each experiment's a1 result, optionally
+         also returned as a DataFrame.
+Key steps: scan for experiment folders, read each a1 result file, concatenate them, and
+           write the combined table.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path

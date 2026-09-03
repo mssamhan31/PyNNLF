@@ -118,3 +118,14 @@ experiment_result/Archive/Testing Result/20250821_test_result_CEEM Computer.csv
 experiment_result/Archive/Testing Result/20250821_test_result_UNSW Laptop.csv
 experiment_result/Archive/Testing Result/20250822_test_result_SS Personal Laptop
 ```
+
+# Unit Tests
+
+The repository also carries a small pytest suite covering the package's core guarantees: that it installs and creates a workspace, that an experiment runs end to end and writes a result table with the expected columns, and that the error metrics return known values.
+
+```bash
+python -m pip install -e ".[test]"
+python -m pytest
+```
+
+These run in continuous integration on every push and pull request, alongside `ruff` linting and the smoke test described above.

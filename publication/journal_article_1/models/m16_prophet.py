@@ -1,4 +1,14 @@
 # IMPORT IMPORTANT LIBRARY
+
+"""Prophet net load forecasting model.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: reshape the frame to the Prophet ds and y convention, add exogenous regressors, then
+           fit, reusing warm start parameters between folds where available.
+"""
+
 import pandas as pd
 from prophet import Prophet
 import numpy as np

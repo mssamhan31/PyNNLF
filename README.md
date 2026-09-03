@@ -1,91 +1,98 @@
-# Welcome to PyNNLF
-PyNNLF (Python for Network Net Load Forecasting) is a tool to evaluate net load forecasting model performance in a reliable and reproducible way.
+# PyNNLF — Python for Network Net Load Forecasting
 
-This tool evaluates net load forecasting models aiming to make new net load forecasting research more reliable and reproducible. It includes a library of public net load datasets and common forecasting models, including simple benchmark models. Users define the forecast problem and model specification, and the tool outputs evaluation results.
+PyNNLF (Python for Network Net Load Forecasting) evaluates net load forecasting model performance in a reliable and reproducible way.
 
-It also allows users to add datasets, models, and modify hyperparameters. Researchers claiming a new or superior model can compare their model with existing ones on public datasets. The target audience includes researchers in academia or industry focused on evaluating and optimizing net load forecasting models.
-
-For worked guidance, see the documentation on [how to add a model](https://mssamhan31.github.io/PyNNLF/add_model/) and [how to modify model hyperparameters](https://mssamhan31.github.io/PyNNLF/modify_hyper/).
-
-A visual illustration of the tool workflow is shown below.
+Net load is the demand remaining after behind-the-meter generation, mostly rooftop solar, has been subtracted. Research on net load forecasting is difficult to compare across studies, because each one uses its own data and its own evaluation protocol. PyNNLF supplies both: a library of existing public net load datasets and a library of existing forecasting models, evaluated on one consistent protocol. You can add your own datasets and models, so a new model can be compared against established ones on public data. It is built for researchers in academia and industry who evaluate and optimise net load forecasting models.
 
 ![Home Illustration](./docs/img/home_illustration.png)
 
-# Input
-1. **Forecast Target**: dataset and forecast horizon defined in `example_project/specs/experiment.yaml`.
-2. **Model Specification**: model and hyperparameters defined in `example_project/specs/experiment.yaml`.
+Full documentation: **[mssamhan31.github.io/PyNNLF](https://mssamhan31.github.io/PyNNLF/)**
 
-# Output
-1. `a1_experiment_result.csv` - Contains accuracy (cross-validated test n-RMSE), stability (accuracy standard deviation), training time, and the run seed.
-2. `a2_hyperparameter.csv` - Lists the effective hyperparameters used for each model.
-3. `a3_cross_validation_result.csv` - Detailed results for each cross-validation split.
-4. `E00001_cv1_plots/` - Optional plot folder for the first CV fold when plot generation is enabled.
-5. `cv_test/` and `cv_train/` - Folders containing time series of observations, forecasts, and residuals for each cross-validation split.
+## Installation
 
-# Tool Output Naming Convention
-Format:
-`[experiment_no]_[experiment_date]_[dataset]_[forecast_horizon]_[model]_[hyperparameter]`
+Requires **Python 3.11 or later**; tested on 3.12. On macOS use `python3`/`pip3`.
 
-Example:
-`E00001_250915_ds0_fh30_m6_lr_hp1`
+```bash
+python -m pip install pynnlf
+```
 
-# Installation Instruction
-1. Install the package.
+## Quick Start
 
-   On macOS, use `python3`/`pip3` if `python`/`pip` are not available.
+```python
+import pynnlf
 
-   ```bash
-   python -m pip install pynnlf
-   ```
+pynnlf.init("my_project")                                        # create a workspace
+pynnlf.run_experiment("my_project/specs/experiment.yaml")        # run it
+```
 
-# How to Use The Tool
-1. Initialize a workspace in any directory you want. This README uses `example_project` as the example workspace name. By default, only the sample dataset (`ds0`) is included.
+Edit `my_project/specs/experiment.yaml` between those two steps to choose the dataset, forecast horizon, model and hyperparameters. Pass `plot_enabled=False` to skip plots.
 
-   Run this in Python. On macOS, start Python with `python3` if `python` is not available.
+Results land in a folder named for the run, for example `my_project/experiment_result/E00001_260903_ds0_fh30_m6_lr_hp1/`:
 
-   ```python
-   import pynnlf
+```text
+E00001_a1_experiment_result.csv         accuracy, stability, runtime, seed
+E00001_a2_hyperparameter.csv            hyperparameters used
+E00001_a3_cross_validation_result.csv   per-fold results
+E00001_cv_train/  E00001_cv_test/       per-fold observations and forecasts
+E00001_models/                          the fitted model for each fold
+E00001_cv1_plots/                       plots for fold 1, if enabled
+```
 
-   pynnlf.init("example_project")
-   ```
+More detail: [Getting started](https://mssamhan31.github.io/PyNNLF/getting_started/) and [Run an experiment](https://mssamhan31.github.io/PyNNLF/run_experiment/).
 
-2. Set up your experiment in `example_project/specs/experiment.yaml`.
+## Repository Structure
 
-3. Run the experiment.
+```text
+src/pynnlf/       the package: engine, runner, metrics, and the workspace scaffold
+tests/            pytest suite
+data/             the public dataset library
+example_project/  a materialised copy of the workspace scaffold
+docs/             documentation source
+paper/            Journal of Open Source Software submission
+publication/      journal article notebooks, results and figures
+```
 
-   ```python
-   import pynnlf
+Annotated version: [Repository structure](https://mssamhan31.github.io/PyNNLF/repo_structure/).
 
-   pynnlf.run_experiment("example_project/specs/experiment.yaml")
-   ```
+## Data
 
-4. To skip plot generation and save storage, use the per-run override.
+`data/` holds the public net load dataset library. Sources include the Ausgrid Solar Home Dataset (ASHD), the Australia Energy Data Platform (AEDP), an Ausgrid zone substation, and a South Australian battery energy storage system (BESS) cohort, with weather from Solcast and the Australian Bureau of Meteorology (BOM).
 
-   ```python
-   import pynnlf
+A new workspace ships with `ds0` only. To fetch more:
 
-   pynnlf.run_experiment(
-       "example_project/specs/experiment.yaml",
-       plot_enabled=False,
-   )
-   ```
+```python
+pynnlf.init("my_project", download_data=True, all_data=True)
+```
 
-5. View results under `example_project/experiment_result`.
+The unaggregated source files behind these datasets are not distributed here. See [Datasets and models](https://mssamhan31.github.io/PyNNLF/datasets_models/) for the full list and for the environment variable the publication notebooks expect.
 
-When `plot_enabled=False`, PyNNLF does not create the `*_cv1_plots/` folder for that run.
+## Tests
 
-# CI
-CI (Continuous Integration) is automated testing that runs on code changes. CI is available to run smoke tests on 3 models and check whether results fall within the standard benchmark.
+```bash
+python -m pip install -e ".[test]"
+python -m pytest
+```
 
-# Full Documentation
-Detailed documentation including examples, testing, detailed guide, API reference, features and limitations, and more is available here: [PyNNLF Documentation](https://mssamhan31.github.io/PyNNLF/)
+See [Testing](https://mssamhan31.github.io/PyNNLF/tool_testing/) for the benchmark comparison run by `pynnlf.run_tests()`.
 
-# Acknowledgements
+## Continuous Integration
+
+Every push and pull request runs linting, the test suite, and smoke experiments on three models checked against the standard benchmark.
+
+## Licence
+
+MIT. See [LICENSE](./LICENSE).
+
+## Citation
+
+Please cite PyNNLF if you use it. Metadata is in [CITATION.cff](./CITATION.cff); the archived release is [10.5281/zenodo.22104164](https://doi.org/10.5281/zenodo.22104164).
+
+## Acknowledgements
 This project is part of Samhan's PhD study, supported by the University International Postgraduate Award (UIPA) Scholarship from UNSW, the Industry Collaboration Project Scholarship from Ausgrid, the RACE for 2030 Scholarship, and the NSW Decarbonisation Innovation Hub (NSW Decarb Hub). We also acknowledge Solcast and the Australian Bureau of Meteorology (BOM) for providing access to historical weather datasets for this research. We further acknowledge the use of Python libraries including Pandas, NumPy, PyTorch, Scikit-learn, XGBoost, Prophet, Statsmodels, and Matplotlib. Finally, we thank the reviewers and editor of the Journal of Open Source Software for their valuable feedback and guidance.
 
 The authors declare that they have no competing financial, personal, or professional interests related to this work.
 
-# Contributors
+## Contributors
 - **M. Syahman Samhan** (m.samhan@unsw.edu.au): Lead developer and researcher. Responsible for conceptualization, implementation, documentation, and experimentation.
 - **Anna Bruce**: Supervisor. Provided guidance on research direction and methodology.
 - **Baran Yildiz**: Supervisor. Provided guidance on research direction and methodology.

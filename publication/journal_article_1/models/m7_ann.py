@@ -1,4 +1,13 @@
 # IMPORT IMPORTANT LIBRARY
+
+"""Artificial neural network (ANN) net load forecasting model, one hidden layer.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: scale the features, then train a single hidden layer PyTorch multilayer perceptron.
+"""
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -24,6 +33,16 @@ def train_model_m7_ann(hyperparameter, train_df_X, train_df_y):
 
     # Set random seed for reproducibility
     def set_seed(seed):
+        """Seed Python, NumPy and PyTorch so this model trains reproducibly.
+
+        Also sets PYTHONHASHSEED, which affects hash ordering in the same process.
+
+        Args:
+            seed (int): value used to seed every random number generator.
+
+        Returns:
+            None.
+        """
         random.seed(seed)
         os.environ["PYTHONHASHSEED"] = str(seed)
         np.random.seed(seed)
@@ -46,6 +65,12 @@ def train_model_m7_ann(hyperparameter, train_df_X, train_df_y):
     
     # Define the ANN model
     class ANNModel(nn.Module):
+        """A artificial neural network (ANN) with one hidden layer for net load forecasting.
+
+        Passes the lag sequence through the network, concatenates the final hidden
+        state with the exogenous features, then maps the result to a single output
+        through a fully connected layer.
+        """
         def __init__(self, input_size, hidden_size, output_size):
             super(ANNModel, self).__init__()
             self.fc1 = nn.Linear(input_size, hidden_size)
@@ -53,6 +78,16 @@ def train_model_m7_ann(hyperparameter, train_df_X, train_df_y):
             self.relu = nn.ReLU()  # Activation function
 
         def forward(self, x):
+            """Run one forward pass.
+
+            Called by PyTorch; do not call directly.
+
+            Args:
+                x (torch.Tensor): batch of lag feature sequences.
+
+            Returns:
+                torch.Tensor: predicted net load, in kilowatts (kW).
+            """
             x = self.fc1(x)
             if activation_function == 'relu':
                 x = self.relu(x)

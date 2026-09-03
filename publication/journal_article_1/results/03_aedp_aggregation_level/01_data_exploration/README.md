@@ -16,7 +16,7 @@ This folder contains dataset-preparation and audit outputs for the AEDP aggregat
 | File | Purpose |
 | --- | --- |
 | `aedp_148hh_recovered_site_list.csv` | Recovered 148-site AEDP cohort used as the starting point. |
-| `aedp_checkpoint_selected_top_level_raw_files.csv` | The 36 top-level raw monthly files selected for `2021-07` through `2024-06`; confirms nested OneDrive duplicate folders were not used. |
+| `aedp_checkpoint_selected_top_level_raw_files.csv` | The 36 top-level raw monthly files selected for `2021-07` through `2024-06`; confirms nested cloud-storage duplicate folders were not used. |
 | `aedp_checkpoint_monthly_scan_summary.csv` | Month-by-month raw scan summary from notebook `2.1`. |
 | `aedp_site_30min_checkpoint_summary.csv` | Full checkpoint status table for all recovered cohort sites. |
 | `aedp_site_30min_checkpoint_validation.csv` | Validation checks for each written per-household 30-minute checkpoint. |

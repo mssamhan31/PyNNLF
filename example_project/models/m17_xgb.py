@@ -1,6 +1,13 @@
 # IMPORT IMPORTANT LIBRARY
-import numpy as np
-import pandas as pd
+
+"""Extreme gradient boosting (XGBoost) net load forecasting model.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: fit an XGBoost regressor on the feature matrix.
+"""
+
 from xgboost import XGBRegressor
 
 def train_model_m17_xgb(hyperparameter, train_df_X, train_df_y):

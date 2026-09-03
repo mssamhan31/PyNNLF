@@ -1,3 +1,11 @@
+"""Seasonal naive net load forecasting model: the value one season ago.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: select the lag column one seasonal period back and use it as the forecast.
+"""
+
 def train_model_m2_snaive(hyperparameter, train_df_X, train_df_y):
     ''' Train and test a seasonal model for point forecasting. 
         

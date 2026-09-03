@@ -1,7 +1,14 @@
+"""Deep neural network (DNN) net load forecasting model.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: scale the features, then train a multi hidden layer PyTorch multilayer perceptron.
+"""
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import numpy as np
 import pandas as pd
 
 def train_model_m8_dnn(hyperparameter, train_df_X, train_df_y):
@@ -33,6 +40,12 @@ def train_model_m8_dnn(hyperparameter, train_df_X, train_df_y):
     
     # Define the DNN model
     class DNNModel(nn.Module):
+        """A deep neural network (DNN) with several hidden layers for net load forecasting.
+
+        Passes the lag sequence through the network, concatenates the final hidden
+        state with the exogenous features, then maps the result to a single output
+        through a fully connected layer.
+        """
         def __init__(self, input_size, hidden_size, output_size, n_hidden, activation_function):
             super(DNNModel, self).__init__()
             self.layers = nn.ModuleList()
@@ -49,6 +62,16 @@ def train_model_m8_dnn(hyperparameter, train_df_X, train_df_y):
             self.layers.append(nn.Linear(hidden_size, output_size))
             
         def forward(self, x):
+            """Run one forward pass.
+
+            Called by PyTorch; do not call directly.
+
+            Args:
+                x (torch.Tensor): batch of lag feature sequences.
+
+            Returns:
+                torch.Tensor: predicted net load, in kilowatts (kW).
+            """
             for i, layer in enumerate(self.layers[:-1]):  # Iterate through hidden layers
                 x = layer(x)
                 if self.activation_function == 'relu':

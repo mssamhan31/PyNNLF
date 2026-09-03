@@ -1,8 +1,16 @@
+"""Gated recurrent unit (GRU) net load forecasting model.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: separate lag from exogenous features, build sequences, then train a PyTorch GRU in
+           minibatches.
+"""
+
 import time
 import os
 import random
 import numpy as np
-import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -34,12 +42,29 @@ def train_model_m14_gru(hyperparameter, train_df_X, train_df_y):
 
     # DEFINE MODEL
     class GRUModel(nn.Module):
+        """A gated recurrent unit (GRU) network for net load forecasting.
+
+        Passes the lag sequence through the GRU, concatenates the final hidden
+        state with the exogenous features, then maps the result to a single output
+        through a fully connected layer.
+        """
         def __init__(self, input_size, hidden_size, num_layers, exog_size, output_size=1):
             super(GRUModel, self).__init__()
             self.gru = nn.GRU(input_size, hidden_size, num_layers, batch_first=True)
             self.fc = nn.Linear(hidden_size + exog_size, output_size)
 
         def forward(self, x, exogenous_data):
+            """Run one forward pass.
+
+            Called by PyTorch; do not call directly.
+
+            Args:
+                x (torch.Tensor): batch of lag feature sequences.
+                exogenous_data (torch.Tensor): batch of exogenous calendar and weather features.
+
+            Returns:
+                torch.Tensor: predicted net load, in kilowatts (kW).
+            """
             out, h_n = self.gru(x)
             last_hidden_state = out[:, -1, :]
             combined_input = torch.cat((last_hidden_state, exogenous_data), dim=1)
@@ -47,6 +72,19 @@ def train_model_m14_gru(hyperparameter, train_df_X, train_df_y):
             return out
 
     def train_gru_with_minibatches(model, train_loader, epochs, learning_rate=0.001):
+        """Train the GRU over minibatches.
+
+        Optimises mean squared error with Adam, printing loss and elapsed time per epoch.
+
+        Args:
+            model (nn.Module): the network being trained.
+            train_loader (DataLoader): minibatches of training sequences and targets.
+            epochs (int): number of passes over the training set.
+            learning_rate (float): Adam optimiser learning rate.
+
+        Returns:
+            nn.Module: the trained model, modified in place and returned for convenience.
+        """
         criterion = nn.MSELoss()
         optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
@@ -69,6 +107,16 @@ def train_model_m14_gru(hyperparameter, train_df_X, train_df_y):
             print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.4f}, time taken: {time.time() - start_time:.2f}s')
 
     def set_seed(seed=seed):
+        """Seed Python, NumPy and PyTorch so this model trains reproducibly.
+
+        Also sets PYTHONHASHSEED, which affects hash ordering in the same process.
+
+        Args:
+            seed (int): value used to seed every random number generator.
+
+        Returns:
+            None.
+        """
         random.seed(seed)
         np.random.seed(seed)
         torch.manual_seed(seed)
@@ -116,6 +164,18 @@ def produce_forecast_m14_gru(model, train_df_X, test_df_X):
     batch_size = int(hyperparameter['batch_size'])
 
     def produce_forecast(gru, X):
+        """Forecast net load from the fitted GRU.
+
+        Splits the frame into lag and exogenous features, reshapes the lags into
+        sequences, then runs the network in evaluation mode.
+
+        Args:
+            gru (nn.Module): the fitted network.
+            X (pd.DataFrame): feature frame to forecast from.
+
+        Returns:
+            np.ndarray: forecast net load, in kilowatts (kW).
+        """
         X_lags, X_exog = separate_lag_and_exogenous_features(X)
         X_lags_tensor = torch.tensor(X_lags.values, dtype=torch.float32)
         X_exog_tensor = torch.tensor(X_exog.values, dtype=torch.float32)

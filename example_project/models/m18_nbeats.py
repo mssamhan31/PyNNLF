@@ -1,4 +1,12 @@
-from pyexpat import model
+"""Neural basis expansion analysis (N-BEATS) net load forecasting model.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: build stacked fully connected blocks that emit backcast and forecast terms, then
+           train the stack in PyTorch.
+"""
+
 
 
 def train_model_m18_nbeats(hyperparameter, train_df_X, train_df_y):
@@ -25,7 +33,9 @@ def train_model_m18_nbeats(hyperparameter, train_df_X, train_df_y):
     seed = int(hyperparameter['seed'])
 
     # ---- Set seeds for reproducibility ----
-    import torch, numpy as np, random
+    import torch
+    import numpy as np
+    import random
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -39,19 +49,35 @@ def train_model_m18_nbeats(hyperparameter, train_df_X, train_df_y):
     # ---- Define NBeats model inside the function ----
     import torch.nn as nn
     class NBeatsModel(nn.Module):
+        """A neural basis expansion analysis (N-BEATS) stack for net load forecasting.
+
+        Passes the lag sequence through the stack, concatenates the final hidden
+        state with the exogenous features, then maps the result to a single output
+        through a fully connected layer.
+        """
         def __init__(self, input_size, output_size, hidden_size, num_blocks, num_layers):
             super(NBeatsModel, self).__init__()
             blocks = []
             for _ in range(num_blocks):
                 block = []
-                for l in range(num_layers):
-                    block.append(nn.Linear(input_size if l==0 else hidden_size, hidden_size))
+                for layer_idx in range(num_layers):
+                    block.append(nn.Linear(input_size if layer_idx==0 else hidden_size, hidden_size))
                     block.append(nn.ReLU())
                 block.append(nn.Linear(hidden_size, output_size))
                 blocks.append(nn.Sequential(*block))
             self.blocks = nn.ModuleList(blocks)
 
         def forward(self, x):
+            """Run one forward pass.
+
+            Called by PyTorch; do not call directly.
+
+            Args:
+                x (torch.Tensor): batch of lag feature sequences.
+
+            Returns:
+                torch.Tensor: predicted net load, in kilowatts (kW).
+            """
             out = 0
             for block in self.blocks:
                 out += block(x)

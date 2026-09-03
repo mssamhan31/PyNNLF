@@ -1,4 +1,14 @@
 # IMPORT IMPORTANT LIBRARY
+
+"""Exponential smoothing (ETS) net load forecasting model.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: fit a statsmodels exponential smoothing state space model, refitting recursively as
+           the forecast origin advances.
+"""
+
 import pandas as pd
 from statsmodels.tsa.statespace.exponential_smoothing import ExponentialSmoothing
 from pynnlf.model_utils import remove_jump_df
@@ -127,7 +137,6 @@ def produce_forecast_m3_ets(model, train_df_X, test_df_X, forecast_horizon):
             model_fitted = model_fitted.append(new_row)
             test_df_y_hat.iloc[i, 0] = model_fitted.forecast(steps=n_timestep_forecast_horizon).iloc[-1] # to update based on the forecast horizon
 
-    # test_df_y_hat = m06_lr.predict(test_df_X)
     
     return train_df_y_hat, test_df_y_hat
 

@@ -1,6 +1,19 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+"""Benchmark comparison harness: run experiments and compare metrics against recorded values.
+
+Inputs:  a workspace specs/tests_*.yaml naming datasets, forecast horizons, models and a
+         benchmark CSV, plus an optional tolerance.
+Outputs: a pass or fail report CSV under the workspace archive directory.
+Key steps: run the listed experiments, read each cross-validation metric, compare it
+           against the benchmark's acceptable range within the tolerance, then write the
+           report.
+
+Results are recorded in the report rather than raised, so review the report CSV to see
+how each metric compared against its benchmark range.
+"""
+
 from datetime import datetime
 from pathlib import Path
 import re
@@ -89,7 +102,7 @@ def _write_report(report_path: Path, report_rows: list[dict]) -> None:
 
     # If nothing matched, write an empty report with headers (no crash)
     if not report_rows:
-        out = pd.DataFrame(columns=["metric_id","min acceptable value","max acceptable value","value, test","test_result"])
+        out = pd.DataFrame(columns=expected_cols)
         out = out.set_index("metric_id")
         report_path.parent.mkdir(parents=True, exist_ok=True)
         out.to_csv(report_path, index=True)
@@ -119,7 +132,7 @@ def _run_recap_smoke(output_dir: Path) -> list[str]:
         return p
 
     folder_1 = _make_folder("E00001_smoke")
-    folder_2 = _make_folder("E00002_smoke")
+    _make_folder("E00002_smoke")
     folder_3 = _make_folder("E00003_smoke")
     folder_4 = _make_folder("E00004_smoke")
 
@@ -243,7 +256,7 @@ def run_tests(spec_path: str | Path, *, plot_enabled: bool | None = None) -> Pat
         parts = exp_dir.name.split("_")
 
         # folder pattern: E00001_YYMMDD_ds0_fh30_<model_name...>_<hp_no>
-        hp_no = parts[-1]
+        _hp_no = parts[-1]
         model_name = "_".join(parts[4:-1])  # join all tokens after fhXX up to hpXX
 
         # Compare each metric in a3 columns for mean and stddev

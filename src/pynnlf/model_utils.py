@@ -1,6 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+"""Shared model helpers, plus the superseded JSON specification workflow.
+
+Inputs:  forecasting DataFrames for the helpers; JSON specification paths for the
+         legacy runners.
+Outputs: cleaned DataFrames and separated feature sets; the legacy runners write
+         experiment results.
+Key steps: remove_jump_df and separate_lag_and_exogenous_features are used by eight of
+           the bundled models. run_single and run_batch are the pre-YAML workflow, kept
+           for backward compatibility and superseded by runner.py.
+"""
+
 from pathlib import Path
 import json
 
@@ -47,6 +58,10 @@ def run_single(spec_path: str | Path) -> None:
 
     Returns:
         None
+
+    Deprecated: superseded by the YAML workflow in runner.py, which pynnlf.run_experiment
+    and pynnlf.run_experiment_batch call. Kept so existing JSON specifications keep
+    working; prefer the YAML entry points for new work.
     """
     spec_path = Path(spec_path)
     ws = _workspace_root_from_spec(spec_path)
@@ -101,6 +116,10 @@ def run_batch(spec_path: str | Path) -> None:
 
     Returns:
         None
+
+    Deprecated: superseded by the YAML workflow in runner.py, which pynnlf.run_experiment
+    and pynnlf.run_experiment_batch call. Kept so existing JSON specifications keep
+    working; prefer the YAML entry points for new work.
     """
     spec_path = Path(spec_path)
     ws = _workspace_root_from_spec(spec_path)

@@ -1,3 +1,12 @@
+"""Transformer net load forecasting model.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: separate lag from exogenous features, build sequences, then train a PyTorch
+           transformer encoder in minibatches.
+"""
+
 import torch
 from pynnlf.model_utils import separate_lag_and_exogenous_features
 
@@ -27,11 +36,20 @@ def train_model_m15_transformer(hyperparameter, train_df_X, train_df_y):
     import torch
     import torch.nn as nn
     import torch.optim as optim
-    import random, numpy as np, os, time
+    import random
+    import numpy as np
+    import os
+    import time
     from torch.utils.data import DataLoader, TensorDataset
 
     # TRANSFORMER MODEL
     class TransformerModel(nn.Module):
+        """A transformer encoder for net load forecasting.
+
+        Passes the lag sequence through the transformer, concatenates the final hidden
+        state with the exogenous features, then maps the result to a single output
+        through a fully connected layer.
+        """
         def __init__(self, input_size, hidden_size, num_layers, exog_size, output_size=1):
             super(TransformerModel, self).__init__()
             # Transformer embedding
@@ -47,6 +65,17 @@ def train_model_m15_transformer(hyperparameter, train_df_X, train_df_y):
             self.fc = nn.Linear(hidden_size + exog_size, output_size)
 
         def forward(self, x, exogenous_data):
+            """Run one forward pass.
+
+            Called by PyTorch; do not call directly.
+
+            Args:
+                x (torch.Tensor): batch of lag feature sequences.
+                exogenous_data (torch.Tensor): batch of exogenous calendar and weather features.
+
+            Returns:
+                torch.Tensor: predicted net load, in kilowatts (kW).
+            """
             x = self.embedding(x) 
             x = self.transformer_encoder(x)
             last_hidden_state = x[:, -1, :]
@@ -55,6 +84,19 @@ def train_model_m15_transformer(hyperparameter, train_df_X, train_df_y):
             return out
 
     def train_transformer_with_minibatches(model, train_loader, epochs, learning_rate=learning_rate):
+        """Train the transformer over minibatches.
+
+        Optimises mean squared error with Adam, printing loss and elapsed time per epoch.
+
+        Args:
+            model (nn.Module): the network being trained.
+            train_loader (DataLoader): minibatches of training sequences and targets.
+            epochs (int): number of passes over the training set.
+            learning_rate (float): Adam optimiser learning rate.
+
+        Returns:
+            nn.Module: the trained model, modified in place and returned for convenience.
+        """
         criterion = nn.MSELoss()
         optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
@@ -75,6 +117,16 @@ def train_model_m15_transformer(hyperparameter, train_df_X, train_df_y):
             print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.4f}, time: {end_time - start_time:.2f}s')
 
     def set_seed(seed=seed):
+        """Seed Python, NumPy and PyTorch so this model trains reproducibly.
+
+        Also sets PYTHONHASHSEED, which affects hash ordering in the same process.
+
+        Args:
+            seed (int): value used to seed every random number generator.
+
+        Returns:
+            None.
+        """
         random.seed(seed)
         np.random.seed(seed)
         torch.manual_seed(seed)
@@ -117,6 +169,18 @@ def produce_forecast_m15_transformer(model, train_df_X, test_df_X):
     input_size = int(hyperparameter['input_size'])
 
     def produce_forecast(transformer, X):
+        """Forecast net load from the fitted transformer.
+
+        Splits the frame into lag and exogenous features, reshapes the lags into
+        sequences, then runs the network in evaluation mode.
+
+        Args:
+            transformer (nn.Module): the fitted network.
+            X (pd.DataFrame): feature frame to forecast from.
+
+        Returns:
+            np.ndarray: forecast net load, in kilowatts (kW).
+        """
         X_lags, X_exog = separate_lag_and_exogenous_features(X)
         X_lags_tensor = torch.tensor(X_lags.values, dtype=torch.float32)
         X_exog_tensor = torch.tensor(X_exog.values, dtype=torch.float32)

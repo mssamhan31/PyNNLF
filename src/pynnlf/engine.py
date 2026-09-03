@@ -1,3 +1,15 @@
+"""Core net load forecasting (NLF) experiment engine.
+
+Inputs:  a dataset comma separated values (CSV) file with a datetime index and a
+         netload_kW column, plus the resolved experiment configuration.
+Outputs: per-experiment result files under the workspace output directory: a1 summary,
+         a2 hyperparameters, a3 cross-validation (CV) detail, per-fold train and test
+         series, saved models, and optional plots.
+Key steps: prepare output folders, load and validate the dataset, add lag and calendar
+           features, split into blocked CV folds, train and forecast per fold, score with
+           seven error metrics, then write results and plots.
+"""
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -5,7 +17,6 @@ import datetime as dt
 from datetime import datetime
 import os
 import time
-import pickle # for saving trained model
 import dill # for saving trained model
 import importlib.util
 from pathlib import Path   
@@ -561,11 +572,7 @@ def save_model(filepath, cv_no, model):
     """
     
     with open(filepath['model'][cv_no], "wb") as model_file:
-        # pickle.dump(model, model_file)
         dill.dump(model, model_file)
-
-import numpy as np
-import pandas as pd
 
 def to_series(y_hat, target_index):
     """
@@ -950,68 +957,80 @@ def run_experiment_engine(
 
 # Mean Bias Error (MBE)
 def compute_MBE(forecast, observation):
-    """As the name suggest.
+    """Mean bias error (MBE): the average signed difference between forecast and observation.
+
+    Positive means the model over-forecasts on average. Unlike the absolute measures it
+    does not describe magnitude of error, because positive and negative errors cancel.
 
     Args:
-        forecast (df): series of the forecast result from the model
-        observation (df): series of the observed value (actual value)
+        forecast (pd.Series): forecast net load, in kilowatts (kW).
+        observation (pd.Series): observed net load, in kilowatts (kW).
 
     Returns:
-        error as the name suggest (float): as the name suggest
+        float: mean bias error in kilowatts (kW), rounded to 5 decimal places.
     """
     return round(((forecast - observation).sum()) / len(observation), 5)
 
 # Mean Absolute Error (MAE)
 def compute_MAE(forecast, observation):
-    """As the name suggest.
+    """Mean absolute error (MAE): the average magnitude of the forecast error.
 
     Args:
-        forecast (df): series of the forecast result from the model
-        observation (df): series of the observed value (actual value)
+        forecast (pd.Series): forecast net load, in kilowatts (kW).
+        observation (pd.Series): observed net load, in kilowatts (kW).
 
     Returns:
-        error as the name suggest (float): as the name suggest
+        float: mean absolute error in kilowatts (kW), rounded to 3 decimal places.
     """
     return round((abs(forecast - observation)).mean(), 3)
 
 # Root Mean Square Error (RMSE)
 def compute_RMSE(forecast, observation):
-    """As the name suggest.
+    """Root mean square error (RMSE): the square root of the mean squared error.
+
+    Penalises large errors more heavily than mean absolute error does.
 
     Args:
-        forecast (df): series of the forecast result from the model
-        observation (df): series of the observed value (actual value)
+        forecast (pd.Series): forecast net load, in kilowatts (kW).
+        observation (pd.Series): observed net load, in kilowatts (kW).
 
     Returns:
-        error as the name suggest (float): as the name suggest
+        float: root mean square error in kilowatts (kW), rounded to 3 decimal places.
     """
     return round(np.sqrt(((forecast - observation) ** 2).mean()), 3)
 
 # Mean Absolute Percentage Error (MAPE)
 def compute_MAPE(forecast, observation):
-    """As the name suggest. Be careful with MAPE though because its value can go to inf since the observed value can be 0. 
+    """Mean absolute percentage error (MAPE): mean absolute error relative to the observation.
+
+    Be careful with MAPE: it tends to infinity when an observed value is zero, which
+    happens readily in net load data.
 
     Args:
-        forecast (df): series of the forecast result from the model
-        observation (df): series of the observed value (actual value)
+        forecast (pd.Series): forecast net load, in kilowatts (kW).
+        observation (pd.Series): observed net load, in kilowatts (kW).
 
     Returns:
-        error as the name suggest (float): as the name suggest
+        float: mean absolute percentage error as a percentage, rounded to 3 decimal places.
     """
     return round((abs((forecast - observation) / observation) * 100).mean(), 3)
 
 # Mean Absolute Scaled Error (MASE)
 def compute_MASE(forecast, observation, train_result):
-    """As the name suggest. MASE is first introduced by Rob Hyndman, used to handle MAPE problem being infinity. 
-    Instead of using observed value as denominator,
-    MASE uses MAE of the naive forecast at the train set for denominator. 
+    """Mean absolute scaled error (MASE): mean absolute error scaled by the naive benchmark.
+
+    Introduced by Rob Hyndman to avoid the infinite values MAPE produces. Instead of
+    dividing by the observed value, MASE divides by the mean absolute error of the naive
+    forecast on the training set. A value below 1 beats the naive forecast.
 
     Args:
-        forecast (df): series of the forecast result from the model
-        observation (df): series of the observed value (actual value)
+        forecast (pd.Series): forecast net load, in kilowatts (kW).
+        observation (pd.Series): observed net load, in kilowatts (kW).
+        train_result (pd.DataFrame): training fold results, providing the naive and
+            observation columns used for the denominator.
 
     Returns:
-        error as the name suggest (float): as the name suggest
+        float: mean absolute scaled error, dimensionless, rounded to 3 decimal places.
     """
     errors = abs(forecast - observation)
     MAE_naive = compute_MAE(train_result['naive'], train_result['observation'])
@@ -1021,29 +1040,35 @@ def compute_MASE(forecast, observation, train_result):
 
 # Forecast Skill (FS)
 def compute_fskill(forecast, observation, naive):
-    """As the name suggest. Forecast Skill is a relative measure seeing the improvement 
-    of the model performance over naive model. 
+    """Forecast skill: the percentage improvement in RMSE over the naive forecast.
+
+    Zero means the model matches the naive forecast; 100 would mean a perfect forecast;
+    a negative value means the model is worse than naive.
 
     Args:
-        forecast (df): series of the forecast result from the model
-        observation (df): series of the observed value (actual value)
+        forecast (pd.Series): forecast net load, in kilowatts (kW).
+        observation (pd.Series): observed net load, in kilowatts (kW).
+        naive (pd.Series): naive benchmark forecast, in kilowatts (kW).
 
     Returns:
-        error as the name suggest (float): as the name suggest
+        float: forecast skill as a percentage, rounded to 3 decimal places.
     """
     return round((1 - compute_RMSE(forecast, observation) / compute_RMSE(naive, observation)) * 100, 3)
 
 # R2
 def compute_R2(forecast, observation):
-    """As the name suggest. Be careful with R2 though because it is not a forecast evaluation. 
-    It is just used to show linearity on the scatter plot of forecast and observed value. 
+    """Squared Pearson correlation between forecast and observation.
+
+    Be careful with this one: it is not a forecast evaluation measure. It is reported only
+    to show how linear the forecast against observation scatter plot is, and a model can
+    score highly here while being badly biased.
 
     Args:
-        forecast (df): series of the forecast result from the model
-        observation (df): series of the observed value (actual value)
+        forecast (pd.Series): forecast net load, in kilowatts (kW).
+        observation (pd.Series): observed net load, in kilowatts (kW).
 
     Returns:
-        error as the name suggest (float): as the name suggest
+        float: squared correlation coefficient, dimensionless, rounded to 3 decimal places.
     """
     return round(forecast.corr(observation)**2, 3)
 
@@ -1070,7 +1095,6 @@ def timeplot_forecast(observation, forecast, pathname, dark_blue, orange):
     plt.figure(figsize=(9, 9))
 
     # Set background color
-    # plt.gcf().patch.set_facecolor(platinum)
 
     # Plot the actual and forecast data
     plt.plot(observation[-timesteps_per_week:], color=dark_blue, label='Actual')
@@ -1108,7 +1132,6 @@ def timeplot_forecast(observation, forecast, pathname, dark_blue, orange):
 
 
     # Show the plot
-    # plt.show()
 
 def scatterplot_forecast(observation, forecast, R2, pathname, dark_blue, orange):
     """Produce scatterplot observation vs forecast value and save it on the designated folder
@@ -1122,7 +1145,6 @@ def scatterplot_forecast(observation, forecast, R2, pathname, dark_blue, orange)
     plt.figure(figsize=(9, 9))
 
     # Set background color
-    # plt.gcf().patch.set_facecolor(platinum)
 
     # Plot the actual and forecast data
     plt.scatter(forecast, observation, color=dark_blue, label='Actual', s=40, alpha=0.7)  # 's' sets the size of the points
@@ -1163,7 +1185,6 @@ def scatterplot_forecast(observation, forecast, R2, pathname, dark_blue, orange)
 
 
     # Show the plot
-#     plt.show()
 
 def timeplot_residual(residual, pathname, dark_blue, orange):
     """Produce time plot of resodia; value and save it on the designated folder
@@ -1186,7 +1207,6 @@ def timeplot_residual(residual, pathname, dark_blue, orange):
     plt.figure(figsize=(9, 9))
 
     # Set background color
-    # plt.gcf().patch.set_facecolor(platinum)
 
     # Plot the actual and forecast data
     plt.plot(residual[-timesteps_per_week:], color=dark_blue, label='Actual')
@@ -1222,7 +1242,6 @@ def timeplot_residual(residual, pathname, dark_blue, orange):
 
 
     # Show the plot
-    # plt.show()
 
 def histogram_residual(residual, df, pathname, dark_blue, orange):
     """Produce histogiram of residual value and save it on the designated folder
@@ -1235,7 +1254,6 @@ def histogram_residual(residual, df, pathname, dark_blue, orange):
     plt.figure(figsize=(9, 9))
 
     # Set background color
-    # plt.gcf().patch.set_facecolor(platinum)
 
     # Compute the range
     dataset_range = df['y'].max() - df['y'].min()
@@ -1276,5 +1294,4 @@ def histogram_residual(residual, df, pathname, dark_blue, orange):
 
 
     # Show the plot
-    # plt.show()
 

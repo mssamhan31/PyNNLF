@@ -1,7 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import numpy as np
+"""Template net load forecasting model: copy this file to add your own.
+
+Inputs:  training and test feature frames prepared by the engine, plus the
+         hyperparameter mapping for this model.
+Outputs: a fitted model object, and a forecast of net load in kilowatts (kW).
+Key steps: implement train_model_<name> to return a fitted object and produce_forecast_<name>
+           to return the forecast series; see the add a model documentation.
+"""
+
 import pandas as pd
 
 def train_model_mXX_template(hyperparameter, train_df_X, train_df_y, forecast_horizon=None):

@@ -78,6 +78,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+test = [
+  "pytest>=8.0.0",
+  "ruff>=0.6.0,<0.17",
+]
+
 # Keep notebook tooling optional (since notebooks won't be "the software" anymore)
 notebook = [
   "ipykernel>=6.29.5",
@@ -125,3 +130,19 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 pynnlf = ["scaffold/**/*"]
+
+[tool.ruff]
+src = ["src"]
+
+[tool.ruff.lint]
+# Pin the rule set explicitly. Ruff's defaults widened in 0.16, so leaving this
+# unset means CI enforces a different standard each time a new ruff is released.
+# These are the correctness rules: pyflakes, plus the pycodestyle errors that matter.
+select = ["E4", "E7", "E9", "F"]
+
+[tool.ruff.lint.per-file-ignores]
+# The bundled models assign hyperparameters and seeds that are then not used. Whether
+# that is a leftover or a genuine reproducibility gap is a modelling decision for the
+# author, not something a formatting pass may silently delete, so F841 is not enforced
+# here. The individual cases are listed in .ai/tidy-20260903.md.
+"src/pynnlf/scaffold/models/*.py" = ["F841"]

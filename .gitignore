@@ -23,8 +23,16 @@ ws_ci/
 ws_full/
 
 # --- Outputs (big, generated) ---
+# Workspace run output is scratch and stays out of git.
 experiment_result/
 **/experiment_result/
+
+# ...except the journal article's own results store, which is the evidence
+# behind the published figures. Without it a clean clone cannot rebuild them:
+# ensure_required_inputs() fails and every aggregation figure loses its
+# fold-level source. Re-include the directory first, because git cannot
+# re-include a file whose parent directory is excluded.
+!publication/journal_article_1/experiment_result/
 
 # --- OS/editor ---
 .DS_Store
@@ -40,7 +48,26 @@ build/
 # --- Site ---
 site/
 
-# --- Unimoprtant Model Artifcats ---
+# --- Bulk inside the journal article results store ---
+# Keep only what the figure build reads, which is ~31 MB of the 33 GB the
+# directory occupies:
+#   a1 registry, a2 hyperparameters, a3 per-fold metrics  - kept, ~0.4 MB
+#   cv_test/...cv1_test_result.csv                        - kept, ~31 MB
+#   cv_test folds 2-10                                    - dropped, never selected
+#   cv_train/                                             - dropped, never read
+#   cv1_plots/ per-experiment diagnostic PNGs             - dropped, regenerable
+#   models and pickles                                    - dropped, regenerable
+# The per-fold cross-validation metrics survive in the a3 files, so the fold
+# numbers stay verifiable without the raw per-fold series.
+publication/journal_article_1/experiment_result/**/E*models/
+publication/journal_article_1/experiment_result/**/*.pkl
+publication/journal_article_1/experiment_result/**/E*cv_train/
+publication/journal_article_1/experiment_result/**/E*cv1_plots/
+publication/journal_article_1/experiment_result/**/*_test_result.csv
+!publication/journal_article_1/experiment_result/**/*_cv1_test_result.csv
+
+# The Databricks store predates this rule and is already released; it keeps its
+# train and test folds. Only its model artefacts are excluded.
 publication/journal_article_1/experiment_result_databricks/**/E*models/
 publication/journal_article_1/experiment_result_databricks/**/*.pkl
 

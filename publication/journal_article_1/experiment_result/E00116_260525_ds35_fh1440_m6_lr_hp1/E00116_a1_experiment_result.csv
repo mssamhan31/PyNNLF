@@ -1,0 +1,2 @@
+experiment_no,exp_date,dataset_no,dataset,dataset_freq_min,dataset_length_week,forecast_horizon_min,train_pct,test_pct,model_no,hyperparameter_no,model_name,hyperparamter,run_seed,seed_keys_overridden,runtime_ms,train_RMSE,train_RMSE_stddev,test_RMSE,test_RMSE_stddev,train_nRMSE,train_nRMSE_stddev,test_nRMSE,test_nRMSE_stddev
+E00116,2026-05-25,ds35,aedp,30,140,1440,0.9,0.1,m6,hp1,m6_lr_hp1,num_features: 50,,,1054.2954206466675,406.13469999999995,5.145569033428451,406.6586,47.37287229159275,21.075541960451403,0.2670189374964028,21.10272869537723,2.4583197588597305

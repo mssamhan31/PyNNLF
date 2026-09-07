@@ -1,0 +1,6 @@
+,hyperparameter,value
+0,seed,1
+1,n_estimators,100
+2,max_depth,3
+3,min_samples_split,2
+4,min_samples_leaf,1

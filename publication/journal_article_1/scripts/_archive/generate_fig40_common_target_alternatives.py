@@ -8,7 +8,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
-import generate_supervisor_revision_outputs as pub
+import generate_paper_figures as pub
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -124,8 +124,8 @@ def main() -> None:
             actual = window["observation_30m"]
             forecast = window[f"forecast_{short}"]
 
-            ax.plot(window["datetime"], actual, color=pub.PALETTE["dark_blue"], linewidth=1.6, label="Actual")
-            ax.plot(window["datetime"], forecast, color=pub.PALETTE["orange"], linewidth=1.3, label="Forecast")
+            ax.plot(window["datetime"], actual, color=pub.PALETTE["series_a"], linewidth=1.6, label="Actual")
+            ax.plot(window["datetime"], forecast, color=pub.PALETTE["series_b"], linewidth=1.3, label="Forecast")
             ax.set_title(f"({chr(97 + panel_index)}) {pretty}")
             ax.set_ylabel("kW")
             ax.set_ylim(*y_limits)

@@ -9,13 +9,32 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-import generate_supervisor_revision_outputs as pub
-from publication_plot_style import PALETTE, apply_publication_style, save_figure
+import generate_paper_figures as pub
+from publication_plot_style import (
+    ANNOTATION_PT,
+    PALETTE,
+    TITLE_PT,
+    apply_publication_style,
+    page_figsize,
+    save_figure,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS_DIR = ROOT / "results"
 DATA_DIR = ROOT / "data"
+
+
+# Legends sit under each panel, so they must fit within one panel's width at the
+# printed size. The matplotlib defaults are sized for a much wider canvas.
+_COMPACT_LEGEND = {
+    "fontsize": ANNOTATION_PT,
+    "handlelength": 1.4,
+    "handletextpad": 0.4,
+    "columnspacing": 0.9,
+    "borderpad": 0.3,
+    "borderaxespad": 0.0,
+}
 
 
 def _load_netload(csv_name: str) -> pd.DataFrame:
@@ -68,16 +87,66 @@ def _plot_band_panel(ax, s: pd.DataFrame, ylabel: str, title: str, zero_line: bo
     p75 = s["p75"].to_numpy(dtype=float)
     p90 = s["p90"].to_numpy(dtype=float)
 
-    ax.fill_between(x, p10, p90, color=PALETTE["light_grey"], alpha=0.20, label="10-90 percentile")
-    ax.fill_between(x, p25, p75, color=PALETTE["grey"], alpha=0.25, label="25-75 percentile")
-    ax.plot(x, p50, color=PALETTE["dark_blue"], linewidth=2.0, label="Median")
+    # Nested bands of one hue at increasing opacity: the spread reads by density
+    # rather than by hue, so it survives greyscale and colour-blind vision.
+    ax.fill_between(x, p10, p90, color=PALETTE["series_a"], alpha=0.18, label="10-90 percentile")
+    ax.fill_between(x, p25, p75, color=PALETTE["series_a"], alpha=0.38, label="25-75 percentile")
+    ax.plot(x, p50, color=PALETTE["series_a"], linewidth=2.2, label="Median")
     if zero_line:
-        ax.axhline(0.0, color=PALETTE["orange"], linewidth=1.2, linestyle="--")
+        ax.axhline(0.0, color=PALETTE["series_b"], linewidth=1.4, linestyle="--")
 
     ax.set_xlim(0, 23)
     ax.set_xticks([0, 4, 8, 12, 16, 20, 23])
     ax.set_ylabel(ylabel)
     ax.set_title(title)
+
+
+
+
+def _label_inside_panel(fig, ax, label: str) -> None:
+    """Write a panel label inside the axes, wrapping it if it would overrun.
+
+    In-panel labels save the vertical space a title would take, but a long one
+    runs past the right-hand spine at the printed size. The label is measured
+    against the axes and split onto a second line only when it does not fit, so
+    short labels stay on one line.
+
+    Args:
+        fig (matplotlib.figure.Figure): parent figure, for a renderer.
+        ax (matplotlib.axes.Axes): the panel to label.
+        label (str): the label text.
+    """
+    text = ax.text(
+        0.02,
+        0.97,
+        label,
+        transform=ax.transAxes,
+        va="top",
+        ha="left",
+        fontsize=TITLE_PT,
+    )
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    available = ax.get_window_extent(renderer=renderer).width * 0.94
+    if text.get_window_extent(renderer=renderer).width <= available:
+        return
+
+    # Break at the latest word boundary whose first line still fits.
+    words = label.split()
+    best = None
+    for split in range(len(words) - 1, 0, -1):
+        text.set_text(" ".join(words[:split]))
+        if text.get_window_extent(renderer=renderer).width <= available:
+            best = split
+            break
+    if best is None:
+        text.set_text(label)
+        return
+
+    # A line ending on a conjunction reads badly, so carry it to the next line.
+    if best > 1 and words[best - 1].lower() in {"&", "and", "with"}:
+        best -= 1
+    text.set_text(" ".join(words[:best]) + "\n" + " ".join(words[best:]))
 
 
 def _prepare_sa_bess_week() -> tuple[pd.Timestamp, dict[str, pd.DataFrame], str]:
@@ -116,13 +185,13 @@ def _prepare_sa_bess_week() -> tuple[pd.Timestamp, dict[str, pd.DataFrame], str]
 
 
 def _generate_combined_fig20_21() -> Path:
-    week_start, week_frames, week_mode = _prepare_sa_bess_week()
+    week_start, week_frames, _ = _prepare_sa_bess_week()
 
     label_order = ["underlying_load", "net_load_with_pv", "net_load_with_pv_battery"]
     pretty = {
         "underlying_load": "Underlying load",
         "net_load_with_pv": "Net load with PV",
-        "net_load_with_pv_battery": "Net load with PV and battery",
+        "net_load_with_pv_battery": "Net load with PV & battery",
     }
 
     pv_generation_obs = (
@@ -156,35 +225,37 @@ def _generate_combined_fig20_21() -> Path:
     max_abs_error = max(float(np.nanmax(np.abs(error.to_numpy(dtype=float)))) for error in errors.values())
     error_limit = max_abs_error * 1.05
 
-    fig, axes = plt.subplots(2, 2, figsize=(16, 12), sharex=False)
+    fig, axes = plt.subplots(2, 2, figsize=page_figsize(16, 12), sharex=False)
     ts_layout = [
         (axes[0, 0], "underlying_load", "(a)"),
         (axes[1, 0], "net_load_with_pv", "(b)"),
         (axes[0, 1], "net_load_with_pv_battery", "(c)"),
     ]
 
+    # Every series is solid; hue alone separates them. Actual is drawn thickest so
+    # that where the forecast tracks it closely the actual still shows either
+    # side of it. Note this figure relies on colour: printed in greyscale the
+    # blue and green traces sit only ~19 luminance apart and will merge.
     for ax, lbl, panel_id in ts_layout:
         d = week_frames[lbl]
         x = d["datetime"]
         ax.set_axisbelow(True)
-        ax.plot(x, d["observation"], color=PALETTE["dark_blue"], linewidth=1.6, label="Actual")
-        ax.plot(x, d["forecast"], color=PALETTE["orange"], linewidth=1.2, label="Forecast")
+        ax.plot(x, d["observation"], color=PALETTE["series_a"], linewidth=2.0, label="Actual")
+        ax.plot(x, d["forecast"], color=PALETTE["series_b"], linewidth=1.2, label="Forecast")
         if lbl == "net_load_with_pv":
             ax.plot(
                 x,
                 pv_generation_obs,
-                color=PALETTE["light_grey"],
-                linewidth=1.1,
-                linestyle="--",
+                color=PALETTE["series_c"],
+                linewidth=1.3,
                 label="PV generation",
             )
         elif lbl == "net_load_with_pv_battery":
             ax.plot(
                 x,
                 battery_charging_obs,
-                color=PALETTE["grey"],
-                linewidth=1.1,
-                linestyle=":",
+                color=PALETTE["series_d"],
+                linewidth=1.3,
                 label="Battery net charge",
             )
         ax.set_title(f"{panel_id} {pretty[lbl]}")
@@ -193,43 +264,51 @@ def _generate_combined_fig20_21() -> Path:
         pub._format_datetime_axis(ax)
         pub._format_numeric_axis(ax)
         ax.text(
-            0.01,
-            -0.18,
+            0.02,
+            0.04,
             f"Roughness: {roughness[lbl]:.2f}",
             transform=ax.transAxes,
-            va="center",
+            va="bottom",
             ha="left",
-            fontsize=13,
+            fontsize=ANNOTATION_PT,
+            bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.75, "pad": 1.5},
         )
-        ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.28), ncol=3)
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.30), ncol=3, **_COMPACT_LEGEND)
 
     ax_err = axes[1, 1]
     colors = {
-        "underlying_load": PALETTE["dark_blue"],
-        "net_load_with_pv": PALETTE["light_grey"],
-        "net_load_with_pv_battery": PALETTE["orange"],
+        "underlying_load": PALETTE["series_a"],
+        "net_load_with_pv": PALETTE["series_c"],
+        "net_load_with_pv_battery": PALETTE["series_b"],
     }
     labels = {
         "underlying_load": "Underlying load",
         "net_load_with_pv": "Net load with PV",
-        "net_load_with_pv_battery": "Net load with PV and battery",
+        "net_load_with_pv_battery": "Net load with PV & battery",
     }
     for lbl in label_order:
         d = week_frames[lbl]
-        ax_err.plot(d["datetime"], errors[lbl], color=colors[lbl], linewidth=1.4, label=labels[lbl])
-    ax_err.axhline(0.0, color=PALETTE["grey"], linewidth=1.0, linestyle="--")
+        ax_err.plot(
+            d["datetime"],
+            errors[lbl],
+            color=colors[lbl],
+            linewidth=1.5,
+            label=labels[lbl],
+        )
+    ax_err.axhline(0.0, color=PALETTE["neutral"], linewidth=1.0, linestyle="-")
     ax_err.set_title("(d) Forecast error comparison across compositions")
     ax_err.set_ylabel("Error (kW)")
     ax_err.set_ylim(-error_limit, error_limit)
     pub._format_datetime_axis(ax_err)
     pub._format_numeric_axis(ax_err)
-    ax_err.legend(loc="upper center", bbox_to_anchor=(0.5, -0.28), ncol=3)
+    ax_err.legend(loc="upper center", bbox_to_anchor=(0.5, -0.30), ncol=3, **_COMPACT_LEGEND)
 
     axes[1, 0].set_xlabel("Date")
     axes[1, 1].set_xlabel("Date")
-    suffix = "(week where underlying is not the roughest)" if week_mode == "underlying_not_most_volatile" else "(best available representative week)"
-    fig.suptitle(f"SA BESS composition: timeseries and error comparison {suffix}, from {week_start.date()}", y=1.01)
-    fig.tight_layout(h_pad=3.8, w_pad=2.0)
+    # The title stays short so the tight bounding box does not grow past the page
+    # width; the week-selection detail belongs in the manuscript caption.
+    fig.suptitle(f"SA BESS load compositions, week from {week_start.date()}", y=1.01)
+    fig.tight_layout(h_pad=2.2, w_pad=1.4)
 
     out_path = RESULTS_DIR / "04_sa_bess_clean_44hh" / "figures" / "fig20_sa_bess_composition_timeseries_error_combined.png"
     return save_figure(fig, out_path)
@@ -243,13 +322,13 @@ def _generate_combined_fig22_23() -> Path:
     series = [
         ("Underlying load", underlying),
         ("Net load with PV", net_pv),
-        ("Net load with PV and battery", net_pv_batt),
+        ("Net load with PV & battery", net_pv_batt),
     ]
 
     load_summaries = [(name, _hourly_distribution(df, value_col="value")) for name, df in series]
     ramp_summaries = [(name, _hourly_ramp_distribution(df, value_col="value")) for name, df in series]
 
-    fig, axes = plt.subplots(2, 3, figsize=(18, 11.5), sharex=False)
+    fig, axes = plt.subplots(2, 3, figsize=page_figsize(18, 11.5), sharex=False)
 
     load_vals = np.concatenate([s[["p10", "p25", "p50", "p75", "p90"]].to_numpy().ravel() for _, s in load_summaries])
     load_vals = load_vals[np.isfinite(load_vals)]
@@ -266,14 +345,14 @@ def _generate_combined_fig22_23() -> Path:
         ax_l = axes[0, i]
         row1_label = f"({chr(97 + i)}) {load_name}"
         _plot_band_panel(ax_l, load_s, "Load (kW)", "")
-        ax_l.text(0.01, 0.98, row1_label, transform=ax_l.transAxes, va="top", ha="left", fontsize=20)
+        _label_inside_panel(fig, ax_l, row1_label)
         ax_l.set_ylim(-load_lim, load_lim)
         ax_l.tick_params(axis="x", labelbottom=True)
 
         ax_r = axes[1, i]
         row2_label = f"({chr(100 + i)}) {ramp_name}"
         _plot_band_panel(ax_r, ramp_s, "Ramp (kW/30 min)", "", zero_line=True)
-        ax_r.text(0.01, 0.98, row2_label, transform=ax_r.transAxes, va="top", ha="left", fontsize=20)
+        _label_inside_panel(fig, ax_r, row2_label)
         ax_r.set_ylim(-ramp_lim, ramp_lim)
 
     for ax in axes[1, :]:
@@ -285,7 +364,6 @@ def _generate_combined_fig22_23() -> Path:
     fig.tight_layout(rect=(0, 0.05, 1, 0.93), h_pad=3.4, w_pad=1.8)
 
     top_row_top = max(ax.get_position().y1 for ax in axes[0, :])
-    top_row_bottom = min(ax.get_position().y0 for ax in axes[0, :])
     bottom_row_top = max(ax.get_position().y1 for ax in axes[1, :])
 
     # Keep the load heading very close to row-1 while staying clear of panel labels.
@@ -299,7 +377,7 @@ def _generate_combined_fig22_23() -> Path:
         "Hourly load distribution (median and percentile bands)",
         ha="center",
         va="center",
-        fontsize=20,
+        fontsize=TITLE_PT,
     )
     fig.text(
         0.5,
@@ -307,7 +385,7 @@ def _generate_combined_fig22_23() -> Path:
         "Hourly ramp distribution (median and percentile bands)",
         ha="center",
         va="center",
-        fontsize=20,
+        fontsize=TITLE_PT,
     )
 
     out_path = RESULTS_DIR / "04_sa_bess_clean_44hh" / "figures" / "fig21_sa_bess_hourly_load_ramp_combined.png"
@@ -326,7 +404,7 @@ def _generate_combined_fig24_25() -> Path:
     pv_summary = _hourly_distribution(merged[["datetime", "pv_generation"]].rename(columns={"pv_generation": "value"}))
     batt_summary = _hourly_distribution(merged[["datetime", "battery_net_charge"]].rename(columns={"battery_net_charge": "value"}))
 
-    fig, axes = plt.subplots(1, 2, figsize=(15, 5.2), sharex=True)
+    fig, axes = plt.subplots(1, 2, figsize=page_figsize(15, 5.2), sharex=True)
     _plot_band_panel(
         axes[0],
         pv_summary,

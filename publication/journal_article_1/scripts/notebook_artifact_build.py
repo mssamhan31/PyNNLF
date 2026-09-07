@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Iterable
 
 import pandas as pd
 
 import generate_sa_bess_combined_figures as sb
-import generate_supervisor_revision_outputs as gsr
+import generate_paper_figures as gsr
 from publication_plot_style import apply_publication_style
 
 
@@ -54,6 +53,22 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "manuscript_label_proposed": "Figure A2",
         "caption_short": "Aggregation RMSE per household: sample mean +- SD with fold background",
         "status": "ready",
+    },
+    {
+        "artifact_path": "results/03_aedp_aggregation_level/figures/fig15_aedp_agg_nrmse_and_rmse_per_hh_two_panel.png",
+        "artifact_type": "figure",
+        "manuscript_section": "Results - Aggregation level comparison",
+        "manuscript_label_proposed": "Figure A0",
+        "caption_short": "Aggregation nRMSE and RMSE per household in one two-row figure",
+        "status": "ready",
+    },
+    {
+        "artifact_path": "results/03_aedp_aggregation_level/figures/supplementary/SUPPLEMENTARY_NOT_FOR_PAPER_aedp_agg_nrmse_fixed_per_hh_denominator.png",
+        "artifact_type": "figure",
+        "manuscript_section": "Not for the manuscript",
+        "manuscript_label_proposed": "-",
+        "caption_short": "Supplementary: aggregation nRMSE on a fixed per-household denominator",
+        "status": "supplementary",
     },
     {
         "artifact_path": "results/03_aedp_aggregation_level/figures/fig12a_aedp_agg1_actual_vs_forecast_timeseries_naive_lr_xgb.png",
@@ -152,6 +167,46 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "ready",
     },
     {
+        "artifact_path": "results/04_sa_bess_clean_44hh/paper_table_sa_bess_44hh_signal_test_rmse_kw.csv",
+        "artifact_type": "table",
+        "manuscript_section": "Results - Load composition comparison",
+        "manuscript_label_proposed": "Table B1",
+        "caption_short": "Load composition test RMSE in kilowatts, 12 models",
+        "status": "ready",
+    },
+    {
+        "artifact_path": "results/04_sa_bess_clean_44hh/paper_table_sa_bess_44hh_signal_test_rmse_kw.md",
+        "artifact_type": "table",
+        "manuscript_section": "Results - Load composition comparison",
+        "manuscript_label_proposed": "Table B1",
+        "caption_short": "Load composition test RMSE in kilowatts, formatted for the manuscript",
+        "status": "ready",
+    },
+    {
+        "artifact_path": "results/04_sa_bess_clean_44hh/figures/fig23_sa_bess_composition_test_rmse_kw.png",
+        "artifact_type": "figure",
+        "manuscript_section": "Results - Load composition comparison",
+        "manuscript_label_proposed": "Figure B4",
+        "caption_short": "Load composition model comparison in absolute kilowatts",
+        "status": "ready",
+    },
+    {
+        "artifact_path": "results/01_ashd_aedp_148hh_comparison/figures/fig32_ashd_aedp_nrmse_stability_scatter_1day.png",
+        "artifact_type": "figure",
+        "manuscript_section": "Results - Accuracy against stability",
+        "manuscript_label_proposed": "Figure C3",
+        "caption_short": "Accuracy against stability for ASHD and AEDP at the 1-day horizon",
+        "status": "ready",
+    },
+    {
+        "artifact_path": "results/02_ashd_148hh_forecast_horizon/figures/fig42_ashd_nrmse_stability_scatter_1week.png",
+        "artifact_type": "figure",
+        "manuscript_section": "Results - Accuracy against stability",
+        "manuscript_label_proposed": "Figure D3",
+        "caption_short": "Accuracy against stability for ASHD at the 1-week horizon",
+        "status": "ready",
+    },
+    {
         "artifact_path": "results/01_ashd_aedp_148hh_comparison/figures/fig30_ashd_vs_aedp_xgb_actual_vs_forecast_daypair.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Dataset comparison",
@@ -191,7 +246,13 @@ SECTION_FILTERS = {
     "01": ["results/01_ashd_aedp_148hh_comparison/"],
     "02": ["results/02_ashd_148hh_forecast_horizon/"],
     "03": ["results/03_aedp_aggregation_level/"],
-    "04": ["results/04_sa_bess_clean_44hh/figures/fig20_", "results/04_sa_bess_clean_44hh/figures/fig21_", "results/04_sa_bess_clean_44hh/figures/fig22_"],
+    "04": [
+        "results/04_sa_bess_clean_44hh/figures/fig20_",
+        "results/04_sa_bess_clean_44hh/figures/fig21_",
+        "results/04_sa_bess_clean_44hh/figures/fig22_",
+        "results/04_sa_bess_clean_44hh/figures/fig23_",
+        "results/04_sa_bess_clean_44hh/paper_table_sa_bess_44hh_signal_test_rmse_kw",
+    ],
 }
 
 
@@ -264,6 +325,8 @@ def build_section_03() -> list[Path]:
     recap_agg = gsr._load_csv(RESULTS_DIR / "03_aedp_aggregation_level" / "aedp_aggregation_fh8_recap.csv")
     out: list[Path] = []
     out.extend(gsr._plot_aggregation_summary_and_cv(recap_agg))
+    out.append(gsr._plot_aggregation_two_panel(recap_agg))
+    out.append(gsr._plot_aggregation_fixed_denominator_supplementary(recap_agg))
     out.extend(gsr._plot_aggregation_forecast_views(recap_agg))
     out.append(gsr._plot_aggregation_xgb_timeseries(recap_agg))
     return out
@@ -272,7 +335,9 @@ def build_section_03() -> list[Path]:
 def build_section_02() -> list[Path]:
     apply_publication_style()
     recap_exp = gsr._load_publication_recap()
-    return gsr._plot_horizon_xgb(recap_exp)
+    out = list(gsr._plot_horizon_xgb(recap_exp))
+    out.append(gsr._plot_ashd_stability_scatter())
+    return out
 
 
 def build_section_01() -> list[Path]:
@@ -280,7 +345,9 @@ def build_section_01() -> list[Path]:
     recap_exp = gsr._load_publication_recap()
     recap_agg = gsr._load_csv(RESULTS_DIR / "03_aedp_aggregation_level" / "aedp_aggregation_fh8_recap.csv")
     notes: list[str] = []
-    return gsr._plot_ashd_vs_aedp_xgb(recap_exp, recap_agg, notes, strict_ashd_aedp=True)
+    out = list(gsr._plot_ashd_vs_aedp_xgb(recap_exp, recap_agg, notes, strict_ashd_aedp=True))
+    out.append(gsr._plot_dataset_stability_scatter_pair())
+    return out
 
 
 def build_section_04() -> list[Path]:
@@ -289,29 +356,42 @@ def build_section_04() -> list[Path]:
     out.append(sb._generate_combined_fig20_21())
     out.append(sb._generate_combined_fig22_23())
     out.append(sb._generate_combined_fig24_25())
+    out.append(gsr._plot_composition_rmse_kw())
+    out.extend(gsr._build_composition_rmse_kw_table())
     return out
 
 
-def check_artifacts(section: str | None = None) -> pd.DataFrame:
-    df = _artifact_df().copy()
-    if section is not None:
-        prefixes = SECTION_FILTERS[section]
-        mask = df["artifact_path"].apply(lambda p: any(str(p).startswith(px) for px in prefixes))
-        df = df.loc[mask].copy()
-
+def _artifact_status(paths: list[str]) -> pd.DataFrame:
+    """Report existence and size for each artifact path."""
     rows = []
-    for p in df["artifact_path"].tolist():
+    for p in paths:
         path = WORKSPACE_DIR / p
         rows.append({
             "path": p,
             "exists": path.exists(),
             "size_bytes": path.stat().st_size if path.exists() else 0,
         })
+    return pd.DataFrame(rows)
 
-    out_df = pd.DataFrame(rows)
-    out_path = RESULTS_DIR / "paper_artifact_output_check.csv"
-    out_df.to_csv(out_path, index=False)
-    return out_df
+
+def check_artifacts(section: str | None = None) -> pd.DataFrame:
+    """Report which registered artifacts exist, optionally for one section.
+
+    The report written to disk always covers the whole manifest, whichever
+    section was asked about. Writing only the requested section would make the
+    committed file depend on the order the sections happened to be built in,
+    so the same tree could produce different content run to run.
+
+    Args:
+        section (str | None): section key to filter the returned frame by, or
+            None for every artifact.
+
+    Returns:
+        pd.DataFrame: status rows for the requested section.
+    """
+    all_paths = _artifact_df()["artifact_path"].tolist()
+    _artifact_status(all_paths).to_csv(RESULTS_DIR / "paper_artifact_output_check.csv", index=False)
+    return _artifact_status(list_expected_artifacts(section))
 
 
 def assert_artifacts(section: str | None = None) -> None:

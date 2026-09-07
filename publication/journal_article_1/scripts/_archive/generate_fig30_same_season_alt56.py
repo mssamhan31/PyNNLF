@@ -10,7 +10,7 @@ import pandas as pd
 import sys
 
 sys.path.append(str(Path(__file__).resolve().parents[1] / "scripts"))
-import generate_supervisor_revision_outputs as pub
+import generate_paper_figures as pub
 from publication_plot_style import PALETTE, save_figure
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -75,9 +75,9 @@ for name, ashd_start, ashd_end, aedp_start, aedp_end in alt_windows:
     fig, axes = plt.subplots(2, 1, figsize=(14, 11), sharex=False, sharey=True)
     for ax, label, week_df, peak in zip(axes, ["ASHD", "AEDP"], [d, aedp_week], [ashd_peak, aedp_peak]):
         ax.set_axisbelow(True)
-        ax.plot(week_df["datetime"], week_df["observation"] / peak, color=PALETTE["dark_blue"], linewidth=1.8, label="Actual")
-        ax.plot(week_df["datetime"], week_df["forecast"] / peak, color=PALETTE["orange"], linewidth=1.4, label="Forecast")
-        ax.axhline(1.0, color=PALETTE["grey"], linewidth=1.1, linestyle="--", label=f"CV1 actual peak: {peak:.2f} kW")
+        ax.plot(week_df["datetime"], week_df["observation"] / peak, color=PALETTE["series_a"], linewidth=1.8, label="Actual")
+        ax.plot(week_df["datetime"], week_df["forecast"] / peak, color=PALETTE["series_b"], linewidth=1.4, label="Forecast")
+        ax.axhline(1.0, color=PALETTE["neutral"], linewidth=1.1, linestyle="--", label=f"CV1 actual peak: {peak:.2f} kW")
         label_name = "ASHD" if label == "ASHD" else "AEDP"
         ax.set_title(f'{label_name} - representative week from {week_df["datetime"].dt.date.iloc[0]}')
         ax.set_ylabel("Load / positive peak")

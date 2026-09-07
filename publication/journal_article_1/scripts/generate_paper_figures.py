@@ -15,7 +15,21 @@ import yaml
 
 import pynnlf
 
-from publication_plot_style import PALETTE, MODEL_COLORS, apply_publication_style, save_figure
+from publication_plot_style import (
+    ANNOTATION_PT,
+    AXIS_LABEL_PT,
+    TICK_BINS,
+    TICK_PT,
+    TITLE_PT,
+    MODEL_COLORS,
+    MODEL_SEQUENCE,
+    MODEL_SEQUENCE_COLORS,
+    MODEL_SHORT_LABELS,
+    PALETTE,
+    apply_publication_style,
+    page_figsize,
+    save_figure,
+)
 
 
 WORKSPACE_DIR = Path(__file__).resolve().parents[1]
@@ -25,18 +39,13 @@ EXP_ROOT = WORKSPACE_DIR / "experiment_result"
 EXP_DATABRICKS_ROOT = WORKSPACE_DIR / "experiment_result_databricks"
 
 MODEL_ORDER = ["m1_naive_hp1", "m6_lr_hp1", "m17_xgb_hp1"]
-MODEL_LABELS = {
-    "m1_naive_hp1": "Naive",
-    "m6_lr_hp1": "Linear Regression",
-    "m17_xgb_hp1": "XGBoost",
-}
 
 
 def _format_numeric_axis(ax, *, x: bool = False, y: bool = True) -> None:
     if x:
-        ax.xaxis.set_major_locator(MaxNLocator(nbins=5))
+        ax.xaxis.set_major_locator(MaxNLocator(nbins=TICK_BINS))
     if y:
-        ax.yaxis.set_major_locator(MaxNLocator(nbins=5))
+        ax.yaxis.set_major_locator(MaxNLocator(nbins=TICK_BINS))
 
 
 def _format_datetime_axis(ax, *, rotation: float = 0, month_year_format: str = "%b-%Y") -> None:
@@ -80,11 +89,43 @@ def _pick_cv1_file(experiment_folder: str) -> Path:
 
 
 def _find_a3_file(experiment_folder: str) -> Path | None:
+    """Locate an experiment's cross-validation result file.
+
+    The file is named by experiment number, not by the full folder name, e.g.
+    ``E00085_260525_ds25_.../E00085_a3_cross_validation_result.csv``.
+
+    Args:
+        experiment_folder (str): the folder name as recorded in the recap.
+
+    Returns:
+        Path | None: the a3 file, or None if neither results store holds it.
+    """
+    experiment_number = experiment_folder.split("_")[0]
     for root in [EXP_ROOT, EXP_DATABRICKS_ROOT]:
-        path = root / experiment_folder / f"{experiment_folder}_a3_cross_validation_result.csv"
+        path = root / experiment_folder / f"{experiment_number}_a3_cross_validation_result.csv"
         if path.exists():
             return path
     return None
+
+
+def _read_fold_metrics(experiment_folder: str) -> pd.DataFrame | None:
+    """Read an experiment's per-fold metrics, excluding its summary rows.
+
+    The a3 file carries one row per cross-validation fold plus ``mean`` and
+    ``stddev`` summary rows. Callers wanting folds must drop the summaries, or
+    the summaries are treated as extra folds.
+
+    Args:
+        experiment_folder (str): the folder name as recorded in the recap.
+
+    Returns:
+        pd.DataFrame | None: the fold rows, or None if the file is absent.
+    """
+    path = _find_a3_file(experiment_folder)
+    if path is None:
+        return None
+    frame = pd.read_csv(path, index_col=0)
+    return frame.drop(index=["mean", "stddev"], errors="ignore")
 
 
 def _read_forecast_frame(path: Path) -> pd.DataFrame:
@@ -133,7 +174,7 @@ def _ensure_ds11_xgb_exists(allow_rerun: bool = False) -> bool:
     }
     specs_dir = WORKSPACE_DIR / "specs"
     specs_dir.mkdir(parents=True, exist_ok=True)
-    tmp_path = specs_dir / f"_tmp_supervisor_ds11_xgb_{uuid.uuid4().hex[:8]}.yaml"
+    tmp_path = specs_dir / f"_tmp_ds11_xgb_{uuid.uuid4().hex[:8]}.yaml"
     tmp_path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
 
     try:
@@ -297,29 +338,6 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
     s["total_household_weight"] = pd.to_numeric(s["total_household_weight"], errors="coerce")
     s["rmse_per_hh"] = s["test_RMSE"] / s["total_household_weight"]
 
-    # Fold-level background points from a3 cross-validation files
-    fold_rows: list[dict] = []
-    for row in s.itertuples(index=False):
-        a3_path = _find_a3_file(str(row.experiment_folder))
-        if a3_path is None:
-            continue
-        a3 = pd.read_csv(a3_path)
-        if "test_nRMSE" not in a3.columns or "test_RMSE" not in a3.columns:
-            continue
-        for _, cv_row in a3.iterrows():
-            nrmse = pd.to_numeric(cv_row.get("test_nRMSE"), errors="coerce")
-            rmse = pd.to_numeric(cv_row.get("test_RMSE"), errors="coerce")
-            if pd.isna(nrmse) or pd.isna(rmse):
-                continue
-            fold_rows.append(
-                {
-                    "model_name": str(row.model_name),
-                    "aggregation_level_hh": int(row.aggregation_level_hh),
-                    "fold_nrmse": float(nrmse),
-                    "fold_rmse_per_hh": float(rmse) / float(row.total_household_weight),
-                }
-            )
-    fold_df = pd.DataFrame(fold_rows)
 
     summary = (
         s.groupby(["model_name", "aggregation_level_hh"], as_index=False)
@@ -333,13 +351,12 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
     )
 
     paths: list[Path] = []
-    for metric, y_label, m_col, s_col, fold_col, out_name in [
+    for metric, y_label, m_col, s_col, out_name in [
         (
             "nrmse",
             "Test nRMSE (%)",
             "sample_mean_nrmse",
             "sample_std_nrmse",
-            "fold_nrmse",
             "fig10_aedp_agg_nrmse_mean_std_cvbg.png",
         ),
         (
@@ -347,16 +364,15 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
             "Test RMSE per household (kW)",
             "sample_mean_rmse_per_hh",
             "sample_std_rmse_per_hh",
-            "fold_rmse_per_hh",
             "fig11_aedp_agg_rmse_per_hh_mean_std_cvbg.png",
         ),
     ]:
-        fig, axes = plt.subplots(1, 3, figsize=(16, 4.7), sharex=True, sharey=True)
+        fig, axes = plt.subplots(1, 3, figsize=page_figsize(16, 4.7), sharex=True, sharey=True)
         for ax, model in zip(axes, MODEL_ORDER):
             m = summary.loc[summary["model_name"].eq(model)].sort_values("aggregation_level_hh")
             x = np.arange(len(levels))
-            means = [float(m.loc[m["aggregation_level_hh"].eq(l), m_col].iloc[0]) if (m["aggregation_level_hh"] == l).any() else np.nan for l in levels]
-            stds = [float(m.loc[m["aggregation_level_hh"].eq(l), s_col].iloc[0]) if (m["aggregation_level_hh"] == l).any() else np.nan for l in levels]
+            means = [float(m.loc[m["aggregation_level_hh"].eq(lvl), m_col].iloc[0]) if (m["aggregation_level_hh"] == lvl).any() else np.nan for lvl in levels]
+            stds = [float(m.loc[m["aggregation_level_hh"].eq(lvl), s_col].iloc[0]) if (m["aggregation_level_hh"] == lvl).any() else np.nan for lvl in levels]
 
             ax.set_axisbelow(True)
 
@@ -373,30 +389,12 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
                     np.full(len(svals), i) + jitter,
                     svals,
                     s=22,
-                    color=PALETTE["grey"],
+                    color=PALETTE["neutral"],
                     alpha=0.55,
                     edgecolors="white",
                     linewidths=0.4,
                     zorder=2,
                 )
-
-            if not fold_df.empty:
-                fm = fold_df.loc[fold_df["model_name"].eq(model)]
-                for i, lvl in enumerate(levels):
-                    vals = fm.loc[fm["aggregation_level_hh"].eq(lvl), fold_col].dropna().to_numpy()
-                    if len(vals) == 0:
-                        continue
-                    rng = np.random.default_rng(1234 + i)
-                    jitter = rng.uniform(-0.08, 0.08, size=len(vals))
-                    ax.scatter(
-                        np.full(len(vals), i) + jitter,
-                        vals,
-                        s=13,
-                        color=PALETTE["light_grey"],
-                        alpha=0.22,
-                        edgecolors="none",
-                        zorder=1,
-                    )
 
             ax.errorbar(
                 x,
@@ -410,16 +408,9 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
                 zorder=3,
             )
             ax.set_xticks(x)
-            ax.set_xticklabels([str(l) for l in levels])
+            ax.set_xticklabels([str(lvl) for lvl in levels])
             ax.set_xlabel("Aggregation level (households)")
-            if metric == "rmse_per_hh":
-                ax.set_title({
-                    "m1_naive_hp1": "naive_hp1",
-                    "m6_lr_hp1": "lr_hp1",
-                    "m17_xgb_hp1": "xgb_hp1",
-                }[model])
-            else:
-                ax.set_title(MODEL_LABELS[model])
+            ax.set_title(MODEL_SHORT_LABELS[model])
             _format_numeric_axis(ax)
             if ax is axes[0]:
                 ax.set_ylabel(y_label)
@@ -459,7 +450,7 @@ def _plot_aggregation_forecast_views(recap_agg: pd.DataFrame) -> list[Path]:
             panel_rows.append(row)
 
         # Time series figure
-        fig, axes = plt.subplots(3, 1, figsize=(14, 11), sharex=True)
+        fig, axes = plt.subplots(3, 1, figsize=page_figsize(14, 11), sharex=True)
         for ax, row in zip(axes, panel_rows):
             cv1 = _pick_cv1_file(str(row["experiment_folder"]))
             df = _read_forecast_frame(cv1)
@@ -472,9 +463,9 @@ def _plot_aggregation_forecast_views(recap_agg: pd.DataFrame) -> list[Path]:
                 x = d["datetime"]
             else:
                 x = np.arange(len(d))
-            ax.plot(x, d["observation"], color=PALETTE["dark_blue"], linewidth=1.6, label="Actual")
-            ax.plot(x, d["forecast"], color=PALETTE["orange"], linewidth=1.2, label="Forecast")
-            ax.set_title(MODEL_LABELS[str(row['model_name'])])
+            ax.plot(x, d["observation"], color=PALETTE["series_a"], linewidth=1.6, label="Actual")
+            ax.plot(x, d["forecast"], color=PALETTE["series_b"], linewidth=1.2, label="Forecast")
+            ax.set_title(MODEL_SHORT_LABELS[str(row['model_name'])])
             ax.set_ylabel("kW")
             _format_datetime_axis(ax)
             _format_numeric_axis(ax)
@@ -490,7 +481,7 @@ def _plot_aggregation_forecast_views(recap_agg: pd.DataFrame) -> list[Path]:
         )
 
         # Scatter figure
-        fig, axes = plt.subplots(1, 3, figsize=(14.2, 5.5), sharex=False, sharey=False)
+        fig, axes = plt.subplots(1, 3, figsize=page_figsize(14.2, 5.5), sharex=False, sharey=False)
         for ax, row in zip(axes, panel_rows):
             cv1 = _pick_cv1_file(str(row["experiment_folder"]))
             df = _read_forecast_frame(cv1)
@@ -505,8 +496,8 @@ def _plot_aggregation_forecast_views(recap_agg: pd.DataFrame) -> list[Path]:
             )
             lo = float(min(d["observation"].min(), d["forecast"].min()))
             hi = float(max(d["observation"].max(), d["forecast"].max()))
-            ax.plot([lo, hi], [lo, hi], color=PALETTE["dark_blue"], linewidth=1.1, linestyle="--")
-            ax.set_title(MODEL_LABELS[str(row["model_name"])])
+            ax.plot([lo, hi], [lo, hi], color=PALETTE["neutral"], linewidth=1.1, linestyle="--")
+            ax.set_title(MODEL_SHORT_LABELS[str(row["model_name"])])
             ax.set_xlabel("Actual (kW)")
             ax.set_ylabel("Forecast (kW)")
             _format_numeric_axis(ax, x=True)
@@ -549,11 +540,11 @@ def _plot_aggregation_xgb_timeseries(recap_agg: pd.DataFrame) -> Path:
         if not frames[level]["datetime"].reset_index(drop=True).equals(reference_dates):
             raise ValueError("XGBoost aggregation comparison requires identical timestamps across household levels")
 
-    fig, axes = plt.subplots(2, 2, figsize=(14, 10), sharex=True)
+    fig, axes = plt.subplots(2, 2, figsize=page_figsize(14, 10), sharex=True)
     for panel_index, (ax, level) in enumerate(zip(axes.flat, levels)):
         frame = frames[level]
-        ax.plot(frame["datetime"], frame["observation"], color=PALETTE["dark_blue"], linewidth=1.6, label="Actual")
-        ax.plot(frame["datetime"], frame["forecast"], color=PALETTE["orange"], linewidth=1.3, label="xgb_hp1 forecast")
+        ax.plot(frame["datetime"], frame["observation"], color=PALETTE["series_a"], linewidth=1.6, label="Actual")
+        ax.plot(frame["datetime"], frame["forecast"], color=PALETTE["series_b"], linewidth=1.3, label="xgb_hp1 forecast")
         household_label = "household" if level == 1 else "households"
         ax.set_title(f"({chr(97 + panel_index)}) {level:,} {household_label}")
         ax.set_ylabel("kW")
@@ -726,14 +717,14 @@ def _plot_ashd_vs_aedp_xgb(
     normalized_limits = (-1.3, 1.3)
     normalized_yticks = [-1.0, -0.5, 0.0, 0.5, 1.0]
 
-    fig, axes = plt.subplots(2, 1, figsize=(14, 11), sharex=False, sharey=True)
+    fig, axes = plt.subplots(2, 1, figsize=page_figsize(14, 11), sharex=False, sharey=True)
     for ax, label in zip(axes, ["ASHD", "AEDP"]):
         week_start, d = week_info[label]
         peak = positive_peaks[label]
         ax.set_axisbelow(True)
-        ax.plot(d["datetime"], d["observation"] / peak, color=PALETTE["dark_blue"], linewidth=1.8, label="Actual")
-        ax.plot(d["datetime"], d["forecast"] / peak, color=PALETTE["orange"], linewidth=1.4, label="Forecast")
-        ax.axhline(1.0, color=PALETTE["grey"], linewidth=1.1, linestyle="--", label=f"CV1 actual peak: {peak:.2f} kW")
+        ax.plot(d["datetime"], d["observation"] / peak, color=PALETTE["series_a"], linewidth=1.8, label="Actual")
+        ax.plot(d["datetime"], d["forecast"] / peak, color=PALETTE["series_b"], linewidth=1.4, label="Forecast")
+        ax.axhline(1.0, color=PALETTE["neutral"], linewidth=1.1, linestyle="--", label=f"CV1 actual peak: {peak:.2f} kW")
         title_label = "ASHD" if label == "ASHD" else aedp_label
         ax.set_title(f"{title_label} - representative week from {week_start.date()}")
         ax.set_ylabel("Load / positive peak")
@@ -763,13 +754,13 @@ def _plot_ashd_vs_aedp_xgb(
     normalized_error_limit = max_abs_normalized_error * 1.05
 
     # error profile
-    fig, axes = plt.subplots(2, 1, figsize=(14, 8.5), sharex=False, sharey=True)
+    fig, axes = plt.subplots(2, 1, figsize=page_figsize(14, 8.5), sharex=False, sharey=True)
     for ax, label in zip(axes, ["ASHD", "AEDP"]):
         week_start, d = week_info[label]
         ax.set_axisbelow(True)
         err = normalized_errors[label]
-        ax.plot(d["datetime"], err, color=PALETTE["grey"], linewidth=1.4)
-        ax.axhline(0, color=PALETTE["dark_blue"], linewidth=1.0, linestyle="--")
+        ax.plot(d["datetime"], err, color=PALETTE["series_c"], linewidth=1.4)
+        ax.axhline(0, color=PALETTE["neutral"], linewidth=1.0, linestyle="--")
         title_label = "ASHD" if label == "ASHD" else aedp_label
         ax.set_title(f"{title_label} forecast error profile (week from {week_start.date()})")
         ax.set_ylabel("Error / positive peak")
@@ -854,14 +845,14 @@ def _plot_horizon_xgb(recap_exp: pd.DataFrame) -> list[Path]:
         ),
     }
 
-    fig, axes = plt.subplots(3, 1, figsize=(14, 12), sharex=False)
+    fig, axes = plt.subplots(3, 1, figsize=page_figsize(14, 12), sharex=False)
     shared_horizon_ylim = (-100.0, 180.0)
     horizon_labels = ["30-minute", "1-day", "1-week"]
     for ax, label in zip(axes, horizon_labels):
         d = selected[label]
         x = d["datetime"] if "datetime" in d.columns else np.arange(len(d))
-        ax.plot(x, d["observation"], color=PALETTE["dark_blue"], linewidth=1.6, label="Actual")
-        ax.plot(x, d["forecast"], color=PALETTE["orange"], linewidth=1.3, label="Forecast")
+        ax.plot(x, d["observation"], color=PALETTE["series_a"], linewidth=1.6, label="Actual")
+        ax.plot(x, d["forecast"], color=PALETTE["series_b"], linewidth=1.3, label="Forecast")
         panel_index = horizon_labels.index(label)
         ax.set_title(f"({chr(97 + panel_index)}) {label} horizon")
         ax.set_ylabel("kW")
@@ -886,18 +877,27 @@ def _plot_horizon_xgb(recap_exp: pd.DataFrame) -> list[Path]:
             & recap_exp["model_name"].astype(str).eq("m17_xgb_hp1")
         ].sort_values(["exp_date", "experiment_no"])
         row = subset.iloc[-1]
-        cv_files = _find_cv_test_files(str(row["experiment_folder"]))
-        maes = []
-        for cv in cv_files:
-            d = _read_forecast_frame(cv)
-            maes.append(float(np.mean(np.abs(d["forecast"].to_numpy() - d["observation"].to_numpy()))))
-        rows.append({"horizon": label, "mae_mean": float(np.mean(maes)), "mae_std": float(np.std(maes))})
+        # The engine already recorded per-fold MAE, so read it rather than
+        # recomputing it from every fold's raw series. The means agree to four
+        # decimal places; the spread here is the sample standard deviation,
+        # which is the right one for a sample of folds.
+        folds = _read_fold_metrics(str(row["experiment_folder"]))
+        if folds is None or "test_MAE" not in folds.columns:
+            raise FileNotFoundError(
+                f"Per-fold metrics unavailable for {row['experiment_folder']}"
+            )
+        maes = pd.to_numeric(folds["test_MAE"], errors="coerce").dropna()
+        rows.append({
+            "horizon": label,
+            "mae_mean": float(maes.mean()),
+            "mae_std": float(maes.std()),
+        })
     em = pd.DataFrame(rows)
 
-    fig, ax = plt.subplots(figsize=(8, 4.6))
+    fig, ax = plt.subplots(figsize=page_figsize(8, 4.6))
     ax.set_axisbelow(True)
     x = np.arange(len(em))
-    ax.bar(x, em["mae_mean"], yerr=em["mae_std"], capsize=5, color=PALETTE["grey"], alpha=0.9, zorder=3)
+    ax.bar(x, em["mae_mean"], yerr=em["mae_std"], capsize=5, color=PALETTE["series_a"], alpha=0.9, zorder=3)
     ax.set_xticks(x)
     ax.set_xticklabels(em["horizon"])
     ax.set_ylabel("CV-fold MAE (kW)")
@@ -992,18 +992,18 @@ def _plot_load_composition_timeseries(recap_sa: pd.DataFrame) -> list[Path]:
     y_pad = 0.04 * (y_max - y_min if y_max > y_min else 1.0)
     y_limits = (y_min - y_pad, y_max + y_pad)
 
-    fig, axes = plt.subplots(3, 1, figsize=(14, 12), sharex=False)
+    fig, axes = plt.subplots(3, 1, figsize=page_figsize(14, 12), sharex=False)
     for ax, lbl in zip(axes, label_order):
         d = week_frames[lbl]
         ax.set_axisbelow(True)
         x = d["datetime"] if "datetime" in d.columns else np.arange(len(d))
-        ax.plot(x, d["observation"], color=PALETTE["dark_blue"], linewidth=1.6, label="Actual")
-        ax.plot(x, d["forecast"], color=PALETTE["orange"], linewidth=1.2, label="Forecast")
+        ax.plot(x, d["observation"], color=PALETTE["series_a"], linewidth=1.6, label="Actual")
+        ax.plot(x, d["forecast"], color=PALETTE["series_b"], linewidth=1.2, label="Forecast")
         if lbl == "net_load_with_pv":
             ax.plot(
                 x,
                 pv_generation_obs,
-                color=PALETTE["light_grey"],
+                color=PALETTE["series_c"],
                 linewidth=1.1,
                 linestyle="--",
                 label="PV generation (reading-based)",
@@ -1012,7 +1012,7 @@ def _plot_load_composition_timeseries(recap_sa: pd.DataFrame) -> list[Path]:
             ax.plot(
                 x,
                 battery_operation_obs,
-                color=PALETTE["grey"],
+                color=PALETTE["series_d"],
                 linewidth=1.1,
                 linestyle=":",
                 label="Battery operation (reading-based)",
@@ -1041,7 +1041,7 @@ def _plot_load_composition_timeseries(recap_sa: pd.DataFrame) -> list[Path]:
             transform=ax.transAxes,
             va="center",
             ha="left",
-            fontsize=13,
+            fontsize=ANNOTATION_PT,
         )
         ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.31), ncol=3)
     axes[-1].set_xlabel("Date")
@@ -1060,14 +1060,14 @@ def _plot_load_composition_timeseries(recap_sa: pd.DataFrame) -> list[Path]:
     )
     error_limit = max_abs_error * 1.05
 
-    fig, axes = plt.subplots(3, 1, figsize=(14, 12), sharex=False, sharey=True)
+    fig, axes = plt.subplots(3, 1, figsize=page_figsize(14, 12), sharex=False, sharey=True)
     for ax, lbl in zip(axes, label_order):
         d = week_frames[lbl]
         ax.set_axisbelow(True)
         x = d["datetime"] if "datetime" in d.columns else np.arange(len(d))
         err = errors[lbl]
-        ax.plot(x, err, color=PALETTE["grey"], linewidth=1.3)
-        ax.axhline(0, color=PALETTE["dark_blue"], linestyle="--", linewidth=1.0)
+        ax.plot(x, err, color=PALETTE["series_c"], linewidth=1.3)
+        ax.axhline(0, color=PALETTE["neutral"], linestyle="--", linewidth=1.0)
         ax.set_title(pretty[lbl])
         ax.set_ylabel("Error (kW)")
         ax.set_ylim(-error_limit, error_limit)
@@ -1185,193 +1185,746 @@ def _check_outputs(paths: Iterable[Path]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+# ---------------------------------------------------------------------------
+# Load composition comparison, reported in absolute kilowatts
+# ---------------------------------------------------------------------------
+
+COMPOSITION_ORDER = ["underlying_load", "net_load_with_pv", "net_load_with_pv_battery"]
+COMPOSITION_LABELS = {
+    "underlying_load": "Underlying load",
+    "net_load_with_pv": "Net load with PV",
+    "net_load_with_pv_battery": "Net load with PV and battery",
+}
+COMPOSITION_DATASETS = {
+    "ds22": "underlying_load",
+    "ds23": "net_load_with_pv",
+    "ds24": "net_load_with_pv_battery",
+}
+
+
+def _composition_metric_tables() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Pivot the load composition recap into model-by-composition RMSE tables.
+
+    Reads the existing cross-validated results only; no experiment is re-run.
+
+    Returns:
+        tuple[pd.DataFrame, pd.DataFrame]: mean test RMSE in kilowatts and its
+        cross-validation fold standard deviation, both indexed by model and
+        ordered by ``MODEL_SEQUENCE`` / ``COMPOSITION_ORDER``.
+    """
+    recap = _load_csv(RESULTS_DIR / "04_sa_bess_clean_44hh" / "sa_bess_44hh_fh8_combined_recap.csv")
+    recap = recap.loc[recap["dataset_no"].astype(str).isin(COMPOSITION_DATASETS)].copy()
+    recap["composition"] = recap["dataset_no"].astype(str).map(COMPOSITION_DATASETS)
+
+    def pivot(column: str) -> pd.DataFrame:
+        table = recap.pivot_table(index="model_name", columns="composition", values=column)
+        missing_models = [m for m in MODEL_SEQUENCE if m not in table.index]
+        missing_cols = [c for c in COMPOSITION_ORDER if c not in table.columns]
+        if missing_models or missing_cols:
+            raise ValueError(
+                f"Composition table for {column} is incomplete. "
+                f"Missing models: {missing_models}; missing compositions: {missing_cols}"
+            )
+        return table.loc[MODEL_SEQUENCE, COMPOSITION_ORDER]
+
+    return pivot("test_RMSE"), pivot("test_RMSE_stddev")
+
+
+def _build_composition_rmse_kw_table() -> list[Path]:
+    """Write the load composition results as absolute RMSE in kilowatts.
+
+    The section previously reported normalised RMSE. Each composition is
+    normalised by its own peak net load (137.5, 101.4 and 71.7 kW), so the
+    percentages are not comparable across compositions and the ordering they
+    imply differs from the ordering in kilowatts. Absolute RMSE avoids that.
+
+    Returns:
+        list[Path]: the CSV written for downstream use and the Markdown copy
+        intended for pasting into the manuscript.
+    """
+    rmse, rmse_std = _composition_metric_tables()
+    out_dir = RESULTS_DIR / "04_sa_bess_clean_44hh"
+
+    table = rmse.copy()
+    table.index = [MODEL_SHORT_LABELS[m] for m in table.index]
+    table.columns = [COMPOSITION_LABELS[c] for c in table.columns]
+    table = table.sort_values(COMPOSITION_LABELS["underlying_load"]).round(2)
+    table.index.name = "model_hp"
+
+    csv_path = out_dir / "paper_table_sa_bess_44hh_signal_test_rmse_kw.csv"
+    table.to_csv(csv_path)
+
+    std_table = rmse_std.copy()
+    std_table.index = [MODEL_SHORT_LABELS[m] for m in std_table.index]
+    std_table.columns = [COMPOSITION_LABELS[c] for c in std_table.columns]
+    std_table = std_table.loc[table.index].round(2)
+    std_table.index.name = "model_hp"
+    std_csv_path = out_dir / "paper_table_sa_bess_44hh_signal_test_rmse_kw_stddev.csv"
+    std_table.to_csv(std_csv_path)
+
+    # Markdown copy so the table can be pasted straight into the manuscript,
+    # with the fold standard deviation shown as a +/- term in each cell.
+    header = "| Model | " + " | ".join(f"{c} (kW)" for c in table.columns) + " |"
+    divider = "|---" * (len(table.columns) + 1) + "|"
+    lines = [
+        "# Load composition comparison, test RMSE in kilowatts",
+        "",
+        "Mean test RMSE across 10 cross-validation folds, plus or minus the fold",
+        "standard deviation. Forecast horizon 1 day. Models ordered by RMSE on the",
+        "underlying load.",
+        "",
+        header,
+        divider,
+    ]
+    for model in table.index:
+        cells = [
+            f"{table.loc[model, c]:.2f} +/- {std_table.loc[model, c]:.2f}"
+            for c in table.columns
+        ]
+        lines.append(f"| {model} | " + " | ".join(cells) + " |")
+    md_path = out_dir / "paper_table_sa_bess_44hh_signal_test_rmse_kw.md"
+    md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    return [csv_path, std_csv_path, md_path]
+
+
+def _plot_grouped_model_bars(
+    metric_table: pd.DataFrame,
+    yerr_table: pd.DataFrame,
+    *,
+    ylabel: str,
+    title: str,
+    out_path: Path,
+    highlight_lowest: bool = True,
+) -> Path:
+    """Draw one grouped bar per model within each load composition.
+
+    Args:
+        metric_table (pd.DataFrame): models by compositions, the bar heights.
+        yerr_table (pd.DataFrame): same shape, the whisker half-lengths.
+        ylabel (str): y axis label including units.
+        title (str): figure title.
+        out_path (Path): destination PNG.
+        highlight_lowest (bool): mark the best model in each composition.
+
+    Returns:
+        Path: the file written.
+    """
+    x = np.arange(len(COMPOSITION_ORDER))
+    total_width = 0.84
+    bar_width = total_width / len(MODEL_SEQUENCE)
+    best_by_composition = metric_table.idxmin(axis=0).to_dict() if highlight_lowest else {}
+
+    fig, ax = plt.subplots(figsize=page_figsize(18, 10.5))
+    for model_idx, model in enumerate(MODEL_SEQUENCE):
+        offsets = x - total_width / 2 + bar_width / 2 + model_idx * bar_width
+        heights = metric_table.loc[model, COMPOSITION_ORDER].to_numpy(dtype=float)
+        yerr = yerr_table.loc[model, COMPOSITION_ORDER].to_numpy(dtype=float)
+        bars = ax.bar(
+            offsets,
+            heights,
+            width=bar_width * 0.92,
+            label=MODEL_SHORT_LABELS[model],
+            color=MODEL_SEQUENCE_COLORS[model],
+            yerr=yerr,
+            capsize=3,
+            error_kw={"elinewidth": 1.1, "ecolor": "0.25", "capthick": 1.1},
+        )
+        if not highlight_lowest:
+            continue
+        # Twelve categorical colours cannot all be told apart, so the best model
+        # in each group is marked by hatching and a star rather than by hue.
+        for composition_idx, composition in enumerate(COMPOSITION_ORDER):
+            if best_by_composition.get(composition) != model:
+                continue
+            bar = bars[composition_idx]
+            bar.set_edgecolor("black")
+            bar.set_linewidth(1.8)
+            bar.set_hatch("///")
+            ax.text(
+                bar.get_x() + bar.get_width() / 2,
+                heights[composition_idx] + yerr[composition_idx] + 0.02 * float(np.nanmax(metric_table.to_numpy())),
+                "*",
+                ha="center",
+                va="bottom",
+                fontsize=TITLE_PT * 1.4,
+                fontweight="bold",
+                color="black",
+            )
+
+    ax.set_xticks(x)
+    ax.set_xticklabels([COMPOSITION_LABELS[key] for key in COMPOSITION_ORDER], rotation=0, fontsize=AXIS_LABEL_PT)
+    ax.tick_params(axis="y", labelsize=TICK_PT)
+    ax.yaxis.set_major_locator(MaxNLocator(nbins=TICK_BINS))
+    ax.set_ylabel(ylabel, fontsize=AXIS_LABEL_PT)
+    ax.set_xlabel("")
+    ax.set_title(title, fontsize=TITLE_PT, pad=10)
+    ax.grid(axis="y", color="0.88", linewidth=0.8)
+    ax.set_axisbelow(True)
+    if highlight_lowest:
+        ax.scatter([], [], marker="*", color="black", label="Lowest RMSE")
+    ax.legend(
+        title="Model / hyperparameter",
+        bbox_to_anchor=(1.02, 1),
+        loc="upper left",
+        fontsize=TICK_PT,
+        title_fontsize=AXIS_LABEL_PT,
+    )
+    fig.tight_layout()
+    return save_figure(fig, out_path)
+
+
+def _plot_composition_rmse_kw() -> Path:
+    """Load composition model comparison in absolute kilowatts."""
+    rmse, rmse_std = _composition_metric_tables()
+    return _plot_grouped_model_bars(
+        rmse,
+        rmse_std,
+        ylabel="Test RMSE (kW)",
+        title="SA BESS 44-household clean cohort: 1-day model performance",
+        out_path=RESULTS_DIR
+        / "04_sa_bess_clean_44hh"
+        / "figures"
+        / "fig23_sa_bess_composition_test_rmse_kw.png",
+    )
+
+
 def _build_reference_mapping() -> tuple[Path, Path]:
-    mapping_rows = [
-        {
-            "artifact_path": "results/paper_table_experiment_parameters.csv",
-            "artifact_type": "table",
-            "manuscript_section": "Methods - Experiment setup",
-            "manuscript_label_proposed": "Table M1",
-            "caption_short": "Experiment parameters: predictors, lags, horizons, CV, models, metrics",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/paper_table_pynnlf_output_artifacts.csv",
-            "artifact_type": "table",
-            "manuscript_section": "Methods - PyNNLF workflow outputs",
-            "manuscript_label_proposed": "Table M2",
-            "caption_short": "PyNNLF output files, contents, and purpose",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/paper_table_model_selection_recommendation.csv",
-            "artifact_type": "table",
-            "manuscript_section": "Results - Model selection recommendation",
-            "manuscript_label_proposed": "Table M3",
-            "caption_short": "Pareto, utility, and satisficing recommendation outputs",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/03_aedp_aggregation_level/figures/fig10_aedp_agg_nrmse_mean_std_cvbg.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Aggregation level comparison",
-            "manuscript_label_proposed": "Figure A1",
-            "caption_short": "Aggregation nRMSE: sample mean +- SD with fold background",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/03_aedp_aggregation_level/figures/fig11_aedp_agg_rmse_per_hh_mean_std_cvbg.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Aggregation level comparison",
-            "manuscript_label_proposed": "Figure A2",
-            "caption_short": "Aggregation RMSE per household: sample mean +- SD with fold background",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/03_aedp_aggregation_level/figures/fig12a_aedp_agg1_actual_vs_forecast_timeseries_naive_lr_xgb.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Aggregation level comparison",
-            "manuscript_label_proposed": "Figure A3(a)",
-            "caption_short": "Actual vs forecast (1 household)",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/03_aedp_aggregation_level/figures/fig12b_aedp_agg10_actual_vs_forecast_timeseries_naive_lr_xgb.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Aggregation level comparison",
-            "manuscript_label_proposed": "Figure A3(b)",
-            "caption_short": "Actual vs forecast (10 households)",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/03_aedp_aggregation_level/figures/fig12c_aedp_agg100_actual_vs_forecast_timeseries_naive_lr_xgb.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Aggregation level comparison",
-            "manuscript_label_proposed": "Figure A3(c)",
-            "caption_short": "Actual vs forecast (100 households)",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/03_aedp_aggregation_level/figures/fig12d_aedp_agg1000_actual_vs_forecast_timeseries_naive_lr_xgb.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Aggregation level comparison",
-            "manuscript_label_proposed": "Figure A3(d)",
-            "caption_short": "Actual vs forecast (1000 households)",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/03_aedp_aggregation_level/figures/fig13a_aedp_agg1_actual_vs_forecast_scatter_naive_lr_xgb.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Aggregation level comparison",
-            "manuscript_label_proposed": "Figure A4(a)",
-            "caption_short": "Scatter actual vs forecast (1 household)",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/03_aedp_aggregation_level/figures/fig13b_aedp_agg10_actual_vs_forecast_scatter_naive_lr_xgb.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Aggregation level comparison",
-            "manuscript_label_proposed": "Figure A4(b)",
-            "caption_short": "Scatter actual vs forecast (10 households)",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/03_aedp_aggregation_level/figures/fig13c_aedp_agg100_actual_vs_forecast_scatter_naive_lr_xgb.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Aggregation level comparison",
-            "manuscript_label_proposed": "Figure A4(c)",
-            "caption_short": "Scatter actual vs forecast (100 households)",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/03_aedp_aggregation_level/figures/fig13d_aedp_agg1000_actual_vs_forecast_scatter_naive_lr_xgb.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Aggregation level comparison",
-            "manuscript_label_proposed": "Figure A4(d)",
-            "caption_short": "Scatter actual vs forecast (1000 households)",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/03_aedp_aggregation_level/figures/fig14_aedp_aggregation_xgb_timeseries_aligned.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Aggregation level comparison",
-            "manuscript_label_proposed": "Figure A5",
-            "caption_short": "Three-day time-aligned XGBoost actual vs forecast across 1, 10, 100, and 1000 households",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/04_sa_bess_clean_44hh/figures/fig20_sa_bess_composition_actual_vs_forecast_timeseries.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Load composition comparison",
-            "manuscript_label_proposed": "Figure B1",
-            "caption_short": "Time series actual vs forecast across load compositions with reading-based PV and battery overlays",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/04_sa_bess_clean_44hh/figures/fig21_sa_bess_composition_error_timeseries.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Load composition comparison",
-            "manuscript_label_proposed": "Figure B2",
-            "caption_short": "Forecast error time series across load compositions",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/01_ashd_aedp_148hh_comparison/figures/fig30_ashd_vs_aedp_xgb_actual_vs_forecast_daypair.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Dataset comparison",
-            "manuscript_label_proposed": "Figure C1",
-            "caption_short": "XGBoost actual vs forecast for ASHD vs AEDP (representative 1-week windows) with peak-demand lines",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/01_ashd_aedp_148hh_comparison/figures/fig31_ashd_vs_aedp_xgb_error_profile_daypair.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Dataset comparison",
-            "manuscript_label_proposed": "Figure C2",
-            "caption_short": "XGBoost error profile for ASHD vs AEDP",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/02_ashd_148hh_forecast_horizon/figures/fig40_ashd_horizons_xgb_actual_vs_forecast.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Forecast horizon comparison",
-            "manuscript_label_proposed": "Figure D1",
-            "caption_short": "XGBoost actual vs forecast for 30-min, 1-day, and 1-week horizons",
-            "status": "ready",
-        },
-        {
-            "artifact_path": "results/02_ashd_148hh_forecast_horizon/figures/fig41_ashd_horizons_xgb_error_summary.png",
-            "artifact_type": "figure",
-            "manuscript_section": "Results - Forecast horizon comparison",
-            "manuscript_label_proposed": "Figure D2",
-            "caption_short": "XGBoost horizon error summary",
-            "status": "ready",
-        },
-    ]
+    """Write the artefact-to-manuscript mapping in CSV and Markdown form.
 
-    df = pd.DataFrame(mapping_rows)
+    The manifest itself lives in notebook_artifact_build.PAPER_ARTIFACTS,
+    which is the single source of truth for what the article ships. It is
+    imported here rather than at module scope because that module imports this
+    one. Keeping one copy of the list means a figure added to the build cannot
+    silently go missing from the mapping.
+
+    Returns:
+        tuple[Path, Path]: the CSV and the Markdown file written.
+    """
+    import notebook_artifact_build
+
+    written = notebook_artifact_build.build_tables_and_mapping()
     csv_path = RESULTS_DIR / "paper_artifact_reference_mapping.csv"
-    df.to_csv(csv_path, index=False)
-
-    md_lines = [
-        "# Paper Artifact Reference Mapping",
-        "",
-        "This file maps generated CSV/PNG artifacts to their intended manuscript section and proposed label.",
-        "",
-    ]
-    for section in df["manuscript_section"].drop_duplicates().tolist():
-        md_lines.append(f"## {section}")
-        for row in df.loc[df["manuscript_section"].eq(section)].itertuples(index=False):
-            md_lines.append(f"- {row.manuscript_label_proposed}: {row.artifact_path} - {row.caption_short}")
-        md_lines.append("")
-
     md_path = RESULTS_DIR / "paper_artifact_reference_mapping.md"
-    md_path.write_text("\n".join(md_lines) + "\n", encoding="utf-8")
+    missing = [p for p in (csv_path, md_path) if p not in written]
+    if missing:
+        raise RuntimeError(f"Reference mapping was not written: {missing}")
     return csv_path, md_path
 
 
+# ---------------------------------------------------------------------------
+# Aggregation level comparison
+# ---------------------------------------------------------------------------
+
+AGGREGATION_LEVELS = [1, 10, 100, 1000]
+
+
+def _aggregation_frames(recap_agg: pd.DataFrame) -> pd.DataFrame:
+    """Prepare the per-sample and per-fold aggregation results for plotting.
+
+    The denominator behind ``test_nRMSE`` is the maximum net load over each
+    dataset's own cross-validation window, so every aggregation level is already
+    normalised by its own peak. RMSE per household divides by the actual
+    household weight rather than the nominal level, because the two differ where
+    a sample could not be filled to the full count.
+
+    Args:
+        recap_agg (pd.DataFrame): the aggregation recap table.
+
+    Returns:
+        pd.DataFrame: one row per sample, carrying nRMSE and RMSE per household.
+    """
+    s = recap_agg.copy()
+    for column in ["aggregation_level_hh", "test_nRMSE", "test_RMSE", "total_household_weight"]:
+        s[column] = pd.to_numeric(s[column], errors="coerce")
+    s["rmse_per_hh"] = s["test_RMSE"] / s["total_household_weight"]
+
+    return s
+
+
+def _draw_aggregation_panel(ax, samples: pd.DataFrame, model: str, *, sample_col: str) -> None:
+    """Draw one model's aggregation trend: sample points and mean +/- SD."""
+    x = np.arange(len(AGGREGATION_LEVELS))
+    ax.set_axisbelow(True)
+
+    model_samples = samples.loc[samples["model_name"].eq(model)]
+    for i, level in enumerate(AGGREGATION_LEVELS):
+        values = model_samples.loc[
+            model_samples["aggregation_level_hh"].eq(level), sample_col
+        ].dropna().to_numpy()
+        if len(values) == 0:
+            continue
+        rng = np.random.default_rng(4321 + i)
+        ax.scatter(
+            np.full(len(values), i) + rng.uniform(-0.06, 0.06, size=len(values)),
+            values,
+            s=22,
+            color=PALETTE["neutral"],
+            alpha=0.55,
+            edgecolors="white",
+            linewidths=0.4,
+            zorder=2,
+        )
+
+    means, stds = [], []
+    for level in AGGREGATION_LEVELS:
+        values = model_samples.loc[
+            model_samples["aggregation_level_hh"].eq(level), sample_col
+        ].dropna()
+        means.append(float(values.mean()) if len(values) else np.nan)
+        stds.append(float(values.std()) if len(values) > 1 else 0.0)
+
+    # Every panel holds one model, named in its title, so the line style carries
+    # no information; solid reads the slope most clearly. Colour still ties each
+    # model to the same hue across figures.
+    ax.errorbar(
+        x,
+        means,
+        yerr=stds,
+        fmt="o-",
+        capsize=4,
+        linewidth=1.8,
+        markersize=5,
+        color=MODEL_COLORS[model],
+        zorder=3,
+    )
+    ax.set_xticks(x)
+    ax.set_xticklabels([str(level) for level in AGGREGATION_LEVELS])
+    _format_numeric_axis(ax)
+
+
+def _plot_aggregation_two_panel(recap_agg: pd.DataFrame) -> Path:
+    """Aggregation results as one figure carrying both metrics.
+
+    Row (a) reports nRMSE, where each aggregation level is normalised by its own
+    maximum positive net load, the convention used elsewhere in the article. Row
+    (b) reports RMSE per household. The two rows move in opposite directions:
+    aggregate peak per household falls faster than error per household, so the
+    normalised error rises even as the absolute error per household falls.
+
+    Args:
+        recap_agg (pd.DataFrame): the aggregation recap table.
+
+    Returns:
+        Path: the figure written.
+    """
+    samples = _aggregation_frames(recap_agg)
+
+    fig, axes = plt.subplots(2, 3, figsize=page_figsize(16, 11.6), sharex=True)
+    rows = [
+        ("(a)", "Test nRMSE (%)", "test_nRMSE"),
+        ("(b)", "Test RMSE per household (kW)", "rmse_per_hh"),
+    ]
+
+    # Each row shares one y scale so levels stay comparable across models; the
+    # two rows carry different units and must not share one.
+    for row_idx, (panel_id, ylabel, sample_col) in enumerate(rows):
+        for col_idx, model in enumerate(MODEL_ORDER):
+            ax = axes[row_idx, col_idx]
+            _draw_aggregation_panel(ax, samples, model, sample_col=sample_col)
+            if row_idx == 0:
+                ax.set_title(MODEL_SHORT_LABELS[model])
+            if row_idx == len(rows) - 1:
+                ax.set_xlabel("Aggregation level (households)")
+            if col_idx == 0:
+                ax.set_ylabel(f"{panel_id} {ylabel}")
+
+        # One y scale per row, spanning every point drawn in that row. Sharing
+        # the axes after plotting would keep the first panel's limits and clip
+        # the others, so the limits are set explicitly here.
+        row_axes = axes[row_idx]
+        lo = min(ax.get_ylim()[0] for ax in row_axes)
+        hi = max(ax.get_ylim()[1] for ax in row_axes)
+        for col_idx, ax in enumerate(row_axes):
+            ax.set_ylim(lo, hi)
+            if col_idx > 0:
+                ax.tick_params(labelleft=False)
+
+    fig.suptitle("AEDP aggregation: sample mean +/- standard deviation", y=1.01)
+    fig.tight_layout()
+    return save_figure(
+        fig,
+        RESULTS_DIR
+        / "03_aedp_aggregation_level"
+        / "figures"
+        / "fig15_aedp_agg_nrmse_and_rmse_per_hh_two_panel.png",
+    )
+
+
+def _aggregation_denominators(recap_agg: pd.DataFrame) -> pd.DataFrame:
+    """Recover the peak net load each aggregation level was normalised by.
+
+    The engine never records its denominator, so it is back-derived from the
+    pair of metrics it did record: nRMSE = 100 * RMSE / peak.
+
+    Args:
+        recap_agg (pd.DataFrame): the aggregation recap table.
+
+    Returns:
+        pd.DataFrame: one row per aggregation level with the mean peak net load
+        in kilowatts and that peak divided by the household count.
+    """
+    d = recap_agg.copy()
+    for column in ["aggregation_level_hh", "test_RMSE", "test_nRMSE", "total_household_weight"]:
+        d[column] = pd.to_numeric(d[column], errors="coerce")
+    d["peak_kW"] = d["test_RMSE"] / d["test_nRMSE"] * 100.0
+    summary = (
+        d.groupby("aggregation_level_hh", as_index=False)
+        .agg(peak_kW=("peak_kW", "mean"), household_weight=("total_household_weight", "mean"))
+        .sort_values("aggregation_level_hh")
+    )
+    summary["peak_kW_per_household"] = summary["peak_kW"] / summary["household_weight"]
+    return summary
+
+
+def _plot_aggregation_fixed_denominator_supplementary(recap_agg: pd.DataFrame) -> Path:
+    """Supplementary variant: nRMSE on a fixed per-household denominator.
+
+    Normalises every aggregation level by N times the single-household peak
+    rather than by that level's own peak. This is monotone-equivalent to RMSE
+    per household, so it preserves the declining trend, but it invents a
+    denominator that no other result in the article uses. Produced to document
+    the alternative that was considered; not a manuscript figure.
+
+    Args:
+        recap_agg (pd.DataFrame): the aggregation recap table.
+
+    Returns:
+        Path: the figure written, under a supplementary subdirectory.
+    """
+    samples = _aggregation_frames(recap_agg)
+    denominators = _aggregation_denominators(recap_agg)
+    single_household_peak = float(
+        denominators.loc[denominators["aggregation_level_hh"].eq(1), "peak_kW_per_household"].iloc[0]
+    )
+
+    samples = samples.copy()
+    samples["fixed_nrmse"] = (
+        100.0 * samples["test_RMSE"] / (samples["total_household_weight"] * single_household_peak)
+    )
+
+    fig, axes = plt.subplots(1, 3, figsize=page_figsize(16, 4.7), sharex=True, sharey=True)
+    for ax, model in zip(axes, MODEL_ORDER):
+        _draw_aggregation_panel(ax, samples, model, sample_col="fixed_nrmse")
+        ax.set_title(MODEL_SHORT_LABELS[model])
+        ax.set_xlabel("Aggregation level (households)")
+        if ax is axes[0]:
+            ax.set_ylabel("Test nRMSE (%)")
+
+    fig.suptitle(
+        "SUPPLEMENTARY - NOT A MANUSCRIPT FIGURE\n"
+        "AEDP aggregation nRMSE on a fixed per-household denominator: "
+        f"N x {single_household_peak:.3f} kW",
+        y=1.12,
+    )
+    fig.tight_layout()
+    return save_figure(
+        fig,
+        RESULTS_DIR
+        / "03_aedp_aggregation_level"
+        / "figures"
+        / "supplementary"
+        / "SUPPLEMENTARY_NOT_FOR_PAPER_aedp_agg_nrmse_fixed_per_hh_denominator.png",
+    )
+
+
+
+# ---------------------------------------------------------------------------
+# Accuracy against stability
+# ---------------------------------------------------------------------------
+
+# Candidate label offsets in axes-fraction units, tried in order until one lands
+# clear of the points and of the labels already placed.
+# Candidate label positions, as (angle in degrees, radius in points) around the
+# point being labelled. Rings are tried from the inside out so a label sits as
+# close to its point as it can without colliding.
+_LABEL_ANGLES = [20, 340, 70, 290, 140, 220, 0, 180, 110, 250, 45, 315]
+_LABEL_RADII = [r * ANNOTATION_PT / 12.0 for r in (34.0, 52.0, 74.0, 100.0, 130.0)]
+
+# Clearances in points: how far a label box and a leader line must stay from any
+# plotted marker before the placement counts as clean.
+_POINT_CLEARANCE = 9.0 * ANNOTATION_PT / 12.0
+_LEADER_CLEARANCE = 7.0 * ANNOTATION_PT / 12.0
+
+
+def _segment_point_distance(ax_, ay, bx, by, px, py) -> float:
+    """Shortest distance from point p to the segment ab, all in display units."""
+    dx, dy = bx - ax_, by - ay
+    length_sq = dx * dx + dy * dy
+    if length_sq <= 1e-12:
+        return float(np.hypot(px - ax_, py - ay))
+    t = max(0.0, min(1.0, ((px - ax_) * dx + (py - ay) * dy) / length_sq))
+    return float(np.hypot(px - (ax_ + t * dx), py - (ay + t * dy)))
+
+
+def _segments_cross(p1, p2, p3, p4) -> bool:
+    """Whether segment p1-p2 properly intersects segment p3-p4."""
+
+    def side(a, b, c) -> float:
+        return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
+
+    d1, d2 = side(p3, p4, p1), side(p3, p4, p2)
+    d3, d4 = side(p1, p2, p3), side(p1, p2, p4)
+    return ((d1 > 0) != (d2 > 0)) and ((d3 > 0) != (d4 > 0))
+
+
+def _place_scatter_labels(fig, ax, points: list[tuple[float, float, str]]) -> None:
+    """Label every scatter point without covering a point or another label.
+
+    Labels are placed one at a time, densest neighbourhood first, because the
+    crowded points are the ones with the fewest workable positions. For each
+    point every candidate in :data:`_LABEL_ANGLES` x :data:`_LABEL_RADII` is
+    scored and the cheapest is kept. The score charges, in decreasing order of
+    weight, for leaving the axes, covering a plotted marker, overlapping a label
+    already placed, and running the leader line close to another marker; ties
+    break towards the shortest leader.
+
+    Args:
+        fig (matplotlib.figure.Figure): parent figure, needed for a renderer.
+        ax (matplotlib.axes.Axes): the axes holding the scatter.
+        points (list[tuple[float, float, str]]): x, y and label per point.
+    """
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    dpi_scale = fig.dpi / 72.0
+    axes_box = ax.get_window_extent(renderer=renderer)
+
+    marker_xy = [ax.transData.transform((px, py)) for px, py, _ in points]
+
+    # Label the most crowded points first: they have the fewest free positions,
+    # so letting them choose before the isolated points avoids dead ends.
+    def crowding(index: int) -> float:
+        x0, y0 = marker_xy[index]
+        return -sum(
+            1
+            for j, (x1, y1) in enumerate(marker_xy)
+            if j != index and np.hypot(x1 - x0, y1 - y0) < 120.0
+        )
+
+    order = sorted(range(len(points)), key=crowding)
+
+    placed_boxes: list = []
+    placed_leaders: list = []
+    text_items: list[tuple[float, float, object]] = []
+
+    for index in order:
+        px, py, label = points[index]
+        anchor_x, anchor_y = marker_xy[index]
+        best = None
+
+        for radius in _LABEL_RADII:
+            for angle in _LABEL_ANGLES:
+                theta = np.radians(angle)
+                offset_x = radius * np.cos(theta) * dpi_scale
+                offset_y = radius * np.sin(theta) * dpi_scale
+                target_x, target_y = anchor_x + offset_x, anchor_y + offset_y
+                data_x, data_y = ax.transData.inverted().transform((target_x, target_y))
+
+                candidate = ax.text(
+                    data_x,
+                    data_y,
+                    label,
+                    ha="left" if offset_x >= 0 else "right",
+                    va="center",
+                    fontsize=ANNOTATION_PT,
+                    bbox={
+                        "facecolor": "white",
+                        "edgecolor": "#CCCCCC",
+                        "alpha": 0.9,
+                        "boxstyle": "round,pad=0.18",
+                    },
+                    zorder=5,
+                )
+                box = candidate.get_window_extent(renderer=renderer)
+
+                penalty = 0.0
+                if box.x0 < axes_box.x0 or box.x1 > axes_box.x1:
+                    penalty += 1000.0
+                if box.y0 < axes_box.y0 or box.y1 > axes_box.y1:
+                    penalty += 1000.0
+
+                padded = box.expanded(
+                    1.0 + 2 * _POINT_CLEARANCE * dpi_scale / max(box.width, 1.0),
+                    1.0 + 2 * _POINT_CLEARANCE * dpi_scale / max(box.height, 1.0),
+                )
+                for j, (mx, my) in enumerate(marker_xy):
+                    if j == index:
+                        continue
+                    if padded.x0 <= mx <= padded.x1 and padded.y0 <= my <= padded.y1:
+                        penalty += 100.0
+
+                penalty += 40.0 * sum(1 for other in placed_boxes if box.overlaps(other))
+
+                # The leader runs from the marker to the centre of the box; charge
+                # for passing close to any other marker on the way.
+                cx, cy = (box.x0 + box.x1) / 2, (box.y0 + box.y1) / 2
+                for j, (mx, my) in enumerate(marker_xy):
+                    if j == index:
+                        continue
+                    if _segment_point_distance(anchor_x, anchor_y, cx, cy, mx, my) < _LEADER_CLEARANCE * dpi_scale:
+                        penalty += 20.0
+
+                # Crossing leaders are readable but untidy, so they cost less
+                # than a covered marker and more than a longer leader.
+                for other_leader in placed_leaders:
+                    if _segments_cross((anchor_x, anchor_y), (cx, cy), *other_leader):
+                        penalty += 8.0
+
+                # Prefer the shortest leader among otherwise equal candidates.
+                penalty += radius / 1000.0
+
+                if best is None or penalty < best[0]:
+                    if best is not None:
+                        best[1].remove()
+                    best = (penalty, candidate, box, (cx, cy))
+                else:
+                    candidate.remove()
+
+            if best is not None and best[0] < 1.0:
+                break
+
+        placed_boxes.append(best[2])
+        placed_leaders.append(((anchor_x, anchor_y), best[3]))
+        text_items.append((px, py, best[1]))
+
+    # Leader lines stop at the outside edge of each rendered box, so the line
+    # never runs across the text it points at.
+    inverse = ax.transData.inverted()
+    for px, py, text in text_items:
+        box = text.get_window_extent(renderer=renderer).expanded(1.08, 1.18)
+        (x0, y0), (x1, y1) = inverse.transform([[box.x0, box.y0], [box.x1, box.y1]])
+        center_x, center_y = (x0 + x1) / 2, (y0 + y1) / 2
+        vx, vy = px - center_x, py - center_y
+        scales = []
+        if abs(vx) > 1e-12:
+            scales.append(((x1 - center_x) / vx) if vx > 0 else ((x0 - center_x) / vx))
+        if abs(vy) > 1e-12:
+            scales.append(((y1 - center_y) / vy) if vy > 0 else ((y0 - center_y) / vy))
+        positive = [s for s in scales if s > 0]
+        if not positive:
+            continue
+        scale = min(positive)
+        ax.plot(
+            [px, center_x + vx * scale],
+            [py, center_y + vy * scale],
+            color="#777777",
+            linewidth=0.5,
+            zorder=2,
+            solid_capstyle="round",
+        )
+
+
+def _draw_stability_panel(fig, ax, frame: pd.DataFrame, title: str) -> None:
+    """Draw one accuracy-against-stability panel for a full model library."""
+    frame = frame.sort_values("test_nRMSE")
+    x = frame["test_nRMSE"].to_numpy(dtype=float)
+    y = frame["test_nRMSE_stddev"].to_numpy(dtype=float)
+
+    # Pad the limits before labelling so the boxes have somewhere to sit.
+    x_pad = 0.20 * (x.max() - x.min())
+    y_pad = 0.26 * (y.max() - y.min())
+    ax.set_xlim(x.min() - x_pad, x.max() + x_pad)
+    ax.set_ylim(max(0.0, y.min() - y_pad), y.max() + y_pad)
+
+    ax.scatter(
+        x,
+        y,
+        s=22,
+        color=PALETTE["series_a"],
+        edgecolor="white",
+        linewidth=0.5,
+        zorder=3,
+    )
+    ax.set_xlabel("Test nRMSE (%)")
+    ax.set_ylabel("Test nRMSE stddev (%)")
+    ax.set_title(title)
+    ax.grid(True, alpha=0.25)
+    ax.xaxis.set_major_locator(MaxNLocator(nbins=TICK_BINS))
+    ax.yaxis.set_major_locator(MaxNLocator(nbins=TICK_BINS))
+
+    labels = [
+        (float(row.test_nRMSE), float(row.test_nRMSE_stddev), MODEL_SHORT_LABELS.get(str(row.model_name), str(row.model_name)))
+        for row in frame.itertuples(index=False)
+    ]
+    _place_scatter_labels(fig, ax, labels)
+
+
+def _validate_stability_frame(frame: pd.DataFrame, description: str) -> pd.DataFrame:
+    """Check a scatter input covers the full model library exactly once."""
+    if frame.empty:
+        raise ValueError(f"No rows found for {description}.")
+    missing = [m for m in MODEL_SEQUENCE if m not in set(frame["model_name"].astype(str))]
+    if missing:
+        raise ValueError(f"{description} is missing models: {missing}")
+    return frame
+
+
+def _plot_ashd_stability_scatter() -> Path:
+    """Accuracy against stability for ASHD at the 1-week horizon.
+
+    Returns:
+        Path: the figure written.
+    """
+    recap = _load_csv(
+        RESULTS_DIR / "02_ashd_148hh_forecast_horizon" / "ashd_148hh_horizon_combined_recap.csv"
+    )
+    frame = recap.loc[pd.to_numeric(recap["forecast_horizon_min"], errors="coerce").eq(10080)].copy()
+    frame = _validate_stability_frame(frame, "ASHD at the 1-week horizon")
+
+    fig, ax = plt.subplots(figsize=page_figsize(8.6, 6.0))
+    _draw_stability_panel(fig, ax, frame, "ASHD 148-household dataset, 1-week forecast horizon")
+    fig.tight_layout()
+    return save_figure(
+        fig,
+        RESULTS_DIR
+        / "02_ashd_148hh_forecast_horizon"
+        / "figures"
+        / "fig42_ashd_nrmse_stability_scatter_1week.png",
+    )
+
+
+def _plot_dataset_stability_scatter_pair() -> Path:
+    """Accuracy against stability for both datasets at the 1-day horizon.
+
+    ASHD is the only dataset with a 1-week run, so the two-dataset comparison is
+    drawn at 1 day, the longest horizon both datasets share. The model ordering
+    on ASHD is close between the two horizons, so the 1-day panel carries the
+    same message as the 1-week single-dataset figure.
+
+    The two panels keep independent axis scales because their ranges do not
+    overlap: forcing a shared scale would compress each panel into a corner and
+    hide the within-dataset spread that the figure exists to show.
+
+    Returns:
+        Path: the figure written.
+    """
+    recap = _load_csv(
+        RESULTS_DIR / "01_ashd_aedp_148hh_comparison" / "ashd_aedp_148hh_fh8_combined_recap.csv"
+    )
+    panels = [
+        ("(a)", "ASHD_148hh_weather", "ASHD 148-household dataset"),
+        ("(b)", "AEDP_148hh_weather", "AEDP 148-household dataset"),
+    ]
+
+    fig, axes = plt.subplots(1, 2, figsize=page_figsize(17, 8.25))
+    for ax, (panel_id, dataset_label, pretty) in zip(axes, panels):
+        frame = recap.loc[recap["dataset_label"].astype(str).eq(dataset_label)].copy()
+        frame = _validate_stability_frame(frame, f"{dataset_label} at the 1-day horizon")
+        _draw_stability_panel(fig, ax, frame, f"{panel_id} {pretty}")
+
+    fig.suptitle("Forecast accuracy against cross-validation stability, 1-day forecast horizon", y=1.02)
+    fig.tight_layout()
+    return save_figure(
+        fig,
+        RESULTS_DIR
+        / "01_ashd_aedp_148hh_comparison"
+        / "figures"
+        / "fig32_ashd_aedp_nrmse_stability_scatter_1day.png",
+    )
+
+
 def _write_pending_report(notes: list[str], failures: list[str]) -> Path:
-    report_path = RESULTS_DIR / "supervisor_revision_pending_items.md"
+    report_path = RESULTS_DIR / "paper_figure_pending_items.md"
     lines = [
         "# Supervisor Revision Pending Items",
         "",
@@ -1400,7 +1953,7 @@ def _write_pending_report(notes: list[str], failures: list[str]) -> Path:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate supervisor revision outputs from readily available artifacts.")
+    parser = argparse.ArgumentParser(description="Regenerate the journal article figures and tables from existing experiment results.")
     parser.add_argument(
         "--allow-rerun",
         action="store_true",
@@ -1463,7 +2016,7 @@ def main() -> None:
     created.append(pending_path)
 
     checks = _check_outputs(created)
-    check_path = RESULTS_DIR / "supervisor_revision_output_check.csv"
+    check_path = RESULTS_DIR / "paper_figure_output_check.csv"
     checks.to_csv(check_path, index=False)
     created.append(check_path)
 

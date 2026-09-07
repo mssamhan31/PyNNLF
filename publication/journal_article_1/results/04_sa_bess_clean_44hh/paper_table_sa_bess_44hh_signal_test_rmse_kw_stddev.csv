@@ -1,0 +1,13 @@
+model_hp,Underlying load,Net load with PV,Net load with PV and battery
+lr_hp1,1.38,1.92,2.3
+xgb_hp1,1.46,2.56,2.67
+rf_hp1,1.42,2.46,2.39
+dnn_hp1,1.54,1.6,2.28
+ann_hp1,1.65,1.69,2.12
+ets_hp1,1.64,2.86,3.03
+naive_hp1,1.63,2.73,2.86
+snaive_hp2,2.11,2.69,3.27
+prophet_hp1,1.6,3.93,4.12
+rt_hp3,1.76,1.98,2.72
+arima_hp1,2.41,7.96,8.81
+lstm_hp2,2.76,8.75,9.4

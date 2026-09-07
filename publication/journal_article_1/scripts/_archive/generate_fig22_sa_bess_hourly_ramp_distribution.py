@@ -80,10 +80,10 @@ def main() -> None:
         p75 = s["p75"].to_numpy(dtype=float)
         p90 = s["p90"].to_numpy(dtype=float)
 
-        ax.fill_between(x, p10, p90, color=PALETTE["light_grey"], alpha=0.20, label="10-90 percentile")
-        ax.fill_between(x, p25, p75, color=PALETTE["grey"], alpha=0.25, label="25-75 percentile")
-        ax.plot(x, p50, color=PALETTE["dark_blue"], linewidth=2.0, label="Median")
-        ax.axhline(0.0, color=PALETTE["orange"], linewidth=1.2, linestyle="--")
+        ax.fill_between(x, p10, p90, color=PALETTE["series_c"], alpha=0.20, label="10-90 percentile")
+        ax.fill_between(x, p25, p75, color=PALETTE["neutral"], alpha=0.25, label="25-75 percentile")
+        ax.plot(x, p50, color=PALETTE["series_a"], linewidth=2.0, label="Median")
+        ax.axhline(0.0, color=PALETTE["series_b"], linewidth=1.2, linestyle="--")
 
         ax.set_xlim(0, 23)
         ax.set_ylim(-y_lim, y_lim)

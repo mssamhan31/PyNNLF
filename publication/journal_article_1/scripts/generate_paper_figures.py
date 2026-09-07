@@ -89,11 +89,43 @@ def _pick_cv1_file(experiment_folder: str) -> Path:
 
 
 def _find_a3_file(experiment_folder: str) -> Path | None:
+    """Locate an experiment's cross-validation result file.
+
+    The file is named by experiment number, not by the full folder name, e.g.
+    ``E00085_260525_ds25_.../E00085_a3_cross_validation_result.csv``.
+
+    Args:
+        experiment_folder (str): the folder name as recorded in the recap.
+
+    Returns:
+        Path | None: the a3 file, or None if neither results store holds it.
+    """
+    experiment_number = experiment_folder.split("_")[0]
     for root in [EXP_ROOT, EXP_DATABRICKS_ROOT]:
-        path = root / experiment_folder / f"{experiment_folder}_a3_cross_validation_result.csv"
+        path = root / experiment_folder / f"{experiment_number}_a3_cross_validation_result.csv"
         if path.exists():
             return path
     return None
+
+
+def _read_fold_metrics(experiment_folder: str) -> pd.DataFrame | None:
+    """Read an experiment's per-fold metrics, excluding its summary rows.
+
+    The a3 file carries one row per cross-validation fold plus ``mean`` and
+    ``stddev`` summary rows. Callers wanting folds must drop the summaries, or
+    the summaries are treated as extra folds.
+
+    Args:
+        experiment_folder (str): the folder name as recorded in the recap.
+
+    Returns:
+        pd.DataFrame | None: the fold rows, or None if the file is absent.
+    """
+    path = _find_a3_file(experiment_folder)
+    if path is None:
+        return None
+    frame = pd.read_csv(path, index_col=0)
+    return frame.drop(index=["mean", "stddev"], errors="ignore")
 
 
 def _read_forecast_frame(path: Path) -> pd.DataFrame:
@@ -306,29 +338,6 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
     s["total_household_weight"] = pd.to_numeric(s["total_household_weight"], errors="coerce")
     s["rmse_per_hh"] = s["test_RMSE"] / s["total_household_weight"]
 
-    # Fold-level background points from a3 cross-validation files
-    fold_rows: list[dict] = []
-    for row in s.itertuples(index=False):
-        a3_path = _find_a3_file(str(row.experiment_folder))
-        if a3_path is None:
-            continue
-        a3 = pd.read_csv(a3_path)
-        if "test_nRMSE" not in a3.columns or "test_RMSE" not in a3.columns:
-            continue
-        for _, cv_row in a3.iterrows():
-            nrmse = pd.to_numeric(cv_row.get("test_nRMSE"), errors="coerce")
-            rmse = pd.to_numeric(cv_row.get("test_RMSE"), errors="coerce")
-            if pd.isna(nrmse) or pd.isna(rmse):
-                continue
-            fold_rows.append(
-                {
-                    "model_name": str(row.model_name),
-                    "aggregation_level_hh": int(row.aggregation_level_hh),
-                    "fold_nrmse": float(nrmse),
-                    "fold_rmse_per_hh": float(rmse) / float(row.total_household_weight),
-                }
-            )
-    fold_df = pd.DataFrame(fold_rows)
 
     summary = (
         s.groupby(["model_name", "aggregation_level_hh"], as_index=False)
@@ -342,13 +351,12 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
     )
 
     paths: list[Path] = []
-    for metric, y_label, m_col, s_col, fold_col, out_name in [
+    for metric, y_label, m_col, s_col, out_name in [
         (
             "nrmse",
             "Test nRMSE (%)",
             "sample_mean_nrmse",
             "sample_std_nrmse",
-            "fold_nrmse",
             "fig10_aedp_agg_nrmse_mean_std_cvbg.png",
         ),
         (
@@ -356,7 +364,6 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
             "Test RMSE per household (kW)",
             "sample_mean_rmse_per_hh",
             "sample_std_rmse_per_hh",
-            "fold_rmse_per_hh",
             "fig11_aedp_agg_rmse_per_hh_mean_std_cvbg.png",
         ),
     ]:
@@ -388,24 +395,6 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
                     linewidths=0.4,
                     zorder=2,
                 )
-
-            if not fold_df.empty:
-                fm = fold_df.loc[fold_df["model_name"].eq(model)]
-                for i, lvl in enumerate(levels):
-                    vals = fm.loc[fm["aggregation_level_hh"].eq(lvl), fold_col].dropna().to_numpy()
-                    if len(vals) == 0:
-                        continue
-                    rng = np.random.default_rng(1234 + i)
-                    jitter = rng.uniform(-0.08, 0.08, size=len(vals))
-                    ax.scatter(
-                        np.full(len(vals), i) + jitter,
-                        vals,
-                        s=13,
-                        color=PALETTE["neutral"],
-                        alpha=0.22,
-                        edgecolors="none",
-                        zorder=1,
-                    )
 
             ax.errorbar(
                 x,
@@ -888,12 +877,21 @@ def _plot_horizon_xgb(recap_exp: pd.DataFrame) -> list[Path]:
             & recap_exp["model_name"].astype(str).eq("m17_xgb_hp1")
         ].sort_values(["exp_date", "experiment_no"])
         row = subset.iloc[-1]
-        cv_files = _find_cv_test_files(str(row["experiment_folder"]))
-        maes = []
-        for cv in cv_files:
-            d = _read_forecast_frame(cv)
-            maes.append(float(np.mean(np.abs(d["forecast"].to_numpy() - d["observation"].to_numpy()))))
-        rows.append({"horizon": label, "mae_mean": float(np.mean(maes)), "mae_std": float(np.std(maes))})
+        # The engine already recorded per-fold MAE, so read it rather than
+        # recomputing it from every fold's raw series. The means agree to four
+        # decimal places; the spread here is the sample standard deviation,
+        # which is the right one for a sample of folds.
+        folds = _read_fold_metrics(str(row["experiment_folder"]))
+        if folds is None or "test_MAE" not in folds.columns:
+            raise FileNotFoundError(
+                f"Per-fold metrics unavailable for {row['experiment_folder']}"
+            )
+        maes = pd.to_numeric(folds["test_MAE"], errors="coerce").dropna()
+        rows.append({
+            "horizon": label,
+            "mae_mean": float(maes.mean()),
+            "mae_std": float(maes.std()),
+        })
     em = pd.DataFrame(rows)
 
     fig, ax = plt.subplots(figsize=page_figsize(8, 4.6))
@@ -1421,7 +1419,7 @@ def _build_reference_mapping() -> tuple[Path, Path]:
 AGGREGATION_LEVELS = [1, 10, 100, 1000]
 
 
-def _aggregation_frames(recap_agg: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+def _aggregation_frames(recap_agg: pd.DataFrame) -> pd.DataFrame:
     """Prepare the per-sample and per-fold aggregation results for plotting.
 
     The denominator behind ``test_nRMSE`` is the maximum net load over each
@@ -1434,48 +1432,18 @@ def _aggregation_frames(recap_agg: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataF
         recap_agg (pd.DataFrame): the aggregation recap table.
 
     Returns:
-        tuple[pd.DataFrame, pd.DataFrame]: per-sample rows, and per-fold rows
-        read from the cross-validation files for the faint background points.
+        pd.DataFrame: one row per sample, carrying nRMSE and RMSE per household.
     """
     s = recap_agg.copy()
     for column in ["aggregation_level_hh", "test_nRMSE", "test_RMSE", "total_household_weight"]:
         s[column] = pd.to_numeric(s[column], errors="coerce")
     s["rmse_per_hh"] = s["test_RMSE"] / s["total_household_weight"]
 
-    fold_rows: list[dict] = []
-    for row in s.itertuples(index=False):
-        a3_path = _find_a3_file(str(row.experiment_folder))
-        if a3_path is None:
-            continue
-        a3 = pd.read_csv(a3_path)
-        if "test_nRMSE" not in a3.columns or "test_RMSE" not in a3.columns:
-            continue
-        for _, cv_row in a3.iterrows():
-            nrmse = pd.to_numeric(cv_row.get("test_nRMSE"), errors="coerce")
-            rmse = pd.to_numeric(cv_row.get("test_RMSE"), errors="coerce")
-            if pd.isna(nrmse) or pd.isna(rmse):
-                continue
-            fold_rows.append(
-                {
-                    "model_name": str(row.model_name),
-                    "aggregation_level_hh": int(row.aggregation_level_hh),
-                    "fold_nrmse": float(nrmse),
-                    "fold_rmse_per_hh": float(rmse) / float(row.total_household_weight),
-                }
-            )
-    return s, pd.DataFrame(fold_rows)
+    return s
 
 
-def _draw_aggregation_panel(
-    ax,
-    samples: pd.DataFrame,
-    folds: pd.DataFrame,
-    model: str,
-    *,
-    sample_col: str,
-    fold_col: str,
-) -> None:
-    """Draw one model's aggregation trend: fold cloud, sample points, mean +/- SD."""
+def _draw_aggregation_panel(ax, samples: pd.DataFrame, model: str, *, sample_col: str) -> None:
+    """Draw one model's aggregation trend: sample points and mean +/- SD."""
     x = np.arange(len(AGGREGATION_LEVELS))
     ax.set_axisbelow(True)
 
@@ -1497,25 +1465,6 @@ def _draw_aggregation_panel(
             linewidths=0.4,
             zorder=2,
         )
-
-    if not folds.empty:
-        model_folds = folds.loc[folds["model_name"].eq(model)]
-        for i, level in enumerate(AGGREGATION_LEVELS):
-            values = model_folds.loc[
-                model_folds["aggregation_level_hh"].eq(level), fold_col
-            ].dropna().to_numpy()
-            if len(values) == 0:
-                continue
-            rng = np.random.default_rng(1234 + i)
-            ax.scatter(
-                np.full(len(values), i) + rng.uniform(-0.08, 0.08, size=len(values)),
-                values,
-                s=13,
-                color=PALETTE["neutral"],
-                alpha=0.22,
-                edgecolors="none",
-                zorder=1,
-            )
 
     means, stds = [], []
     for level in AGGREGATION_LEVELS:
@@ -1559,22 +1508,20 @@ def _plot_aggregation_two_panel(recap_agg: pd.DataFrame) -> Path:
     Returns:
         Path: the figure written.
     """
-    samples, folds = _aggregation_frames(recap_agg)
+    samples = _aggregation_frames(recap_agg)
 
     fig, axes = plt.subplots(2, 3, figsize=page_figsize(16, 11.6), sharex=True)
     rows = [
-        ("(a)", "Test nRMSE (%)", "test_nRMSE", "fold_nrmse"),
-        ("(b)", "Test RMSE per household (kW)", "rmse_per_hh", "fold_rmse_per_hh"),
+        ("(a)", "Test nRMSE (%)", "test_nRMSE"),
+        ("(b)", "Test RMSE per household (kW)", "rmse_per_hh"),
     ]
 
     # Each row shares one y scale so levels stay comparable across models; the
     # two rows carry different units and must not share one.
-    for row_idx, (panel_id, ylabel, sample_col, fold_col) in enumerate(rows):
+    for row_idx, (panel_id, ylabel, sample_col) in enumerate(rows):
         for col_idx, model in enumerate(MODEL_ORDER):
             ax = axes[row_idx, col_idx]
-            _draw_aggregation_panel(
-                ax, samples, folds, model, sample_col=sample_col, fold_col=fold_col
-            )
+            _draw_aggregation_panel(ax, samples, model, sample_col=sample_col)
             if row_idx == 0:
                 ax.set_title(MODEL_SHORT_LABELS[model])
             if row_idx == len(rows) - 1:
@@ -1645,7 +1592,7 @@ def _plot_aggregation_fixed_denominator_supplementary(recap_agg: pd.DataFrame) -
     Returns:
         Path: the figure written, under a supplementary subdirectory.
     """
-    samples, folds = _aggregation_frames(recap_agg)
+    samples = _aggregation_frames(recap_agg)
     denominators = _aggregation_denominators(recap_agg)
     single_household_peak = float(
         denominators.loc[denominators["aggregation_level_hh"].eq(1), "peak_kW_per_household"].iloc[0]
@@ -1655,16 +1602,10 @@ def _plot_aggregation_fixed_denominator_supplementary(recap_agg: pd.DataFrame) -
     samples["fixed_nrmse"] = (
         100.0 * samples["test_RMSE"] / (samples["total_household_weight"] * single_household_peak)
     )
-    folds = folds.copy()
-    if not folds.empty:
-        # Fold rows already carry RMSE divided by the household weight.
-        folds["fixed_fold_nrmse"] = 100.0 * folds["fold_rmse_per_hh"] / single_household_peak
 
     fig, axes = plt.subplots(1, 3, figsize=page_figsize(16, 4.7), sharex=True, sharey=True)
     for ax, model in zip(axes, MODEL_ORDER):
-        _draw_aggregation_panel(
-            ax, samples, folds, model, sample_col="fixed_nrmse", fold_col="fixed_fold_nrmse"
-        )
+        _draw_aggregation_panel(ax, samples, model, sample_col="fixed_nrmse")
         ax.set_title(MODEL_SHORT_LABELS[model])
         ax.set_xlabel("Aggregation level (households)")
         if ax is axes[0]:

@@ -361,26 +361,37 @@ def build_section_04() -> list[Path]:
     return out
 
 
-def check_artifacts(section: str | None = None) -> pd.DataFrame:
-    df = _artifact_df().copy()
-    if section is not None:
-        prefixes = SECTION_FILTERS[section]
-        mask = df["artifact_path"].apply(lambda p: any(str(p).startswith(px) for px in prefixes))
-        df = df.loc[mask].copy()
-
+def _artifact_status(paths: list[str]) -> pd.DataFrame:
+    """Report existence and size for each artifact path."""
     rows = []
-    for p in df["artifact_path"].tolist():
+    for p in paths:
         path = WORKSPACE_DIR / p
         rows.append({
             "path": p,
             "exists": path.exists(),
             "size_bytes": path.stat().st_size if path.exists() else 0,
         })
+    return pd.DataFrame(rows)
 
-    out_df = pd.DataFrame(rows)
-    out_path = RESULTS_DIR / "paper_artifact_output_check.csv"
-    out_df.to_csv(out_path, index=False)
-    return out_df
+
+def check_artifacts(section: str | None = None) -> pd.DataFrame:
+    """Report which registered artifacts exist, optionally for one section.
+
+    The report written to disk always covers the whole manifest, whichever
+    section was asked about. Writing only the requested section would make the
+    committed file depend on the order the sections happened to be built in,
+    so the same tree could produce different content run to run.
+
+    Args:
+        section (str | None): section key to filter the returned frame by, or
+            None for every artifact.
+
+    Returns:
+        pd.DataFrame: status rows for the requested section.
+    """
+    all_paths = _artifact_df()["artifact_path"].tolist()
+    _artifact_status(all_paths).to_csv(RESULTS_DIR / "paper_artifact_output_check.csv", index=False)
+    return _artifact_status(list_expected_artifacts(section))
 
 
 def assert_artifacts(section: str | None = None) -> None:

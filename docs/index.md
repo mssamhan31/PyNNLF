@@ -58,11 +58,11 @@ hide:
         <span>introduced a novel model</span>
       </div>
       <div>
-        <strong>75%</strong>
+        <strong>76%</strong>
         <span>did not compare with naive or seasonal naive benchmarks</span>
       </div>
       <div>
-        <strong>58%</strong>
+        <strong>43%</strong>
         <span>did not use a publicly available dataset</span>
       </div>
       <div>

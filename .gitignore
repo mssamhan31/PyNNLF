@@ -74,3 +74,31 @@ publication/journal_article_1/experiment_result_databricks/**/*.pkl
 # --- Other ---
 ignored_from_git
 .ai/
+
+# --- Darth EDP datasets, no longer published ---
+# Sourced from the Darth Energy Data Platform (darth.engineering.unsw.edu.au);
+# data/metadata.xlsx records them as 'Solar Analytics, Wattwatchers collected in
+# Darth'. Untracked so they stop being distributed, but kept on disk and left in
+# the existing git history. Listed by exact path rather than a data/*aedp* glob,
+# so a future file is never excluded by accident.
+data/ds2_aedp_5min.csv
+data/ds3_aedp_30min.csv
+data/ds5_aedp_30min_with_weather.csv
+data/ds6_aedp_cluster_5min.csv
+data/ds7_aedp_cluster_30min.csv
+data/ds8_aedp_cluster_30min_with_weather.csv
+data/ds9_aedp_cluster2_5min.csv
+data/ds10_aedp_cluster2_30min.csv
+data/ds11_aedp_cluster2_30min_with_weather.csv
+data/ds25_aedp_1hh_sample01_30min_with_weather.csv
+data/ds26_aedp_1hh_sample02_30min_with_weather.csv
+data/ds27_aedp_1hh_sample03_30min_with_weather.csv
+data/ds28_aedp_10hh_sample01_30min_with_weather.csv
+data/ds29_aedp_10hh_sample02_30min_with_weather.csv
+data/ds30_aedp_10hh_sample03_30min_with_weather.csv
+data/ds31_aedp_100hh_sample01_30min_with_weather.csv
+data/ds32_aedp_100hh_sample02_30min_with_weather.csv
+data/ds33_aedp_100hh_sample03_30min_with_weather.csv
+data/ds34_aedp_1000hh_sample01_30min_with_weather.csv
+data/ds35_aedp_1000hh_sample02_30min_with_weather.csv
+data/ds36_aedp_1000hh_sample03_30min_with_weather.csv

@@ -81,6 +81,18 @@ Unlike the previous household-focused datasets, this dataset covers a zone subst
 | `ds14_ausgrid_zs_mascot.csv` | Zone Substation data for Mascot |
 | `ds15_ausgrid_zs_mascot_30min_with_weather.csv` | `ds14` enhanced with weather data at 30-minute resolution |
 
+### International Datasets
+Two aggregate datasets from outside Australia, built by the notebooks in `publication/journal_article_1/notebooks/00_data_exploration_and_processing/02_process_international_datasets/` with the same recipe as the ASHD datasets: sum the sites, convert energy to average power, attach weather under the same column names, and validate a regular index with no missing values.
+
+| Dataset Name | Description |
+| --- | --- |
+| `ds37_sundance_hourly.csv` | UMass Smart* SunDance release: hourly net load for calendar 2015, summed over the 87 of 100 North American solar sites that are hourly, complete and residential in scale. Sites in several time zones are summed on their local standard clock, so the aggregate is synthetic rather than a physical feeder. |
+| `ds38_sundance_hourly_with_weather.csv` | `ds37` enhanced with the site-mean temperature, relative humidity and wind speed from the weather files shipped with the release |
+| `ds39_fluvius_pv_30min.csv` | Fluvius digital-meter release: half-hourly net load (offtake minus injection) for calendar 2024, summed over the 300 residential meters with solar panels and neither a heat pump nor an electric vehicle, on Central European Time |
+| `ds40_fluvius_pv_30min_with_weather.csv` | `ds39` enhanced with Brussels-Uccle temperature, relative humidity and wind speed from the Open-Meteo historical weather API |
+
+SunDance is released under CC BY 4.0 by the UMass Trace Repository; cite Chen, D. and Irwin, D. (2017), *SunDance: Black-box Behind-the-Meter Solar Disaggregation*, ACM e-Energy '17. The Fluvius data (dataset `1_50`, last updated by Fluvius on 2025-09-29) are reused under the Fluvius open data licence, which permits redistribution and commercial use provided Fluvius and the date of the last update are named. Open-Meteo data are CC BY 4.0.
+
 ## Model
 
 ### Forecasting Models Overview
@@ -129,7 +141,10 @@ The datasets in `data/` are derived from the following sources, all cleared for 
 | Australian Centre for Advanced Photovoltaics (ACAP), Energy Data Platform (ACAP-EDP) | `ds2`, `ds3`, `ds5`–`ds11`, `ds28`–`ds36` |
 | Ausgrid zone substation, Mascot | `ds14`, `ds15` |
 | Solar Analytics CICCADA battery energy storage system (BESS) cohort | South Australian BESS datasets |
-| Solcast and the Australian Bureau of Meteorology (BOM) | weather and cloud variables in the `_with_weather` variants |
+| Solcast and the Australian Bureau of Meteorology (BOM) | weather and cloud variables in the Australian `_with_weather` variants |
+| UMass Smart* SunDance release (CC BY 4.0) | `ds37`, `ds38` |
+| Fluvius Open Data (Fluvius open data licence) | `ds39`, `ds40` |
+| Open-Meteo historical weather API (CC BY 4.0) | weather variables in `ds40` |
 
 ### Downloading datasets
 
@@ -152,4 +167,4 @@ Set `PYNNLF_RAW_DATA_DIR` to the directory holding your source data folders befo
 $env:PYNNLF_RAW_DATA_DIR = "D:\pynnlf_source_data"
 ```
 
-Those notebooks expect the `1. raw`, `2. processed` and `3. cleaned` folders beneath that root, plus `reference/ch5_data.xlsx` for the comparison tables in section 01. A notebook that needs the variable raises an error naming it if it is unset.
+Those notebooks expect the `1. raw`, `2. processed` and `3. cleaned` folders beneath that root. The international datasets read `1. raw/SunDance/SunDance_data_release/` (the unpacked SunDance archive), `1. raw/Fluvius/` (the Fluvius `Deel_1` ZIP and legend workbook) and `1. raw/Open-Meteo/` (fetched by the notebook when absent). A notebook that needs the variable raises an error naming it if it is unset.

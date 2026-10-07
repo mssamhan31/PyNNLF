@@ -39,7 +39,7 @@ These five notebooks are the canonical paper-artifact entrypoints. They rebuild 
 
 The numbered notebooks before each build notebook document data lineage and, where applicable, experiment execution:
 
-- Section 00 contains ASHD preparation, source exploration, and the workspace-structure figure workflow.
+- Section 00 contains ASHD preparation, the SunDance and Fluvius dataset preparation, source exploration, and the workspace-structure figure workflow.
 - Section 01 contains the ASHD/ACAP-EDP recap-processing workflow.
 - Section 02 contains the ASHD experiment-run and recap-processing workflow.
 - Section 03 contains ACAP-EDP checkpoint creation, aggregation-dataset generation, experiment execution, and recap processing.

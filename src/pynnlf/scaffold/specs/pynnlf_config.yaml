@@ -35,6 +35,10 @@ datasets:
   ds34: ds34_acap-edp_1000hh_sample01_30min_with_weather.csv
   ds35: ds35_acap-edp_1000hh_sample02_30min_with_weather.csv
   ds36: ds36_acap-edp_1000hh_sample03_30min_with_weather.csv
+  ds37: ds37_sundance_hourly.csv
+  ds38: ds38_sundance_hourly_with_weather.csv
+  ds39: ds39_fluvius_pv_30min.csv
+  ds40: ds40_fluvius_pv_30min_with_weather.csv
 
 forecast_horizons:
   fh1: 30

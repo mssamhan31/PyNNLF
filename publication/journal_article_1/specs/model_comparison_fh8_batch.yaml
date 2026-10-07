@@ -1,0 +1,41 @@
+# Model comparison for the journal article: 14 models x 4 datasets at the 1-day
+# horizon (fh8 = 1440 min). One hyperparameter set per model, the one the paper
+# reports. Models are ordered light to heavy so a partial run still yields the
+# cheap rows first; the runner skips any (dataset, model, hp) already in a
+# result store, so the 12 existing ASHD ds20 runs are not repeated.
+datasets:
+- ds20   # ASHD 148 households, Sydney, 30 min
+- ds11   # ACAP-EDP 148 households, NSW, 30 min
+- ds38   # UMass Smart* SunDance aggregate, North America, hourly
+- ds40   # Fluvius solar households, Belgium, 30 min
+forecast_horizons:
+- fh8
+model_and_hp:
+- - m1    # naive
+  - hp1
+- - m2    # seasonal naive
+  - hp2
+- - m3    # ETS
+  - hp1
+- - m4    # ARIMA
+  - hp1
+- - m6    # linear regression
+  - hp1
+- - m7    # ANN
+  - hp1
+- - m8    # DNN
+  - hp1
+- - m9    # regression tree
+  - hp3
+- - m17   # XGBoost
+  - hp1
+- - m19   # N-HiTS
+  - hp2
+- - m20   # PatchTST
+  - hp2
+- - m16   # Prophet
+  - hp1
+- - m10   # random forest
+  - hp1
+- - m13   # LSTM
+  - hp2

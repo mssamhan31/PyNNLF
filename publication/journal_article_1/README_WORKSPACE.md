@@ -16,10 +16,10 @@ build reads existing results only, so a rebuild is reproducible and cheap.
 | `specs/` | Experiment and batch specifications, plus the workspace config. |
 | `models/` | Model definitions and the hyperparameter file used by the runs. |
 | `experiment_result/` | Cross-validated output of the runs executed locally, one folder per experiment, plus the `a1_experiment_result.csv` index. |
-| `experiment_result_databricks/` | The same, for the load-composition runs executed on Databricks. |
+| `experiment_result_databricks/` | The same, for the runs executed on Databricks: the load-composition runs and the 14-model, 4-dataset comparison (`scripts/run_model_comparison_batch.py`, resumable). |
 | `notebooks/` | The workflow, numbered per section. `_archive/` holds superseded versions. |
 | `results/` | Everything generated: figures under `<section>/figures/`, tables as `paper_table_*.csv`. |
-| `scripts/` | The plotting and table code the notebooks call. |
+| `scripts/` | The plotting and table code the notebooks call, plus the resumable batch runners (`run_sa_bess_batch.py`, `run_model_comparison_batch.py`). |
 
 ## How a figure gets built
 

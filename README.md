@@ -56,7 +56,7 @@ Annotated version: [Repository structure](https://mssamhan31.github.io/PyNNLF/re
 
 ## Data
 
-`data/` holds the public net load dataset library. Sources include the Ausgrid Solar Home Dataset (ASHD), the Australia Energy Data Platform (AEDP), an Ausgrid zone substation, and a South Australian battery energy storage system (BESS) cohort, with weather from Solcast and the Australian Bureau of Meteorology (BOM).
+`data/` holds the public net load dataset library. Sources include the Ausgrid Solar Home Dataset (ASHD), the Australian Centre for Advanced Photovoltaics (ACAP), Energy Data Platform (ACAP-EDP), an Ausgrid zone substation, and a South Australian battery energy storage system (BESS) cohort, with weather from Solcast and the Australian Bureau of Meteorology (BOM).
 
 A new workspace ships with `ds0` only. To fetch more:
 
@@ -88,7 +88,7 @@ MIT. See [LICENSE](./LICENSE).
 Please cite PyNNLF if you use it. Metadata is in [CITATION.cff](./CITATION.cff); the archived releases are at [10.5281/zenodo.18794990](https://doi.org/10.5281/zenodo.18794990), which always resolves to the latest version.
 
 ## Acknowledgements
-This project is part of Samhan's PhD study, supported by the University International Postgraduate Award (UIPA) Scholarship from UNSW, the Industry Collaboration Project Scholarship from Ausgrid, the RACE for 2030 Scholarship, and the NSW Decarbonisation Innovation Hub (NSW Decarb Hub). We also acknowledge Solcast and the Australian Bureau of Meteorology (BOM) for providing access to historical weather datasets for this research. We further acknowledge the use of Python libraries including Pandas, NumPy, PyTorch, Scikit-learn, XGBoost, Prophet, Statsmodels, and Matplotlib. Finally, we thank the reviewers and editor of the Journal of Open Source Software for their valuable feedback and guidance.
+This project is part of Samhan's PhD study, supported by the University International Postgraduate Award (UIPA) Scholarship from UNSW, the Industry Collaboration Project Scholarship from Ausgrid, the RACE for 2030 Scholarship, and the NSW Decarbonisation Innovation Hub (NSW Decarb Hub). We also acknowledge Solcast and the Australian Bureau of Meteorology (BOM) for providing access to historical weather datasets for this research. We acknowledge the Australian Centre for Advanced Photovoltaics (ACAP), Energy Data Platform (ACAP-EDP) for the household net load data compiled from Solar Analytics and Wattwatchers. We further acknowledge the use of Python libraries including Pandas, NumPy, PyTorch, Scikit-learn, XGBoost, Prophet, Statsmodels, and Matplotlib. Finally, we thank the reviewers and editor of the Journal of Open Source Software for their valuable feedback and guidance.
 
 The authors declare that they have no competing financial, personal, or professional interests related to this work.
 

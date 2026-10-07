@@ -19,7 +19,7 @@ RESULTS_DIR = ROOT / "results"
 recap = pd.read_csv(ROOT / "experiment_result" / "a1_experiment_result.csv")
 
 rows = {}
-for ds_no, label in [("ds20", "ASHD"), ("ds11", "AEDP")]:
+for ds_no, label in [("ds20", "ASHD"), ("ds11", "ACAP-EDP")]:
     subset = recap.loc[
         recap["dataset_no"].astype(str).eq(ds_no)
         & pd.to_numeric(recap["forecast_horizon_min"], errors="coerce").eq(1440)
@@ -30,18 +30,18 @@ for ds_no, label in [("ds20", "ASHD"), ("ds11", "AEDP")]:
     rows[label] = subset.iloc[-1]
 
 ashd_path = pub._pick_cv1_file(str(rows["ASHD"]["experiment_folder"]))
-aedp_path = pub._pick_cv1_file(str(rows["AEDP"]["experiment_folder"]))
+acap_edp_path = pub._pick_cv1_file(str(rows["ACAP-EDP"]["experiment_folder"]))
 ashd_df = pub._read_forecast_frame(ashd_path).sort_values("datetime").reset_index(drop=True)
-aedp_df = pub._read_forecast_frame(aedp_path).sort_values("datetime").reset_index(drop=True)
+acap_edp_df = pub._read_forecast_frame(acap_edp_path).sort_values("datetime").reset_index(drop=True)
 
 ashd_peak = float(
     pd.to_numeric(ashd_df["observation"], errors="coerce")
     .loc[pd.to_numeric(ashd_df["observation"], errors="coerce").gt(0)]
     .max()
 )
-aedp_peak = float(
-    pd.to_numeric(aedp_df["observation"], errors="coerce")
-    .loc[pd.to_numeric(aedp_df["observation"], errors="coerce").gt(0)]
+acap_edp_peak = float(
+    pd.to_numeric(acap_edp_df["observation"], errors="coerce")
+    .loc[pd.to_numeric(acap_edp_df["observation"], errors="coerce").gt(0)]
     .max()
 )
 
@@ -50,12 +50,12 @@ ashd_candidates = [
     ("alt2_feb_2013_mid", pd.Timestamp("2013-02-10"), pd.Timestamp("2013-02-17")),
     ("alt3_feb_2013_late", pd.Timestamp("2013-02-17"), pd.Timestamp("2013-02-24")),
 ]
-aedp_window = (pd.Timestamp("2024-02-04"), pd.Timestamp("2024-02-11"))
-aedp_week = aedp_df.loc[
-    (aedp_df["datetime"] >= aedp_window[0]) & (aedp_df["datetime"] < aedp_window[1])
+acap_edp_window = (pd.Timestamp("2024-02-04"), pd.Timestamp("2024-02-11"))
+acap_edp_week = acap_edp_df.loc[
+    (acap_edp_df["datetime"] >= acap_edp_window[0]) & (acap_edp_df["datetime"] < acap_edp_window[1])
 ].copy().reset_index(drop=True)
 
-out_dir = RESULTS_DIR / "01_ashd_aedp_148hh_comparison" / "figures" / "fig30_same_season_alternatives"
+out_dir = RESULTS_DIR / "01_ashd_acap_edp_148hh_comparison" / "figures" / "fig30_same_season_alternatives"
 out_dir.mkdir(parents=True, exist_ok=True)
 
 for name, start, end in ashd_candidates:
@@ -66,8 +66,8 @@ for name, start, end in ashd_candidates:
     vals = []
     vals.extend(d["observation"].to_numpy(dtype=float) / ashd_peak)
     vals.extend(d["forecast"].to_numpy(dtype=float) / ashd_peak)
-    vals.extend(aedp_week["observation"].to_numpy(dtype=float) / aedp_peak)
-    vals.extend(aedp_week["forecast"].to_numpy(dtype=float) / aedp_peak)
+    vals.extend(acap_edp_week["observation"].to_numpy(dtype=float) / acap_edp_peak)
+    vals.extend(acap_edp_week["forecast"].to_numpy(dtype=float) / acap_edp_peak)
     arr = np.concatenate([np.asarray(vals, dtype=float)])
     ymin = min(0.0, float(np.nanmin(arr)))
     ymax = max(1.0, float(np.nanmax(arr)))
@@ -75,12 +75,12 @@ for name, start, end in ashd_candidates:
     limits = (ymin - pad, ymax + pad)
 
     fig, axes = plt.subplots(2, 1, figsize=(14, 11), sharex=False, sharey=True)
-    for ax, label, week_df, peak in zip(axes, ["ASHD", "AEDP"], [d, aedp_week], [ashd_peak, aedp_peak]):
+    for ax, label, week_df, peak in zip(axes, ["ASHD", "ACAP-EDP"], [d, acap_edp_week], [ashd_peak, acap_edp_peak]):
         ax.set_axisbelow(True)
         ax.plot(week_df["datetime"], week_df["observation"] / peak, color=PALETTE["series_a"], linewidth=1.8, label="Actual")
         ax.plot(week_df["datetime"], week_df["forecast"] / peak, color=PALETTE["series_b"], linewidth=1.4, label="Forecast")
         ax.axhline(1.0, color=PALETTE["neutral"], linewidth=1.1, linestyle="--", label=f"CV1 actual peak: {peak:.2f} kW")
-        label_name = "ASHD" if label == "ASHD" else "AEDP"
+        label_name = "ASHD" if label == "ASHD" else "ACAP-EDP"
         ax.set_title(f'{label_name} - representative week from {week_df["datetime"].dt.date.iloc[0]}')
         ax.set_ylabel("Load / positive peak")
         ax.set_ylim(*limits)

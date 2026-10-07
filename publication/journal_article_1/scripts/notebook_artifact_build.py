@@ -39,7 +39,7 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "ready",
     },
     {
-        "artifact_path": "results/03_aedp_aggregation_level/figures/fig10_aedp_agg_nrmse_mean_std_cvbg.png",
+        "artifact_path": "results/03_acap_edp_aggregation_level/figures/fig10_acap_edp_agg_nrmse_mean_std_cvbg.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Aggregation level comparison",
         "manuscript_label_proposed": "Figure A1",
@@ -47,7 +47,7 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "ready",
     },
     {
-        "artifact_path": "results/03_aedp_aggregation_level/figures/fig11_aedp_agg_rmse_per_hh_mean_std_cvbg.png",
+        "artifact_path": "results/03_acap_edp_aggregation_level/figures/fig11_acap_edp_agg_rmse_per_hh_mean_std_cvbg.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Aggregation level comparison",
         "manuscript_label_proposed": "Figure A2",
@@ -55,7 +55,7 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "ready",
     },
     {
-        "artifact_path": "results/03_aedp_aggregation_level/figures/fig15_aedp_agg_nrmse_and_rmse_per_hh_two_panel.png",
+        "artifact_path": "results/03_acap_edp_aggregation_level/figures/fig15_acap_edp_agg_nrmse_and_rmse_per_hh_two_panel.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Aggregation level comparison",
         "manuscript_label_proposed": "Figure A0",
@@ -63,7 +63,7 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "ready",
     },
     {
-        "artifact_path": "results/03_aedp_aggregation_level/figures/supplementary/SUPPLEMENTARY_NOT_FOR_PAPER_aedp_agg_nrmse_fixed_per_hh_denominator.png",
+        "artifact_path": "results/03_acap_edp_aggregation_level/figures/supplementary/SUPPLEMENTARY_NOT_FOR_PAPER_acap_edp_agg_nrmse_fixed_per_hh_denominator.png",
         "artifact_type": "figure",
         "manuscript_section": "Not for the manuscript",
         "manuscript_label_proposed": "-",
@@ -71,7 +71,7 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "supplementary",
     },
     {
-        "artifact_path": "results/03_aedp_aggregation_level/figures/fig12a_aedp_agg1_actual_vs_forecast_timeseries_naive_lr_xgb.png",
+        "artifact_path": "results/03_acap_edp_aggregation_level/figures/fig12a_acap_edp_agg1_actual_vs_forecast_timeseries_naive_lr_xgb.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Aggregation level comparison",
         "manuscript_label_proposed": "Figure A3(a)",
@@ -79,7 +79,7 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "ready",
     },
     {
-        "artifact_path": "results/03_aedp_aggregation_level/figures/fig12b_aedp_agg10_actual_vs_forecast_timeseries_naive_lr_xgb.png",
+        "artifact_path": "results/03_acap_edp_aggregation_level/figures/fig12b_acap_edp_agg10_actual_vs_forecast_timeseries_naive_lr_xgb.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Aggregation level comparison",
         "manuscript_label_proposed": "Figure A3(b)",
@@ -87,7 +87,7 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "ready",
     },
     {
-        "artifact_path": "results/03_aedp_aggregation_level/figures/fig12c_aedp_agg100_actual_vs_forecast_timeseries_naive_lr_xgb.png",
+        "artifact_path": "results/03_acap_edp_aggregation_level/figures/fig12c_acap_edp_agg100_actual_vs_forecast_timeseries_naive_lr_xgb.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Aggregation level comparison",
         "manuscript_label_proposed": "Figure A3(c)",
@@ -95,7 +95,7 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "ready",
     },
     {
-        "artifact_path": "results/03_aedp_aggregation_level/figures/fig12d_aedp_agg1000_actual_vs_forecast_timeseries_naive_lr_xgb.png",
+        "artifact_path": "results/03_acap_edp_aggregation_level/figures/fig12d_acap_edp_agg1000_actual_vs_forecast_timeseries_naive_lr_xgb.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Aggregation level comparison",
         "manuscript_label_proposed": "Figure A3(d)",
@@ -103,7 +103,7 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "ready",
     },
     {
-        "artifact_path": "results/03_aedp_aggregation_level/figures/fig13a_aedp_agg1_actual_vs_forecast_scatter_naive_lr_xgb.png",
+        "artifact_path": "results/03_acap_edp_aggregation_level/figures/fig13a_acap_edp_agg1_actual_vs_forecast_scatter_naive_lr_xgb.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Aggregation level comparison",
         "manuscript_label_proposed": "Figure A4(a)",
@@ -111,7 +111,7 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "ready",
     },
     {
-        "artifact_path": "results/03_aedp_aggregation_level/figures/fig13b_aedp_agg10_actual_vs_forecast_scatter_naive_lr_xgb.png",
+        "artifact_path": "results/03_acap_edp_aggregation_level/figures/fig13b_acap_edp_agg10_actual_vs_forecast_scatter_naive_lr_xgb.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Aggregation level comparison",
         "manuscript_label_proposed": "Figure A4(b)",
@@ -119,7 +119,7 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "ready",
     },
     {
-        "artifact_path": "results/03_aedp_aggregation_level/figures/fig13c_aedp_agg100_actual_vs_forecast_scatter_naive_lr_xgb.png",
+        "artifact_path": "results/03_acap_edp_aggregation_level/figures/fig13c_acap_edp_agg100_actual_vs_forecast_scatter_naive_lr_xgb.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Aggregation level comparison",
         "manuscript_label_proposed": "Figure A4(c)",
@@ -127,7 +127,7 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "ready",
     },
     {
-        "artifact_path": "results/03_aedp_aggregation_level/figures/fig13d_aedp_agg1000_actual_vs_forecast_scatter_naive_lr_xgb.png",
+        "artifact_path": "results/03_acap_edp_aggregation_level/figures/fig13d_acap_edp_agg1000_actual_vs_forecast_scatter_naive_lr_xgb.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Aggregation level comparison",
         "manuscript_label_proposed": "Figure A4(d)",
@@ -135,7 +135,7 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "ready",
     },
     {
-        "artifact_path": "results/03_aedp_aggregation_level/figures/fig14_aedp_aggregation_xgb_timeseries_aligned.png",
+        "artifact_path": "results/03_acap_edp_aggregation_level/figures/fig14_acap_edp_aggregation_xgb_timeseries_aligned.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Aggregation level comparison",
         "manuscript_label_proposed": "Figure A5",
@@ -191,11 +191,11 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "ready",
     },
     {
-        "artifact_path": "results/01_ashd_aedp_148hh_comparison/figures/fig32_ashd_aedp_nrmse_stability_scatter_1day.png",
+        "artifact_path": "results/01_ashd_acap_edp_148hh_comparison/figures/fig32_ashd_acap_edp_nrmse_stability_scatter_1day.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Accuracy against stability",
         "manuscript_label_proposed": "Figure C3",
-        "caption_short": "Accuracy against stability for ASHD and AEDP at the 1-day horizon",
+        "caption_short": "Accuracy against stability for ASHD and ACAP-EDP at the 1-day horizon",
         "status": "ready",
     },
     {
@@ -207,19 +207,19 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
         "status": "ready",
     },
     {
-        "artifact_path": "results/01_ashd_aedp_148hh_comparison/figures/fig30_ashd_vs_aedp_xgb_actual_vs_forecast_daypair.png",
+        "artifact_path": "results/01_ashd_acap_edp_148hh_comparison/figures/fig30_ashd_vs_acap_edp_xgb_actual_vs_forecast_daypair.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Dataset comparison",
         "manuscript_label_proposed": "Figure C1",
-        "caption_short": "XGBoost actual vs forecast for ASHD vs AEDP with shared peak-normalized scale",
+        "caption_short": "XGBoost actual vs forecast for ASHD vs ACAP-EDP with shared peak-normalized scale",
         "status": "ready",
     },
     {
-        "artifact_path": "results/01_ashd_aedp_148hh_comparison/figures/fig31_ashd_vs_aedp_xgb_error_profile_daypair.png",
+        "artifact_path": "results/01_ashd_acap_edp_148hh_comparison/figures/fig31_ashd_vs_acap_edp_xgb_error_profile_daypair.png",
         "artifact_type": "figure",
         "manuscript_section": "Results - Dataset comparison",
         "manuscript_label_proposed": "Figure C2",
-        "caption_short": "XGBoost error profile for ASHD vs AEDP",
+        "caption_short": "XGBoost error profile for ASHD vs ACAP-EDP",
         "status": "ready",
     },
     {
@@ -243,9 +243,9 @@ PAPER_ARTIFACTS: list[dict[str, str]] = [
 
 SECTION_FILTERS = {
     "00": ["results/paper_table_", "results/paper_artifact_reference_mapping."],
-    "01": ["results/01_ashd_aedp_148hh_comparison/"],
+    "01": ["results/01_ashd_acap_edp_148hh_comparison/"],
     "02": ["results/02_ashd_148hh_forecast_horizon/"],
-    "03": ["results/03_aedp_aggregation_level/"],
+    "03": ["results/03_acap_edp_aggregation_level/"],
     "04": [
         "results/04_sa_bess_clean_44hh/figures/fig20_",
         "results/04_sa_bess_clean_44hh/figures/fig21_",
@@ -263,7 +263,7 @@ def _artifact_df() -> pd.DataFrame:
 def ensure_required_inputs() -> None:
     required_files = [
         WORKSPACE_DIR / "experiment_result" / "a1_experiment_result.csv",
-        RESULTS_DIR / "03_aedp_aggregation_level" / "aedp_aggregation_fh8_recap.csv",
+        RESULTS_DIR / "03_acap_edp_aggregation_level" / "acap_edp_aggregation_fh8_recap.csv",
         RESULTS_DIR / "04_sa_bess_clean_44hh" / "sa_bess_44hh_fh8_combined_recap.csv",
     ]
     missing = [p for p in required_files if not p.exists()]
@@ -275,8 +275,8 @@ def ensure_required_inputs() -> None:
 def remove_stale_trial_artifacts() -> list[Path]:
     removed: list[Path] = []
     targets = [
-        RESULTS_DIR / "01_ashd_aedp_148hh_comparison" / "figures" / "fig30_alternatives",
-        RESULTS_DIR / "01_ashd_aedp_148hh_comparison" / "figures" / "fig30_same_season_alternatives",
+        RESULTS_DIR / "01_ashd_acap_edp_148hh_comparison" / "figures" / "fig30_alternatives",
+        RESULTS_DIR / "01_ashd_acap_edp_148hh_comparison" / "figures" / "fig30_same_season_alternatives",
         RESULTS_DIR / "02_ashd_148hh_forecast_horizon" / "figures" / "fig40_common_target_alternatives",
         RESULTS_DIR / "04_sa_bess_clean_44hh" / "figures" / "fig20_sa_bess_composition_actual_vs_forecast_timeseries.png",
         RESULTS_DIR / "04_sa_bess_clean_44hh" / "figures" / "fig21_sa_bess_composition_error_timeseries.png",
@@ -322,7 +322,7 @@ def build_tables_and_mapping() -> list[Path]:
 
 def build_section_03() -> list[Path]:
     apply_publication_style()
-    recap_agg = gsr._load_csv(RESULTS_DIR / "03_aedp_aggregation_level" / "aedp_aggregation_fh8_recap.csv")
+    recap_agg = gsr._load_csv(RESULTS_DIR / "03_acap_edp_aggregation_level" / "acap_edp_aggregation_fh8_recap.csv")
     out: list[Path] = []
     out.extend(gsr._plot_aggregation_summary_and_cv(recap_agg))
     out.append(gsr._plot_aggregation_two_panel(recap_agg))
@@ -343,9 +343,9 @@ def build_section_02() -> list[Path]:
 def build_section_01() -> list[Path]:
     apply_publication_style()
     recap_exp = gsr._load_publication_recap()
-    recap_agg = gsr._load_csv(RESULTS_DIR / "03_aedp_aggregation_level" / "aedp_aggregation_fh8_recap.csv")
+    recap_agg = gsr._load_csv(RESULTS_DIR / "03_acap_edp_aggregation_level" / "acap_edp_aggregation_fh8_recap.csv")
     notes: list[str] = []
-    out = list(gsr._plot_ashd_vs_aedp_xgb(recap_exp, recap_agg, notes, strict_ashd_aedp=True))
+    out = list(gsr._plot_ashd_vs_acap_edp_xgb(recap_exp, recap_agg, notes, strict_ashd_acap_edp=True))
     out.append(gsr._plot_dataset_stability_scatter_pair())
     return out
 

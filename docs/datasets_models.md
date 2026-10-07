@@ -127,6 +127,8 @@ SunDance is released under CC BY 4.0 by the UMass Trace Repository; cite Chen, D
 | `m16_prophet` | Prophet | Time series model developed by Facebook for business forecasting |
 | `m17_xgb` | XGBoost | Gradient boosting framework optimized for speed and performance |
 | `m18_nbeats` | N-BEATS | Deep learning model for univariate time series forecasting |
+| `m19_nhits` | N-HiTS | Multi-rate MLP stack with backcast residuals (Challu et al., 2023) |
+| `m20_patchtst` | PatchTST | Transformer encoder over patches of the lookback window (Nie et al., 2023) |
 
 ### Hyperparameter
 The list of available models and their hyperparameters can be seen in `models/hyperparameters.yaml`. The values currently available are the hyperparameter values mostly used in academic literature, but not necessarily the optimum value.

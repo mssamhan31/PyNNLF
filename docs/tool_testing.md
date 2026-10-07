@@ -79,8 +79,8 @@ This runs the same 3-model check used in CI and compares results to the benchmar
 
 This also writes `example_project/experiment_result/a1_experiment_result.csv`. Recap skips missing or malformed CSVs with warnings. The test report compares only the experiments created by that test invocation.
 
-## 3) Full model test (18 models)
-This runs all 18 models and compares results to the benchmark.
+## 3) Full model test (20 models)
+This runs all 20 models and compares results to the benchmark.
 
 1. Initialize a workspace if you have not already:
 

@@ -69,6 +69,8 @@ models:
   m16: m16_prophet
   m17: m17_xgb
   m18: m18_nbeats
+  m19: m19_nhits
+  m20: m20_patchtst
 
 cv:
   k: 10

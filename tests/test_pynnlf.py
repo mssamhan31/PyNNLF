@@ -1,6 +1,6 @@
 """Minimum test suite for PyNNLF (Python for Network Net Load Forecasting).
 
-Three tests, chosen for the failures that actually happen rather than for coverage:
+Four tests, chosen for the failures that actually happen rather than for coverage:
 
 1. The package imports and builds a workspace, which catches a broken install or a
    scaffold that was not packaged.
@@ -8,6 +8,9 @@ Three tests, chosen for the failures that actually happen rather than for covera
    table with the expected columns, which catches a broken pipeline.
 3. Two error metrics return hand-computed values, which catches a silent change to
    how accuracy is measured.
+4. The two sequence models (N-HiTS, PatchTST) return a finite forecast of the right
+   length and reproduce it under the same seed, which catches a broken lag-window
+   reshape or a lost seed.
 
 Inputs:  the bundled scaffold and its ds0 sample dataset; no external data or network.
 Outputs: assertions only; every file is written under pytest's tmp_path.
@@ -82,3 +85,45 @@ def test_metrics_match_hand_computed_values():
 
     assert compute_MAE(forecast, observation) == pytest.approx(2.0)
     assert compute_RMSE(forecast, observation) == pytest.approx(2.16, abs=1e-3)
+
+
+# --- 4. Sequence models honour the model contract -----------------------------------
+
+@pytest.mark.parametrize("stem", ["m19_nhits", "m20_patchtst"])
+def test_sequence_models_forecast_shape_and_determinism(stem):
+    """N-HiTS and PatchTST must return finite 1-D forecasts and be seed-reproducible.
+
+    Uses a small synthetic frame laid out like the engine's: weather columns, a
+    newest-first ``y_lag_*`` block, then calendar dummies, one of which is constant.
+    """
+    import importlib
+    import sys
+    from pathlib import Path
+
+    import numpy as np
+
+    sys.path.insert(0, str(Path(pynnlf.__file__).parent / "scaffold" / "models"))
+    module = importlib.import_module(stem)
+    train = getattr(module, f"train_model_{stem}")
+    forecast = getattr(module, f"produce_forecast_{stem}")
+
+    rng = np.random.default_rng(0)
+    n_rows, lookback = 200, 96
+    X = pd.DataFrame(rng.normal(size=(n_rows, lookback)), columns=[f"y_lag_{i}" for i in range(1, lookback + 1)])
+    X.insert(0, "air_temperature_in_degrees_c", rng.normal(size=n_rows))
+    X["weekday_1"] = rng.integers(0, 2, n_rows)
+    X["constant_dummy"] = 1.0
+    y = pd.DataFrame({"y": rng.normal(size=n_rows)})
+    hyperparameter = {
+        "seed": 1, "hidden_size": 16, "num_layers": 1, "pool_kernel_sizes": [4, 2, 1],
+        "exog_hidden_size": 4, "patch_length": 16, "stride": 8, "d_model": 8, "num_heads": 2,
+        "feedforward_size": 16, "dropout": 0.1, "batch_size": 64, "epochs": 1, "learning_rate": 1e-3,
+    }
+
+    train_hat, test_hat = forecast(train(hyperparameter, X, y, 1440), X, X.iloc[:20], y, 1440)
+    train_hat_again, _ = forecast(train(hyperparameter, X, y, 1440), X, X.iloc[:20], y, 1440)
+
+    assert train_hat.shape == (n_rows,) and test_hat.shape == (20,)
+    assert np.isfinite(train_hat).all() and np.isfinite(test_hat).all()
+    assert np.allclose(train_hat, train_hat_again), "same seed must give the same forecast"
+

@@ -1,7 +1,8 @@
 """Run the 14-model x 4-dataset comparison for the journal article, resumably.
 
 Inputs:  ``specs/model_comparison_fh8_batch.yaml`` (datasets, the single horizon,
-         and the model/hyperparameter pairs in light-to-heavy order), the
+         and the model/hyperparameter pairs in light-to-heavy order, which the
+         runner walks model by model across all datasets), the
          workspace config and hyperparameter file, plus any
          ``E*_a1_experiment_result.csv`` already present in ``experiment_result/``
          or ``experiment_result_databricks/``.
@@ -123,7 +124,9 @@ def main(dry_run: bool = False) -> None:
     done = completed_keys(RESULT_STORES)
     OUTPUT_ROOT.mkdir(exist_ok=True)
 
-    plan = [(str(dataset_id), str(model_id), str(hp)) for dataset_id in batch["datasets"] for model_id, hp in batch["model_and_hp"]]
+    # Model-major order: every dataset for the cheapest model first, the LSTM on
+    # every dataset last, so an early stop still leaves whole rows of the table.
+    plan = [(str(dataset_id), str(model_id), str(hp)) for model_id, hp in batch["model_and_hp"] for dataset_id in batch["datasets"]]
     pending = [key for key in plan if key not in done]
     print(f"{len(plan)} combinations in the spec, {len(plan) - len(pending)} already done, {len(pending)} to run")
     for key in plan:

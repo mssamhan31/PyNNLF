@@ -1,7 +1,8 @@
 # Model comparison for the journal article: 14 models x 4 datasets at the 1-day
 # horizon (fh8 = 1440 min). One hyperparameter set per model, the one the paper
-# reports. Models are ordered light to heavy so a partial run still yields the
-# cheap rows first; the runner skips any (dataset, model, hp) already in a
+# reports. Models are ordered light to heavy and the runner walks this list
+# model by model across all four datasets, so a partial run yields whole rows
+# of the table, cheap ones first; the runner skips any (dataset, model, hp) already in a
 # result store, so the 12 existing ASHD ds20 runs are not repeated.
 datasets:
 - ds20   # ASHD 148 households, Sydney, 30 min

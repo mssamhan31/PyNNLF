@@ -9,8 +9,8 @@ Outputs: one experiment folder per missing (dataset, model, hp) under
          ``experiment_result_databricks/`` and a refreshed ``a1_experiment_result.csv``
          recap there.
 Key steps: collect the completed keys from both result stores, run each missing
-           combination through the engine with the Databricks output folder,
-           then recap.
+           combination through the engine with the Databricks output folder and
+           model pickling off, prune the training folds, then recap.
 
 Usage (from ``publication/journal_article_1/``)::
 
@@ -28,6 +28,7 @@ summary exists, so a fold-level interruption reruns that combination.
 
 from __future__ import annotations
 
+import shutil
 import sys
 from pathlib import Path
 
@@ -75,10 +76,32 @@ def completed_keys(results_roots: list[Path]) -> set[tuple[str, str, str]]:
 
 
 def load_workspace_config() -> dict:
-    """Read the workspace config with plotting switched off for batch runs."""
+    """Read the workspace config with plotting and model pickling switched off.
+
+    The pickles are never read back, and the LSTM and Prophet ones run to hundreds
+    of megabytes per fold, which breaks the 1 GB working-branch limit of a
+    Databricks Git folder.
+    """
     config = yaml.safe_load(CONFIG_PATH.read_text(encoding="utf-8"))
     config.setdefault("plot", {})["enabled"] = False
+    config.setdefault("output", {})["save_models"] = False
     return config
+
+
+def prune_training_folds(results_root: Path) -> None:
+    """Delete the per-fold training series the engine writes; the a3 file keeps the fold metrics.
+
+    They are ignored by Git, but on Databricks they would still count towards the
+    Git folder size limit.
+
+    Args:
+        results_root (Path): result store to prune.
+
+    Returns:
+        None.
+    """
+    for folder in results_root.glob("E*/E*_cv_train"):
+        shutil.rmtree(folder, ignore_errors=True)
 
 
 def main(dry_run: bool = False) -> None:
@@ -124,6 +147,7 @@ def main(dry_run: bool = False) -> None:
             models_dir=models_dir,
             config=config,
         )
+        prune_training_folds(OUTPUT_ROOT)
 
     pynnlf.recap_experiments(OUTPUT_ROOT, output_path=OUTPUT_ROOT / "a1_experiment_result.csv")
     print(f"Model comparison batch complete. Recap: {OUTPUT_ROOT / 'a1_experiment_result.csv'}")

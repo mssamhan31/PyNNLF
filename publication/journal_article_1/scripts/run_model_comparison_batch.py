@@ -15,8 +15,10 @@ Key steps: collect the completed keys from both result stores, run each missing
 
 Usage (from ``publication/journal_article_1/``)::
 
-    python scripts/run_model_comparison_batch.py            # run what is missing
-    python scripts/run_model_comparison_batch.py --dry-run  # list only
+    python scripts/run_model_comparison_batch.py             # run what is missing
+    python scripts/run_model_comparison_batch.py --dry-run   # list only
+    python scripts/run_model_comparison_batch.py --skip m13  # everything but the LSTM
+    python scripts/run_model_comparison_batch.py --only m13  # the LSTM alone
 
 The Databricks notebook ``notebooks/01_ashd_acap_edp_148hh_comparison/
 0_run_model_comparison_databricks.ipynb`` imports this module and calls
@@ -105,7 +107,7 @@ def prune_training_folds(results_root: Path) -> None:
         shutil.rmtree(folder, ignore_errors=True)
 
 
-def main(dry_run: bool = False) -> None:
+def main(dry_run: bool = False, only: set[str] | None = None, skip: set[str] | None = None) -> None:
     """Run every missing combination in the batch spec, then recap the output store.
 
     The engine is called directly with ``OUTPUT_ROOT`` as its output folder; the
@@ -113,6 +115,8 @@ def main(dry_run: bool = False) -> None:
 
     Args:
         dry_run (bool): when True, print the plan and run nothing.
+        only (set[str] | None): model ids to restrict the run to, such as {"m13"}.
+        skip (set[str] | None): model ids to leave out, such as {"m13"}.
 
     Returns:
         None.
@@ -127,6 +131,10 @@ def main(dry_run: bool = False) -> None:
     # Model-major order: every dataset for the cheapest model first, the LSTM on
     # every dataset last, so an early stop still leaves whole rows of the table.
     plan = [(str(dataset_id), str(model_id), str(hp)) for model_id, hp in batch["model_and_hp"] for dataset_id in batch["datasets"]]
+    if only:
+        plan = [key for key in plan if key[1] in only]
+    if skip:
+        plan = [key for key in plan if key[1] not in skip]
     pending = [key for key in plan if key not in done]
     print(f"{len(plan)} combinations in the spec, {len(plan) - len(pending)} already done, {len(pending)} to run")
     for key in plan:
@@ -156,5 +164,13 @@ def main(dry_run: bool = False) -> None:
     print(f"Model comparison batch complete. Recap: {OUTPUT_ROOT / 'a1_experiment_result.csv'}")
 
 
+def _model_ids(flag: str) -> set[str] | None:
+    """Read a comma-separated model-id list after ``flag`` from the command line."""
+    args = sys.argv[1:]
+    if flag not in args:
+        return None
+    return {model_id.strip() for model_id in args[args.index(flag) + 1].split(",")}
+
+
 if __name__ == "__main__":
-    main(dry_run="--dry-run" in sys.argv[1:])
+    main(dry_run="--dry-run" in sys.argv[1:], only=_model_ids("--only"), skip=_model_ids("--skip"))

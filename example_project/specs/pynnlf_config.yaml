@@ -12,20 +12,33 @@ dataset_download:
 datasets:
   ds0: ds0_test.csv
   ds1: ds1_ashd.csv
-  ds2: ds2_aedp_5min.csv
-  ds3: ds3_aedp_30min.csv
+  ds2: ds2_acap-edp_5min.csv
+  ds3: ds3_acap-edp_30min.csv
   ds4: ds4_ashd_with_weather.csv
-  ds5: ds5_aedp_30min_with_weather.csv
-  ds6: ds6_aedp_cluster_5min.csv
-  ds7: ds7_aedp_cluster_30min.csv
-  ds8: ds8_aedp_cluster_30min_with_weather.csv
-  ds9: ds9_aedp_cluster2_5min.csv
-  ds10: ds10_aedp_cluster2_30min.csv
-  ds11: ds11_aedp_cluster2_30min_with_weather.csv
+  ds5: ds5_acap-edp_30min_with_weather.csv
+  ds6: ds6_acap-edp_cluster_5min.csv
+  ds7: ds7_acap-edp_cluster_30min.csv
+  ds8: ds8_acap-edp_cluster_30min_with_weather.csv
+  ds9: ds9_acap-edp_cluster2_5min.csv
+  ds10: ds10_acap-edp_cluster2_30min.csv
+  ds11: ds11_acap-edp_cluster2_30min_with_weather.csv
   ds12: ds12_ashd_with_cloud_bom.csv
   ds13: ds13_ashd_with_cloud_solcast.csv
   ds14: ds14_ausgrid_zs_mascot.csv
   ds15: ds15_ausgrid_zs_mascot_30min_with_weather.csv
+  ds28: ds28_acap-edp_10hh_sample01_30min_with_weather.csv
+  ds29: ds29_acap-edp_10hh_sample02_30min_with_weather.csv
+  ds30: ds30_acap-edp_10hh_sample03_30min_with_weather.csv
+  ds31: ds31_acap-edp_100hh_sample01_30min_with_weather.csv
+  ds32: ds32_acap-edp_100hh_sample02_30min_with_weather.csv
+  ds33: ds33_acap-edp_100hh_sample03_30min_with_weather.csv
+  ds34: ds34_acap-edp_1000hh_sample01_30min_with_weather.csv
+  ds35: ds35_acap-edp_1000hh_sample02_30min_with_weather.csv
+  ds36: ds36_acap-edp_1000hh_sample03_30min_with_weather.csv
+  ds37: ds37_sundance_hourly.csv
+  ds38: ds38_sundance_hourly_with_weather.csv
+  ds39: ds39_fluvius_pv_30min.csv
+  ds40: ds40_fluvius_pv_30min_with_weather.csv
 
 forecast_horizons:
   fh1: 30
@@ -59,6 +72,8 @@ models:
   m16: m16_prophet
   m17: m17_xgb
   m18: m18_nbeats
+  m19: m19_nhits
+  m20: m20_patchtst
 
 cv:
   k: 10
@@ -70,3 +85,10 @@ plot:
     dark_blue: "#22303D"
     orange: "#EB932C"
   font_family: Arial
+
+# Fold outputs. Each fold's fitted model is pickled under E*_models/ by default;
+# switch it off for batch runs whose pickles are never read (the Databricks
+# comparison runner does this itself), since LSTM and Prophet objects run to
+# hundreds of megabytes per fold.
+output:
+  save_models: true

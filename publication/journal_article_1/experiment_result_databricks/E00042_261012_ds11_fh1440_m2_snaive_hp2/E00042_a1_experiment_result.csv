@@ -1,0 +1,2 @@
+experiment_no,exp_date,dataset_no,dataset,dataset_freq_min,dataset_length_week,forecast_horizon_min,train_pct,test_pct,model_no,hyperparameter_no,model_name,hyperparamter,run_seed,seed_keys_overridden,runtime_ms,train_RMSE,train_RMSE_stddev,test_RMSE,test_RMSE_stddev,train_nRMSE,train_nRMSE_stddev,test_nRMSE,test_nRMSE_stddev
+E00042,2026-10-12,ds11,acap-edp,30,140,1440,0.9,0.1,m2,hp2,m2_snaive_hp2,days: 7,,,0.0,83.8323,1.2934693270425859,83.0592,12.044572911574003,30.306162288788148,0.4676012866272571,30.026679391796627,4.354226012614508

@@ -638,6 +638,7 @@ def run_model(
     plot_style,
     run_seed=None,
     seed_keys_overridden=None,
+    save_models=True,
 ):
     """
     Run CV loop, train model, forecast, export outputs.
@@ -658,6 +659,9 @@ def run_model(
         test_pct (float): 1/k
         train_pct (float): 1 - test_pct
         n_block (int): k + 1
+        save_models (bool): pickle each fold's fitted model under E*_models/; off for
+            large batch runs where the pickles are never read (LSTM and Prophet objects
+            run to hundreds of MB per fold)
         plot_enabled (bool): plot on/off
         plot_style (dict): colors + font
         run_seed (int | None): central run seed from config
@@ -705,7 +709,8 @@ def run_model(
         # TRAIN MODEL
         start_time = time.time()
         model = call_train(train_fn, hyperparameter, train_df_X, train_df_y, forecast_horizon)
-        save_model(filepath, cv_no, model)
+        if save_models:
+            save_model(filepath, cv_no, model)
         end_time = time.time()
         runtime_ms = (end_time - start_time) * 1000
 
@@ -949,6 +954,7 @@ def run_experiment_engine(
         plot_style=config["plot"],
         run_seed=run_seed,
         seed_keys_overridden=seed_keys_overridden,
+        save_models=bool(config.get("output", {}).get("save_models", True)),
     )
 
 # # PERFORMANCE COMPUTATION

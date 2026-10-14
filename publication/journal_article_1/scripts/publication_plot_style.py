@@ -139,6 +139,8 @@ MODEL_SHORT_LABELS = {
     "m13_lstm_hp2": "lstm_hp2",
     "m16_prophet_hp1": "prophet_hp1",
     "m17_xgb_hp1": "xgb_hp1",
+    "m19_nhits_hp2": "nhits_hp2",
+    "m20_patchtst_hp2": "patchtst_hp2",
 }
 
 

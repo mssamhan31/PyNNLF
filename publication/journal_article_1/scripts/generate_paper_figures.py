@@ -197,9 +197,9 @@ def _ensure_ds11_xgb_exists(allow_rerun: bool = False) -> bool:
 
 def _replace_legacy_section_figures() -> None:
     section_dirs = [
-        RESULTS_DIR / "01_ashd_aedp_148hh_comparison" / "figures",
+        RESULTS_DIR / "01_ashd_acap_edp_148hh_comparison" / "figures",
         RESULTS_DIR / "02_ashd_148hh_forecast_horizon" / "figures",
-        RESULTS_DIR / "03_aedp_aggregation_level" / "figures",
+        RESULTS_DIR / "03_acap_edp_aggregation_level" / "figures",
         RESULTS_DIR / "04_sa_bess_clean_44hh" / "figures",
     ]
     for section_dir in section_dirs:
@@ -213,8 +213,8 @@ def _replace_legacy_section_figures() -> None:
 def _build_experiment_parameters_table() -> Path:
     rows = [
         {
-            "experiment_part": "ASHD vs AEDP comparison",
-            "dataset": "ds20 (ASHD_148hh_weather), ds11 (AEDP_148hh_weather)",
+            "experiment_part": "ASHD vs ACAP-EDP comparison",
+            "dataset": "ds20 (ASHD_148hh_weather), ds11 (ACAP-EDP_148hh_weather)",
             "target_variable": "netload_kW",
             "predictor_groups": "calendar, lag net load, weather",
             "lag_construction": "up to 7 days lag, horizon-aware",
@@ -239,8 +239,8 @@ def _build_experiment_parameters_table() -> Path:
             "evaluation_metrics": "train/test RMSE, train/test nRMSE, stddev, runtime",
         },
         {
-            "experiment_part": "AEDP aggregation level comparison",
-            "dataset": "ds25-ds36 (AEDP sample sets)",
+            "experiment_part": "ACAP-EDP aggregation level comparison",
+            "dataset": "ds25-ds36 (ACAP-EDP sample sets)",
             "target_variable": "netload_kW",
             "predictor_groups": "calendar, lag net load, weather",
             "lag_construction": "up to 7 days lag, horizon-aware",
@@ -327,7 +327,7 @@ def _load_publication_recap() -> pd.DataFrame:
 
 
 def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
-    fig_dir = RESULTS_DIR / "03_aedp_aggregation_level" / "figures"
+    fig_dir = RESULTS_DIR / "03_acap_edp_aggregation_level" / "figures"
     levels = [1, 10, 100, 1000]
 
     # Sample-level summary
@@ -357,14 +357,14 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
             "Test nRMSE (%)",
             "sample_mean_nrmse",
             "sample_std_nrmse",
-            "fig10_aedp_agg_nrmse_mean_std_cvbg.png",
+            "fig10_acap_edp_agg_nrmse_mean_std_cvbg.png",
         ),
         (
             "rmse_per_hh",
             "Test RMSE per household (kW)",
             "sample_mean_rmse_per_hh",
             "sample_std_rmse_per_hh",
-            "fig11_aedp_agg_rmse_per_hh_mean_std_cvbg.png",
+            "fig11_acap_edp_agg_rmse_per_hh_mean_std_cvbg.png",
         ),
     ]:
         fig, axes = plt.subplots(1, 3, figsize=page_figsize(16, 4.7), sharex=True, sharey=True)
@@ -415,7 +415,7 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
             if ax is axes[0]:
                 ax.set_ylabel(y_label)
         fig.suptitle(
-            "AEDP aggregation comparison: sample mean +/- std with sample points and fold-level background",
+            "ACAP-EDP aggregation comparison: sample mean +/- std with sample points and fold-level background",
             y=1.03,
         )
         fig.tight_layout()
@@ -425,7 +425,7 @@ def _plot_aggregation_summary_and_cv(recap_agg: pd.DataFrame) -> list[Path]:
 
 
 def _plot_aggregation_forecast_views(recap_agg: pd.DataFrame) -> list[Path]:
-    fig_dir = RESULTS_DIR / "03_aedp_aggregation_level" / "figures"
+    fig_dir = RESULTS_DIR / "03_acap_edp_aggregation_level" / "figures"
     levels = [1, 10, 100, 1000]
     level_to_suffix = {1: "a", 10: "b", 100: "c", 1000: "d"}
     out_paths: list[Path] = []
@@ -471,12 +471,12 @@ def _plot_aggregation_forecast_views(recap_agg: pd.DataFrame) -> list[Path]:
             _format_numeric_axis(ax)
         axes[0].legend(loc="upper right", ncol=2, frameon=True)
         axes[-1].set_xlabel("Date")
-        fig.suptitle(f"AEDP aggregation {lvl} households: actual vs forecast (sample 1, CV1)", y=1.02)
+        fig.suptitle(f"ACAP-EDP aggregation {lvl} households: actual vs forecast (sample 1, CV1)", y=1.02)
         fig.tight_layout()
         out_paths.append(
             save_figure(
                 fig,
-                fig_dir / f"fig12{level_to_suffix[lvl]}_aedp_agg{lvl}_actual_vs_forecast_timeseries_naive_lr_xgb.png",
+                fig_dir / f"fig12{level_to_suffix[lvl]}_acap_edp_agg{lvl}_actual_vs_forecast_timeseries_naive_lr_xgb.png",
             )
         )
 
@@ -501,12 +501,12 @@ def _plot_aggregation_forecast_views(recap_agg: pd.DataFrame) -> list[Path]:
             ax.set_xlabel("Actual (kW)")
             ax.set_ylabel("Forecast (kW)")
             _format_numeric_axis(ax, x=True)
-        fig.suptitle(f"AEDP aggregation {lvl} households: actual vs forecast scatter (sample 1, CV1)", y=1.03)
+        fig.suptitle(f"ACAP-EDP aggregation {lvl} households: actual vs forecast scatter (sample 1, CV1)", y=1.03)
         fig.tight_layout()
         out_paths.append(
             save_figure(
                 fig,
-                fig_dir / f"fig13{level_to_suffix[lvl]}_aedp_agg{lvl}_actual_vs_forecast_scatter_naive_lr_xgb.png",
+                fig_dir / f"fig13{level_to_suffix[lvl]}_acap_edp_agg{lvl}_actual_vs_forecast_scatter_naive_lr_xgb.png",
             )
         )
 
@@ -514,7 +514,7 @@ def _plot_aggregation_forecast_views(recap_agg: pd.DataFrame) -> list[Path]:
 
 
 def _plot_aggregation_xgb_timeseries(recap_agg: pd.DataFrame) -> Path:
-    fig_dir = RESULTS_DIR / "03_aedp_aggregation_level" / "figures"
+    fig_dir = RESULTS_DIR / "03_acap_edp_aggregation_level" / "figures"
     levels = [1, 10, 100, 1000]
     frames: dict[int, pd.DataFrame] = {}
 
@@ -554,9 +554,9 @@ def _plot_aggregation_xgb_timeseries(recap_agg: pd.DataFrame) -> Path:
     fig.legend(handles, labels, loc="upper center", bbox_to_anchor=(0.5, 0.94), ncol=2)
     axes[1, 0].set_xlabel("Date")
     axes[1, 1].set_xlabel("Date")
-    fig.suptitle("AEDP XGBoost actual vs forecast by aggregation level (sample 1, CV1)", y=1.01)
+    fig.suptitle("ACAP-EDP XGBoost actual vs forecast by aggregation level (sample 1, CV1)", y=1.01)
     fig.tight_layout(rect=(0, 0, 1, 0.9))
-    return save_figure(fig, fig_dir / "fig14_aedp_aggregation_xgb_timeseries_aligned.png")
+    return save_figure(fig, fig_dir / "fig14_acap_edp_aggregation_xgb_timeseries_aligned.png")
 
 
 def _select_representative_day(df: pd.DataFrame) -> tuple[pd.Timestamp, pd.DataFrame]:
@@ -639,13 +639,13 @@ def _select_composition_week(frames: dict[str, pd.DataFrame], points_per_day: in
     return start, clipped, mode
 
 
-def _plot_ashd_vs_aedp_xgb(
+def _plot_ashd_vs_acap_edp_xgb(
     recap_exp: pd.DataFrame,
     recap_agg: pd.DataFrame,
     notes: list[str],
-    strict_ashd_aedp: bool = False,
+    strict_ashd_acap_edp: bool = False,
 ) -> list[Path]:
-    fig_dir = RESULTS_DIR / "01_ashd_aedp_148hh_comparison" / "figures"
+    fig_dir = RESULTS_DIR / "01_ashd_acap_edp_148hh_comparison" / "figures"
 
     rows = {}
     # ASHD source (required)
@@ -659,18 +659,18 @@ def _plot_ashd_vs_aedp_xgb(
             raise ValueError(f"Missing {ds_no} fh8 xgb experiment row")
         rows[label] = subset.iloc[-1]
 
-    # Preferred AEDP source: ds11, fallback to AEDP aggregation level 100 sample 1
+    # Preferred ACAP-EDP source: ds11, fallback to ACAP-EDP aggregation level 100 sample 1
     ds11_subset = recap_exp.loc[
         recap_exp["dataset_no"].astype(str).eq("ds11")
         & recap_exp["forecast_horizon_min"].astype(int).eq(1440)
         & recap_exp["model_name"].astype(str).eq("m17_xgb_hp1")
     ].sort_values(["exp_date", "experiment_no"])
     if not ds11_subset.empty:
-        rows["AEDP"] = ds11_subset.iloc[-1]
-        aedp_label = "AEDP"
+        rows["ACAP-EDP"] = ds11_subset.iloc[-1]
+        acap_edp_label = "ACAP-EDP"
     else:
-        if strict_ashd_aedp:
-            raise ValueError("Strict ASHD-vs-AEDP mode requires ds11 fh8 xgb folds, but they are unavailable.")
+        if strict_ashd_acap_edp:
+            raise ValueError("Strict ASHD-vs-ACAP-EDP mode requires ds11 fh8 xgb folds, but they are unavailable.")
         fallback = recap_agg.copy()
         fallback["aggregation_level_hh"] = pd.to_numeric(fallback["aggregation_level_hh"], errors="coerce")
         fallback["sample_no"] = pd.to_numeric(fallback["sample_no"], errors="coerce")
@@ -679,19 +679,19 @@ def _plot_ashd_vs_aedp_xgb(
             & fallback["aggregation_level_hh"].eq(100)
         ].sort_values(["sample_no", "exp_date", "experiment_no"])
         if fallback.empty:
-            raise ValueError("Missing AEDP fallback row (aggregation level 100, XGBoost)")
+            raise ValueError("Missing ACAP-EDP fallback row (aggregation level 100, XGBoost)")
         if (fallback["sample_no"] == 1).any():
-            rows["AEDP"] = fallback.loc[fallback["sample_no"].eq(1)].iloc[-1]
+            rows["ACAP-EDP"] = fallback.loc[fallback["sample_no"].eq(1)].iloc[-1]
         else:
-            rows["AEDP"] = fallback.iloc[0]
-        aedp_label = "AEDP (100hh fallback)"
+            rows["ACAP-EDP"] = fallback.iloc[0]
+        acap_edp_label = "ACAP-EDP (100hh fallback)"
         notes.append(
-            "ASHD vs AEDP XGBoost figure used AEDP aggregation fallback (100 households, sample 1) because ds11 fh8 xgb folds are unavailable locally."
+            "ASHD vs ACAP-EDP XGBoost figure used ACAP-EDP aggregation fallback (100 households, sample 1) because ds11 fh8 xgb folds are unavailable locally."
         )
 
     fixed_windows = {
         "ASHD": (pd.Timestamp("2013-02-06"), pd.Timestamp("2013-02-13")),
-        "AEDP": (pd.Timestamp("2024-02-06"), pd.Timestamp("2024-02-13")),
+        "ACAP-EDP": (pd.Timestamp("2024-02-06"), pd.Timestamp("2024-02-13")),
     }
 
     week_info = {}
@@ -718,14 +718,14 @@ def _plot_ashd_vs_aedp_xgb(
     normalized_yticks = [-1.0, -0.5, 0.0, 0.5, 1.0]
 
     fig, axes = plt.subplots(2, 1, figsize=page_figsize(14, 11), sharex=False, sharey=True)
-    for ax, label in zip(axes, ["ASHD", "AEDP"]):
+    for ax, label in zip(axes, ["ASHD", "ACAP-EDP"]):
         week_start, d = week_info[label]
         peak = positive_peaks[label]
         ax.set_axisbelow(True)
         ax.plot(d["datetime"], d["observation"] / peak, color=PALETTE["series_a"], linewidth=1.8, label="Actual")
         ax.plot(d["datetime"], d["forecast"] / peak, color=PALETTE["series_b"], linewidth=1.4, label="Forecast")
         ax.axhline(1.0, color=PALETTE["neutral"], linewidth=1.1, linestyle="--", label=f"CV1 actual peak: {peak:.2f} kW")
-        title_label = "ASHD" if label == "ASHD" else aedp_label
+        title_label = "ASHD" if label == "ASHD" else acap_edp_label
         ax.set_title(f"{title_label} - representative week from {week_start.date()}")
         ax.set_ylabel("Load / positive peak")
         ax.set_ylim(*normalized_limits)
@@ -738,14 +738,14 @@ def _plot_ashd_vs_aedp_xgb(
     fig.tight_layout(h_pad=3.0)
     p1 = save_figure(
         fig,
-        fig_dir / "fig30_ashd_vs_aedp_xgb_actual_vs_forecast_daypair.png",
+        fig_dir / "fig30_ashd_vs_acap_edp_xgb_actual_vs_forecast_daypair.png",
     )
 
     normalized_errors = {
         label: (
             week_info[label][1]["forecast"] - week_info[label][1]["observation"]
         ) / positive_peaks[label]
-        for label in ["ASHD", "AEDP"]
+        for label in ["ASHD", "ACAP-EDP"]
     }
     max_abs_normalized_error = max(
         float(np.nanmax(np.abs(error.to_numpy(dtype=float))))
@@ -755,13 +755,13 @@ def _plot_ashd_vs_aedp_xgb(
 
     # error profile
     fig, axes = plt.subplots(2, 1, figsize=page_figsize(14, 8.5), sharex=False, sharey=True)
-    for ax, label in zip(axes, ["ASHD", "AEDP"]):
+    for ax, label in zip(axes, ["ASHD", "ACAP-EDP"]):
         week_start, d = week_info[label]
         ax.set_axisbelow(True)
         err = normalized_errors[label]
         ax.plot(d["datetime"], err, color=PALETTE["series_c"], linewidth=1.4)
         ax.axhline(0, color=PALETTE["neutral"], linewidth=1.0, linestyle="--")
-        title_label = "ASHD" if label == "ASHD" else aedp_label
+        title_label = "ASHD" if label == "ASHD" else acap_edp_label
         ax.set_title(f"{title_label} forecast error profile (week from {week_start.date()})")
         ax.set_ylabel("Error / positive peak")
         ax.set_ylim(-normalized_error_limit, normalized_error_limit)
@@ -770,7 +770,7 @@ def _plot_ashd_vs_aedp_xgb(
     axes[-1].set_xlabel("Date")
     fig.suptitle("XGBoost representative-week error profile: peak-normalized shared scale", y=1.02)
     fig.tight_layout()
-    p2 = save_figure(fig, fig_dir / "fig31_ashd_vs_aedp_xgb_error_profile_daypair.png")
+    p2 = save_figure(fig, fig_dir / "fig31_ashd_vs_acap_edp_xgb_error_profile_daypair.png")
 
     return [p1, p2]
 
@@ -1540,14 +1540,14 @@ def _plot_aggregation_two_panel(recap_agg: pd.DataFrame) -> Path:
             if col_idx > 0:
                 ax.tick_params(labelleft=False)
 
-    fig.suptitle("AEDP aggregation: sample mean +/- standard deviation", y=1.01)
+    fig.suptitle("ACAP-EDP aggregation: sample mean +/- standard deviation", y=1.01)
     fig.tight_layout()
     return save_figure(
         fig,
         RESULTS_DIR
-        / "03_aedp_aggregation_level"
+        / "03_acap_edp_aggregation_level"
         / "figures"
-        / "fig15_aedp_agg_nrmse_and_rmse_per_hh_two_panel.png",
+        / "fig15_acap_edp_agg_nrmse_and_rmse_per_hh_two_panel.png",
     )
 
 
@@ -1613,7 +1613,7 @@ def _plot_aggregation_fixed_denominator_supplementary(recap_agg: pd.DataFrame) -
 
     fig.suptitle(
         "SUPPLEMENTARY - NOT A MANUSCRIPT FIGURE\n"
-        "AEDP aggregation nRMSE on a fixed per-household denominator: "
+        "ACAP-EDP aggregation nRMSE on a fixed per-household denominator: "
         f"N x {single_household_peak:.3f} kW",
         y=1.12,
     )
@@ -1621,10 +1621,10 @@ def _plot_aggregation_fixed_denominator_supplementary(recap_agg: pd.DataFrame) -
     return save_figure(
         fig,
         RESULTS_DIR
-        / "03_aedp_aggregation_level"
+        / "03_acap_edp_aggregation_level"
         / "figures"
         / "supplementary"
-        / "SUPPLEMENTARY_NOT_FOR_PAPER_aedp_agg_nrmse_fixed_per_hh_denominator.png",
+        / "SUPPLEMENTARY_NOT_FOR_PAPER_acap_edp_agg_nrmse_fixed_per_hh_denominator.png",
     )
 
 
@@ -1645,6 +1645,9 @@ _LABEL_RADII = [r * ANNOTATION_PT / 12.0 for r in (34.0, 52.0, 74.0, 100.0, 130.
 # plotted marker before the placement counts as clean.
 _POINT_CLEARANCE = 9.0 * ANNOTATION_PT / 12.0
 _LEADER_CLEARANCE = 7.0 * ANNOTATION_PT / 12.0
+# Gap kept between label boxes: the text extent excludes the box padding, so two
+# labels whose extents merely touch would draw with their frames overlapping.
+_LABEL_CLEARANCE = 3.0 * ANNOTATION_PT / 12.0
 
 
 def _segment_point_distance(ax_, ay, bx, by, px, py) -> float:
@@ -1753,7 +1756,11 @@ def _place_scatter_labels(fig, ax, points: list[tuple[float, float, str]]) -> No
                     if padded.x0 <= mx <= padded.x1 and padded.y0 <= my <= padded.y1:
                         penalty += 100.0
 
-                penalty += 40.0 * sum(1 for other in placed_boxes if box.overlaps(other))
+                framed = box.expanded(
+                    1.0 + 2 * _LABEL_CLEARANCE * dpi_scale / max(box.width, 1.0),
+                    1.0 + 2 * _LABEL_CLEARANCE * dpi_scale / max(box.height, 1.0),
+                )
+                penalty += 40.0 * sum(1 for other in placed_boxes if framed.overlaps(other))
 
                 # The leader runs from the marker to the centre of the box; charge
                 # for passing close to any other marker on the way.
@@ -1814,8 +1821,14 @@ def _place_scatter_labels(fig, ax, points: list[tuple[float, float, str]]) -> No
         )
 
 
-def _draw_stability_panel(fig, ax, frame: pd.DataFrame, title: str) -> None:
-    """Draw one accuracy-against-stability panel for a full model library."""
+def _draw_stability_panel(fig, ax, frame: pd.DataFrame, title: str) -> list[tuple[float, float, str]]:
+    """Draw one accuracy-against-stability panel for a full model library.
+
+    Returns the (x, y, label) triples for :func:`_place_scatter_labels`, which the
+    caller runs only after ``fig.tight_layout()``: label offsets are chosen in
+    pixels and stored in data coordinates, so any later change to the axes
+    size would move them into each other.
+    """
     frame = frame.sort_values("test_nRMSE")
     x = frame["test_nRMSE"].to_numpy(dtype=float)
     y = frame["test_nRMSE_stddev"].to_numpy(dtype=float)
@@ -1846,7 +1859,7 @@ def _draw_stability_panel(fig, ax, frame: pd.DataFrame, title: str) -> None:
         (float(row.test_nRMSE), float(row.test_nRMSE_stddev), MODEL_SHORT_LABELS.get(str(row.model_name), str(row.model_name)))
         for row in frame.itertuples(index=False)
     ]
-    _place_scatter_labels(fig, ax, labels)
+    return labels
 
 
 def _validate_stability_frame(frame: pd.DataFrame, description: str) -> pd.DataFrame:
@@ -1872,8 +1885,9 @@ def _plot_ashd_stability_scatter() -> Path:
     frame = _validate_stability_frame(frame, "ASHD at the 1-week horizon")
 
     fig, ax = plt.subplots(figsize=page_figsize(8.6, 6.0))
-    _draw_stability_panel(fig, ax, frame, "ASHD 148-household dataset, 1-week forecast horizon")
+    labels = _draw_stability_panel(fig, ax, frame, "ASHD 148-household dataset, 1-week forecast horizon")
     fig.tight_layout()
+    _place_scatter_labels(fig, ax, labels)
     return save_figure(
         fig,
         RESULTS_DIR
@@ -1899,27 +1913,30 @@ def _plot_dataset_stability_scatter_pair() -> Path:
         Path: the figure written.
     """
     recap = _load_csv(
-        RESULTS_DIR / "01_ashd_aedp_148hh_comparison" / "ashd_aedp_148hh_fh8_combined_recap.csv"
+        RESULTS_DIR / "01_ashd_acap_edp_148hh_comparison" / "ashd_acap_edp_148hh_fh8_combined_recap.csv"
     )
     panels = [
         ("(a)", "ASHD_148hh_weather", "ASHD 148-household dataset"),
-        ("(b)", "AEDP_148hh_weather", "AEDP 148-household dataset"),
+        ("(b)", "ACAP-EDP_148hh_weather", "ACAP-EDP 148-household dataset"),
     ]
 
     fig, axes = plt.subplots(1, 2, figsize=page_figsize(17, 8.25))
+    panel_labels = []
     for ax, (panel_id, dataset_label, pretty) in zip(axes, panels):
         frame = recap.loc[recap["dataset_label"].astype(str).eq(dataset_label)].copy()
         frame = _validate_stability_frame(frame, f"{dataset_label} at the 1-day horizon")
-        _draw_stability_panel(fig, ax, frame, f"{panel_id} {pretty}")
+        panel_labels.append((ax, _draw_stability_panel(fig, ax, frame, f"{panel_id} {pretty}")))
 
     fig.suptitle("Forecast accuracy against cross-validation stability, 1-day forecast horizon", y=1.02)
     fig.tight_layout()
+    for ax, labels in panel_labels:
+        _place_scatter_labels(fig, ax, labels)
     return save_figure(
         fig,
         RESULTS_DIR
-        / "01_ashd_aedp_148hh_comparison"
+        / "01_ashd_acap_edp_148hh_comparison"
         / "figures"
-        / "fig32_ashd_aedp_nrmse_stability_scatter_1day.png",
+        / "fig32_ashd_acap_edp_nrmse_stability_scatter_1day.png",
     )
 
 
@@ -1946,7 +1963,7 @@ def _write_pending_report(notes: list[str], failures: list[str]) -> Path:
 
     lines.append("")
     lines.append("## Deferred Long-Run Items")
-    lines.append("- Optional rerun for ds11 fh8 xgb experiments (if strict ASHD-vs-AEDP matched dataset requirement must be enforced).")
+    lines.append("- Optional rerun for ds11 fh8 xgb experiments (if strict ASHD-vs-ACAP-EDP matched dataset requirement must be enforced).")
 
     report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return report_path
@@ -1960,9 +1977,9 @@ def main() -> None:
         help="Allow rerunning missing experiments (disabled by default for fast progress mode).",
     )
     parser.add_argument(
-        "--strict-ashd-aedp",
+        "--strict-ashd-acap-edp",
         action="store_true",
-        help="Require strict ds11 AEDP source for ASHD-vs-AEDP figures (no fallback).",
+        help="Require strict ds11 ACAP-EDP source for ASHD-vs-ACAP-EDP figures (no fallback).",
     )
     args = parser.parse_args()
 
@@ -1978,7 +1995,7 @@ def main() -> None:
 
     recap_exp = _load_publication_recap()
 
-    recap_agg = _load_csv(RESULTS_DIR / "03_aedp_aggregation_level" / "aedp_aggregation_fh8_recap.csv")
+    recap_agg = _load_csv(RESULTS_DIR / "03_acap_edp_aggregation_level" / "acap_edp_aggregation_fh8_recap.csv")
     recap_sa = _load_csv(RESULTS_DIR / "04_sa_bess_clean_44hh" / "sa_bess_44hh_fh8_combined_recap.csv")
 
     created: list[Path] = []
@@ -1992,12 +2009,12 @@ def main() -> None:
         ("fig_aggregation_xgb_timeseries", lambda: [_plot_aggregation_xgb_timeseries(recap_agg)]),
         ("fig_load_composition", lambda: _plot_load_composition_timeseries(recap_sa)),
         (
-            "fig_ashd_vs_aedp",
-            lambda: _plot_ashd_vs_aedp_xgb(
+            "fig_ashd_vs_acap_edp",
+            lambda: _plot_ashd_vs_acap_edp_xgb(
                 recap_exp,
                 recap_agg,
                 notes,
-                strict_ashd_aedp=args.strict_ashd_aedp,
+                strict_ashd_acap_edp=args.strict_ashd_acap_edp,
             ),
         ),
         ("fig_horizon_xgb", lambda: _plot_horizon_xgb(recap_exp)),

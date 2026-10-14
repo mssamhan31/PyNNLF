@@ -33,6 +33,7 @@ Args:
 - `spec_path`: path to the YAML spec file.
 
 - `plot_enabled`: optional per-run override for `pynnlf_config.yaml`. When `False`, PyNNLF skips plot generation and does not create the `*_cv1_plots/` folder.
+- The workspace config key `output.save_models` (default `true`) controls whether each fold's fitted model is pickled under `*_models/`; set it to `false` for large batch runs whose pickles are never read.
 
 Returns:
 

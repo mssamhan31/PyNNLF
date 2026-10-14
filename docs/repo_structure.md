@@ -23,7 +23,7 @@ PyNNLF/
 |       |-- tools/                  developer utilities, not part of the public API
 |       `-- scaffold/
 |           |-- data/               the ds0 sample dataset
-|           |-- models/             the 18 bundled models and a template
+|           |-- models/             the 20 bundled models and a template
 |           `-- specs/              experiment, batch and test specifications
 |-- tests/                          pytest suite
 |-- docs/                           documentation source for the GitHub Pages site

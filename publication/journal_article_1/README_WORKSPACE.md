@@ -16,10 +16,10 @@ build reads existing results only, so a rebuild is reproducible and cheap.
 | `specs/` | Experiment and batch specifications, plus the workspace config. |
 | `models/` | Model definitions and the hyperparameter file used by the runs. |
 | `experiment_result/` | Cross-validated output of the runs executed locally, one folder per experiment, plus the `a1_experiment_result.csv` index. |
-| `experiment_result_databricks/` | The same, for the load-composition runs executed on Databricks. |
+| `experiment_result_databricks/` | The same, for the runs executed on Databricks: the load-composition runs and the 14-model, 4-dataset comparison (`scripts/run_model_comparison_batch.py`, resumable; `notebooks/01_ashd_acap_edp_148hh_comparison/0_run_model_comparison_databricks.ipynb` runs it locally or on Databricks, with the LSTM as a separate step). |
 | `notebooks/` | The workflow, numbered per section. `_archive/` holds superseded versions. |
 | `results/` | Everything generated: figures under `<section>/figures/`, tables as `paper_table_*.csv`. |
-| `scripts/` | The plotting and table code the notebooks call. |
+| `scripts/` | The plotting and table code the notebooks call, plus the resumable batch runners (`run_sa_bess_batch.py`, `run_model_comparison_batch.py`). |
 
 ## How a figure gets built
 
@@ -52,14 +52,14 @@ label for each artefact. The correspondence to the current manuscript is:
 
 | Manuscript | Artefact |
 |---|---|
-| Aggregation, RMSE per household | `results/03_aedp_aggregation_level/figures/fig11_aedp_agg_rmse_per_hh_mean_std_cvbg.png` |
-| Aggregation, nRMSE | `results/03_aedp_aggregation_level/figures/fig10_aedp_agg_nrmse_mean_std_cvbg.png` |
-| Aggregation, both metrics in one figure | `results/03_aedp_aggregation_level/figures/fig15_aedp_agg_nrmse_and_rmse_per_hh_two_panel.png` |
+| Aggregation, RMSE per household | `results/03_acap_edp_aggregation_level/figures/fig11_acap_edp_agg_rmse_per_hh_mean_std_cvbg.png` |
+| Aggregation, nRMSE | `results/03_acap_edp_aggregation_level/figures/fig10_acap_edp_agg_nrmse_mean_std_cvbg.png` |
+| Aggregation, both metrics in one figure | `results/03_acap_edp_aggregation_level/figures/fig15_acap_edp_agg_nrmse_and_rmse_per_hh_two_panel.png` |
 | Load composition, model comparison | `results/04_sa_bess_clean_44hh/figures/fig23_sa_bess_composition_test_rmse_kw.png` |
 | Load composition, time series and error | `results/04_sa_bess_clean_44hh/figures/fig20_sa_bess_composition_timeseries_error_combined.png` |
 | Load composition, results table | `results/04_sa_bess_clean_44hh/paper_table_sa_bess_44hh_signal_test_rmse_kw.csv` and `.md` |
 | Accuracy against stability, ASHD at 1 week | `results/02_ashd_148hh_forecast_horizon/figures/fig42_ashd_nrmse_stability_scatter_1week.png` |
-| Accuracy against stability, ASHD and AEDP at 1 day | `results/01_ashd_aedp_148hh_comparison/figures/fig32_ashd_aedp_nrmse_stability_scatter_1day.png` |
+| Accuracy against stability, ASHD and ACAP-EDP at 1 day | `results/01_ashd_acap_edp_148hh_comparison/figures/fig32_ashd_acap_edp_nrmse_stability_scatter_1day.png` |
 
 Figures under `results/*/figures/supplementary/` are **not** manuscript figures.
 They record alternatives that were considered and not adopted, and their

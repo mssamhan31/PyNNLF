@@ -19,5 +19,7 @@ model_and_hp:
   - [m16, hp1]
   - [m17, hp1]
   - [m18, hp1]
+  - [m19, hp1]
+  - [m20, hp1]
 benchmark_csv: specs/testing_benchmark.csv
 mode: warn

@@ -1,4 +1,4 @@
 Model Name,ACAP-EDP Train nRMSE (%),ACAP-EDP Test nRMSE (%),ACAP-EDP Training Time (s),ASHD Train nRMSE (%),ASHD Test nRMSE (%),ASHD Training Time (s)
-xgb_hp1,8.2,17.8,35.2,2.7,6.1,22.3
+xgb_hp1,8.2,17.8,27.7,2.7,6.1,22.3
 naive_hp1,24.5,24.3,0.0,9.1,9.1,0.0
-arima_hp1,7.7,37.0,2.5,3.7,16.2,2.1
+arima_hp1,7.7,37.0,4.9,3.7,16.2,2.1

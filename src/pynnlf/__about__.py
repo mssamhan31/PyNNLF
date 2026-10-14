@@ -4,4 +4,4 @@ Inputs:  none.
 Outputs: __version__, read by pyproject.toml at build time and re-exported by __init__.
 """
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"

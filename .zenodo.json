@@ -1,0 +1,26 @@
+{
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "MIT",
+  "title": "PyNNLF: Python for Network Net Load Forecasting",
+  "description": "PyNNLF (Python for Network Net Load Forecasting) evaluates net load forecasting model performance in a reliable and reproducible way, with a library of public net load datasets and common forecasting models. Users define the dataset, forecast horizon, model and hyperparameters in a YAML specification; PyNNLF prepares the data, builds lag and calendar features, runs cross-validation and stores accuracy, stability, runtime and forecast outputs in a consistent structure.",
+  "creators": [
+    {"name": "Samhan, M. Syahman", "affiliation": "UNSW Sydney"},
+    {"name": "Bruce, Anna", "affiliation": "UNSW Sydney"},
+    {"name": "Yildiz, Baran", "affiliation": "UNSW Sydney"}
+  ],
+  "keywords": [
+    "net load forecasting",
+    "electricity load forecasting",
+    "rooftop solar",
+    "distribution network",
+    "machine learning",
+    "benchmark",
+    "reproducibility"
+  ],
+  "notes": "This project is part of Samhan's PhD study, supported by the University International Postgraduate Award (UIPA) Scholarship from UNSW, the Industry Collaboration Project Scholarship from Ausgrid, the RACE for 2030 Scholarship, and the NSW Decarbonisation Innovation Hub (NSW Decarb Hub). We acknowledge Solcast and the Australian Bureau of Meteorology (BOM) for providing access to historical weather datasets for this research. We acknowledge the Australian Centre for Advanced Photovoltaics (ACAP), Energy Data Platform (ACAP-EDP) for the household net load data compiled from Solar Analytics and Wattwatchers. The North American dataset is derived from the UMass Smart* SunDance release (Chen and Irwin, 2017), used under CC BY 4.0, and the Belgian dataset from Fluvius Open Data (dataset 1_50, last updated by Fluvius on 2025-09-29), used under the Fluvius open data licence, with weather from the Open-Meteo historical weather API (CC BY 4.0).",
+  "related_identifiers": [
+    {"identifier": "https://github.com/mssamhan31/PyNNLF", "relation": "isSupplementTo", "resource_type": "software"},
+    {"identifier": "https://mssamhan31.github.io/PyNNLF/", "relation": "isDocumentedBy", "resource_type": "publication-other"}
+  ]
+}

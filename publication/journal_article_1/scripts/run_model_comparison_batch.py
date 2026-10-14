@@ -91,20 +91,26 @@ def load_workspace_config() -> dict:
     return config
 
 
-def prune_training_folds(results_root: Path) -> None:
-    """Delete the per-fold training series the engine writes; the a3 file keeps the fold metrics.
+def prune_training_folds(experiment_dirs: set[Path]) -> None:
+    """Delete the per-fold training series of the given experiments; the a3 file keeps the fold metrics.
 
-    They are ignored by Git, but on Databricks they would still count towards the
-    Git folder size limit.
+    Only the experiments just produced are pruned. Older experiments in the store
+    keep whatever they have, since some of them were released with their folds.
 
     Args:
-        results_root (Path): result store to prune.
+        experiment_dirs (set[Path]): experiment folders written by this run.
 
     Returns:
         None.
     """
-    for folder in results_root.glob("E*/E*_cv_train"):
-        shutil.rmtree(folder, ignore_errors=True)
+    for experiment_dir in experiment_dirs:
+        for folder in experiment_dir.glob("E*_cv_train"):
+            shutil.rmtree(folder, ignore_errors=True)
+
+
+def experiment_dirs(results_root: Path) -> set[Path]:
+    """Return the experiment folders currently in a result store."""
+    return {path for path in results_root.glob("E*") if path.is_dir()}
 
 
 def main(dry_run: bool = False, only: set[str] | None = None, skip: set[str] | None = None) -> None:
@@ -148,6 +154,7 @@ def main(dry_run: bool = False, only: set[str] | None = None, skip: set[str] | N
     for index, (dataset_id, model_id, hp_no) in enumerate(pending, start=1):
         model_name = discover_model_name(models_dir, model_id)
         print(f"[run {index}/{len(pending)}] {dataset_id} {model_id} {hp_no} -> {model_name}", flush=True)
+        before = experiment_dirs(OUTPUT_ROOT)
         run_experiment_engine(
             dataset_path=discover_dataset_path(data_dir, dataset_id),
             forecast_horizon_min=HORIZON_MINUTES,
@@ -158,7 +165,7 @@ def main(dry_run: bool = False, only: set[str] | None = None, skip: set[str] | N
             models_dir=models_dir,
             config=config,
         )
-        prune_training_folds(OUTPUT_ROOT)
+        prune_training_folds(experiment_dirs(OUTPUT_ROOT) - before)
 
     pynnlf.recap_experiments(OUTPUT_ROOT, output_path=OUTPUT_ROOT / "a1_experiment_result.csv")
     print(f"Model comparison batch complete. Recap: {OUTPUT_ROOT / 'a1_experiment_result.csv'}")

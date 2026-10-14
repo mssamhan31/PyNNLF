@@ -1,0 +1,9 @@
+,hyperparameter,value
+0,seed,1.0
+1,input_size,1.0
+2,hidden_size,64.0
+3,num_layers,1.0
+4,output_size,1.0
+5,batch_size,4096.0
+6,epochs,100.0
+7,learning_rate,0.001

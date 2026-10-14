@@ -1,0 +1,2 @@
+experiment_no,exp_date,dataset_no,dataset,dataset_freq_min,dataset_length_week,forecast_horizon_min,train_pct,test_pct,model_no,hyperparameter_no,model_name,hyperparamter,run_seed,seed_keys_overridden,runtime_ms,train_RMSE,train_RMSE_stddev,test_RMSE,test_RMSE_stddev,train_nRMSE,train_nRMSE_stddev,test_nRMSE,test_nRMSE_stddev
+E00049,2026-10-12,ds38,sundance,60,40,1440,0.9,0.1,m4,hp1,m4_arima_hp1,"p: 1, d: 0, q: 1",,,1477.742838859558,26.2505,1.1922358314435018,101.09622222222221,14.335802696202412,10.137451429087605,0.46041914756962254,39.04146749364869,5.5362184922091044

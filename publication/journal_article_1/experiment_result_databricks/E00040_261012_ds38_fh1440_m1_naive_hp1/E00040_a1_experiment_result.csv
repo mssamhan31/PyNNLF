@@ -1,0 +1,2 @@
+experiment_no,exp_date,dataset_no,dataset,dataset_freq_min,dataset_length_week,forecast_horizon_min,train_pct,test_pct,model_no,hyperparameter_no,model_name,hyperparamter,run_seed,seed_keys_overridden,runtime_ms,train_RMSE,train_RMSE_stddev,test_RMSE,test_RMSE_stddev,train_nRMSE,train_nRMSE_stddev,test_nRMSE,test_nRMSE_stddev
+E00040,2026-10-12,ds38,sundance,60,40,1440,0.9,0.1,m1,hp1,m1_naive_hp1,hyperparameter_1: No hyperparameter,,,0.0,34.4202,0.39486504023526786,34.263,3.4913868941216535,13.292436550903076,0.1524894827309858,13.23172885525337,1.3483082249599545

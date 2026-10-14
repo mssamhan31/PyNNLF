@@ -1645,6 +1645,9 @@ _LABEL_RADII = [r * ANNOTATION_PT / 12.0 for r in (34.0, 52.0, 74.0, 100.0, 130.
 # plotted marker before the placement counts as clean.
 _POINT_CLEARANCE = 9.0 * ANNOTATION_PT / 12.0
 _LEADER_CLEARANCE = 7.0 * ANNOTATION_PT / 12.0
+# Gap kept between label boxes: the text extent excludes the box padding, so two
+# labels whose extents merely touch would draw with their frames overlapping.
+_LABEL_CLEARANCE = 3.0 * ANNOTATION_PT / 12.0
 
 
 def _segment_point_distance(ax_, ay, bx, by, px, py) -> float:
@@ -1753,7 +1756,11 @@ def _place_scatter_labels(fig, ax, points: list[tuple[float, float, str]]) -> No
                     if padded.x0 <= mx <= padded.x1 and padded.y0 <= my <= padded.y1:
                         penalty += 100.0
 
-                penalty += 40.0 * sum(1 for other in placed_boxes if box.overlaps(other))
+                framed = box.expanded(
+                    1.0 + 2 * _LABEL_CLEARANCE * dpi_scale / max(box.width, 1.0),
+                    1.0 + 2 * _LABEL_CLEARANCE * dpi_scale / max(box.height, 1.0),
+                )
+                penalty += 40.0 * sum(1 for other in placed_boxes if framed.overlaps(other))
 
                 # The leader runs from the marker to the centre of the box; charge
                 # for passing close to any other marker on the way.
@@ -1814,8 +1821,14 @@ def _place_scatter_labels(fig, ax, points: list[tuple[float, float, str]]) -> No
         )
 
 
-def _draw_stability_panel(fig, ax, frame: pd.DataFrame, title: str) -> None:
-    """Draw one accuracy-against-stability panel for a full model library."""
+def _draw_stability_panel(fig, ax, frame: pd.DataFrame, title: str) -> list[tuple[float, float, str]]:
+    """Draw one accuracy-against-stability panel for a full model library.
+
+    Returns the (x, y, label) triples for :func:`_place_scatter_labels`, which the
+    caller runs only after ``fig.tight_layout()``: label offsets are chosen in
+    pixels and stored in data coordinates, so any later change to the axes
+    size would move them into each other.
+    """
     frame = frame.sort_values("test_nRMSE")
     x = frame["test_nRMSE"].to_numpy(dtype=float)
     y = frame["test_nRMSE_stddev"].to_numpy(dtype=float)
@@ -1846,7 +1859,7 @@ def _draw_stability_panel(fig, ax, frame: pd.DataFrame, title: str) -> None:
         (float(row.test_nRMSE), float(row.test_nRMSE_stddev), MODEL_SHORT_LABELS.get(str(row.model_name), str(row.model_name)))
         for row in frame.itertuples(index=False)
     ]
-    _place_scatter_labels(fig, ax, labels)
+    return labels
 
 
 def _validate_stability_frame(frame: pd.DataFrame, description: str) -> pd.DataFrame:
@@ -1872,8 +1885,9 @@ def _plot_ashd_stability_scatter() -> Path:
     frame = _validate_stability_frame(frame, "ASHD at the 1-week horizon")
 
     fig, ax = plt.subplots(figsize=page_figsize(8.6, 6.0))
-    _draw_stability_panel(fig, ax, frame, "ASHD 148-household dataset, 1-week forecast horizon")
+    labels = _draw_stability_panel(fig, ax, frame, "ASHD 148-household dataset, 1-week forecast horizon")
     fig.tight_layout()
+    _place_scatter_labels(fig, ax, labels)
     return save_figure(
         fig,
         RESULTS_DIR
@@ -1907,13 +1921,16 @@ def _plot_dataset_stability_scatter_pair() -> Path:
     ]
 
     fig, axes = plt.subplots(1, 2, figsize=page_figsize(17, 8.25))
+    panel_labels = []
     for ax, (panel_id, dataset_label, pretty) in zip(axes, panels):
         frame = recap.loc[recap["dataset_label"].astype(str).eq(dataset_label)].copy()
         frame = _validate_stability_frame(frame, f"{dataset_label} at the 1-day horizon")
-        _draw_stability_panel(fig, ax, frame, f"{panel_id} {pretty}")
+        panel_labels.append((ax, _draw_stability_panel(fig, ax, frame, f"{panel_id} {pretty}")))
 
     fig.suptitle("Forecast accuracy against cross-validation stability, 1-day forecast horizon", y=1.02)
     fig.tight_layout()
+    for ax, labels in panel_labels:
+        _place_scatter_labels(fig, ax, labels)
     return save_figure(
         fig,
         RESULTS_DIR
